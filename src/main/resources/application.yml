@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand-dev
+    username: admin
+    password: errandmysql4_
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 5000
