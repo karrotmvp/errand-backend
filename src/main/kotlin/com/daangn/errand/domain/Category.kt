@@ -5,7 +5,7 @@ import javax.persistence.*
 @Entity
 class Category {
     @Id
-    val id: Long? = null
+    var id: Long? = null
 
     @Column
     val name: String = ""
