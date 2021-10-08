@@ -37,7 +37,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          mv build/libs/*.jar deploy/application.jar
+          mv build/libs/*.jar deploy/
           mv Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
