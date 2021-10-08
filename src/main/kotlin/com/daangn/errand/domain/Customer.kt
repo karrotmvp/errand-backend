@@ -29,6 +29,9 @@ class Customer(
     @LastModifiedDate
     val updatedAt: LocalDateTime = LocalDateTime.now()
 
+    @OneToMany(mappedBy = "customer")
+    var errands: MutableList<Errand> = ArrayList()
+
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Customer::id)
         private val toStringProperties = arrayOf(
