@@ -1,4 +1,4 @@
-name: Deploy to Test EB
+name: Deploy to Prod EB
 
 on:
   push:
