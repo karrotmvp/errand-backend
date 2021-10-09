@@ -13,3 +13,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
+server:
+  port: 5000
