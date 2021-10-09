@@ -9,7 +9,6 @@ import javax.persistence.*
 class User(
     nickname: String,
     phoneNumber: String,
-    regionId: String,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +20,8 @@ class User(
     @Column(nullable = false, unique = true)
     var phoneNumber: String = phoneNumber
 
-    @Column(nullable = false)
-    var regionId: String = regionId
-
     @Column
-    var mannerTemp: Float? = null
+    var mannerTemp: Float? = null // TODO: 매너온도 저장할지 말지 그리즈한테 물어보기
 
     @Column
     var profileImageUrl: String? = null
@@ -41,7 +37,6 @@ class User(
             User::nickname,
             User::phoneNumber,
             User::id,
-            User::regionId,
             User::profileImageUrl,
             User::createdAt,
             User::updatedAt
@@ -49,7 +44,6 @@ class User(
         val toStringProperties = arrayOf(
             User::id,
             User::nickname,
-            User::regionId,
             User::phoneNumber,
             User::profileImageUrl
         )
