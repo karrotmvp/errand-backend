@@ -3,7 +3,7 @@ name: Deploy to Test EB
 on:
   push:
     branches: [ develop ]
-  workflow_dispatch: # 수동 실행
+
 jobs:
   build:
     name: CD Pipeline
