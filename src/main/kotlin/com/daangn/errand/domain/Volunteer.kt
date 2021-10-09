@@ -10,11 +10,13 @@ class Volunteer(
     @ManyToOne
     val errand: Errand,
     @ManyToOne
-    val helper: Helper
-) {
+    val helper: User,
+    @Column
+    val bio: String? = null
+): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
 
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Volunteer::id)

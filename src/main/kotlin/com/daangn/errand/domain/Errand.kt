@@ -10,26 +10,30 @@ import javax.persistence.*
 class Errand (
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    val customer: Customer,
+    val customer: User,
     @ManyToOne
     @JoinColumn(name = "category_id")
-    val category: Category,
+    var category: Category,
     @Column(nullable = false)
-    val regionId: String,
+    var regionId: String,
     @Column(nullable = false)
-    val detail: String
-        ){
+    var detailAddress: String,
+    @Column(nullable = false)
+    var gratuity: String,
+    @Column(nullable = false)
+    var detail: String
+        ): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    val isCompleted: Boolean = false
+    var isCompleted: Boolean = false
 
     @ManyToOne
     @JoinColumn(name = "chosen_helper_id")
-    val chosenHelper: Helper? = null
+    var chosenHelper: User? = null
 
     companion object{
         private val equalsAndHashCodeProperties = arrayOf(Errand::id)
