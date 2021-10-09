@@ -1,8 +1,6 @@
 name: Deploy to Test EB
 
 on:
-  push:
-    branches: [ develop ]
   pull_request:
     branches: [ develop ]
   workflow_dispatch: # 수동 실행
@@ -52,6 +50,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: daangn-errand
           environment_name: Daangn-errand-dev
-          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          version_label: dev-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
