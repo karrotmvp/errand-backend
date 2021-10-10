@@ -1,8 +1,11 @@
-package com.daangn.errand.domain
+package com.daangn.errand.domain.errand
 
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
+import com.daangn.errand.domain.BaseEntity
+import com.daangn.errand.domain.category.Category
+import com.daangn.errand.domain.user.User
 import org.hibernate.annotations.ColumnDefault
 import javax.persistence.*
 

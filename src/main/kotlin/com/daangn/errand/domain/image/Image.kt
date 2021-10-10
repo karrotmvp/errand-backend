@@ -1,5 +1,6 @@
-package com.daangn.errand.domain
+package com.daangn.errand.domain.image
 
+import com.daangn.errand.domain.errand.Errand
 import javax.persistence.*
 
 @Entity

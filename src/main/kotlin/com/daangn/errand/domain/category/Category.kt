@@ -1,4 +1,4 @@
-package com.daangn.errand.domain
+package com.daangn.errand.domain.category
 
 import javax.persistence.*
 
