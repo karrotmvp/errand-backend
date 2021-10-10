@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RestController
 @Api(tags = ["Test API"])
 class HelloController {
     @GetMapping("")
-    fun helloWorld() = ResponseEntity<String>("Hello daangn!", null, HttpStatus.OK)
+    fun healthCheck() = ResponseEntity<String>("Healthy.", null, HttpStatus.OK)
 
     @GetMapping("/api")
+    @ApiOperation(value = "test API")
     fun testAPI() = ResponseEntity<String>("OK", null, HttpStatus.OK)
 }
