@@ -53,6 +53,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
 
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
 }
 
 tasks.withType<KotlinCompile> {
