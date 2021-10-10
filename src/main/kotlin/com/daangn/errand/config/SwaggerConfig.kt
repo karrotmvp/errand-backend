@@ -18,8 +18,8 @@ class SwaggerConfig {
         Docket(DocumentationType.OAS_30)
             .apiInfo(apiInfo())
             .select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.ant("/api/**"))
+            .apis(RequestHandlerSelectors.basePackage("com.daangn.errand.controller"))
+            .paths(PathSelectors.any())
             .build()
 
     private fun apiInfo(): ApiInfo = ApiInfoBuilder()
