@@ -1,4 +1,4 @@
-package com.daangn.errand.domain
+package com.daangn.errand.domain.category
 
 import javax.persistence.*
 
@@ -8,5 +8,5 @@ class Category {
     var id: Long? = null
 
     @Column
-    val name: String = ""
+    var name: String = ""
 }

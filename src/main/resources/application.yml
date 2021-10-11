@@ -15,3 +15,5 @@ spring:
         format_sql: true
 server:
   port: 5000
+url:
+  defaultImg: https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F75e23316-b3e6-4448-9fde-5852b400262a%2Flogo.png?table=block&id=3d0197c1-37ec-43d1-8ff7-39b5b254a3c8&spaceId=05b6560f-4c34-4811-bdc3-c653ef40ed27&width=250&userId=3331006c-ef8a-445a-bef0-40006db0d6f7&cache=v2

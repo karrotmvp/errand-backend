@@ -18,6 +18,7 @@ plugins {
 
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
+    kotlin("kapt") version kotlinVersion
 }
 
 allOpen {
@@ -54,6 +55,12 @@ dependencies {
     testImplementation("com.h2database:h2")
 
     implementation("io.springfox:springfox-boot-starter:3.0.0")
+
+    val mapstructVersion = "1.4.2.Final"
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    testImplementation("org.mapstruct:mapstruct-processor:$mapstructVersion")
 }
 
 tasks.withType<KotlinCompile> {

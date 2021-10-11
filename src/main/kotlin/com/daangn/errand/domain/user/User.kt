@@ -1,8 +1,11 @@
-package com.daangn.errand.domain
+package com.daangn.errand.domain.user
 
 import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
+import com.daangn.errand.domain.BaseEntity
+import com.daangn.errand.domain.HelperHasCategories
+import com.daangn.errand.domain.errand.Errand
 import javax.persistence.*
 
 @Entity
@@ -21,9 +24,6 @@ class User(
     var phoneNumber: String = phoneNumber
 
     @Column
-    var mannerTemp: Float? = null // TODO: 매너온도 저장할지 말지 그리즈한테 물어보기
-
-    @Column
     var profileImageUrl: String? = null
 
     @OneToMany(mappedBy = "customer")
@@ -31,6 +31,9 @@ class User(
 
     @OneToMany(mappedBy = "chosenHelper")
     var errandList: MutableList<Errand> = ArrayList()
+
+    @OneToMany
+    var categories: MutableList<HelperHasCategories> = ArrayList()
 
     companion object {
         val equalsAndHashcodeProperties = arrayOf(
