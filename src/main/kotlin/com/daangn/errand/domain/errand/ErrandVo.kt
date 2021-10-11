@@ -4,7 +4,7 @@ import com.daangn.errand.domain.category.CategoryVo
 import com.daangn.errand.domain.user.UserVo
 
 data class ErrandVo(
-    val id: Long,
+    val id: Long?,
     val customer: UserVo,
     val category: CategoryVo,
     val regionId: String,
@@ -12,5 +12,5 @@ data class ErrandVo(
     val gratuity: String,
     val detail: String,
     val isCompleted: Boolean,
-    val chosenHelper: UserVo
+    val chosenHelper: UserVo?
 )
