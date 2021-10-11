@@ -14,11 +14,13 @@ enum class ErrandError(var description: String, val status: HttpStatus) {
     AWS_ERROR("AWS 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     CUSTOM_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR);
 
+    // 발생하는 예외가 무엇인지 모를 때 사용
     fun setDescExceptionMsg(e: Exception): ErrandError {
         description = e.toString()
         return this
     }
 
+    // 임의로 에러메시지를 수정하고 싶을 때 사용
     fun setCustomDesc(msg: String): ErrandError {
         description = msg
         return this
