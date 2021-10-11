@@ -1,10 +1,8 @@
 package com.daangn.errand.domain.user
 
-import com.daangn.errand.domain.Value
-
 data class UserVo(
-    val id: Long?,
+    val id: Long? = null,
     val nickname: String,
     val phoneNumber: String,
-    val profileImageUrl: String = Value.defaultImgUrl,
+    val profileImageUrl: String? = null
 )
