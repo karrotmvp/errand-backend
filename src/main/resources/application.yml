@@ -29,3 +29,17 @@ cloud:
     stack:
       auto: false
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
