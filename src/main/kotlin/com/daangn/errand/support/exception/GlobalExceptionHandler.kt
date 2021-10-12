@@ -33,15 +33,16 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrandResponse<Unit>> {
-        logger.error { "MethodArgumentNotValidException : " + e.message };
+        logger.error { "MethodArgumentNotValidException : " + e.message }
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(ErrandResponse(HttpStatus.BAD_REQUEST, e.message));
+            .body(ErrandResponse(HttpStatus.BAD_REQUEST, e.message))
     }
 
     @ExceptionHandler(RuntimeException::class)
     fun unknownException(e: Exception): ResponseEntity<ErrandResponse<Unit>> {
-        logger.error { "UnknownException : ${e.stackTrace}" }
+        logger.error { "UnknownException : $e" }
+        e.printStackTrace() // TODO: 지우기
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrandResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.localizedMessage))
