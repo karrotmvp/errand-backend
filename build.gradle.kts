@@ -61,6 +61,9 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testImplementation("org.mapstruct:mapstruct-processor:$mapstructVersion")
+
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 }
 
 tasks.withType<KotlinCompile> {
