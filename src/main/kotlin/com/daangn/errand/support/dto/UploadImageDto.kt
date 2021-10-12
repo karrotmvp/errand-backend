@@ -6,3 +6,7 @@ data class UploadImageDto(
     val img: MultipartFile,
     val fileName: String
 )
+
+data class UploadImagesDto(
+    val img: List<MultipartFile>
+)
