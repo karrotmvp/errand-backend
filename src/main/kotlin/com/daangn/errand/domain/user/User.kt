@@ -10,21 +10,14 @@ import javax.persistence.*
 
 @Entity
 class User(
-    nickname: String,
-    phoneNumber: String,
+    daangnId: String
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
     @Column(nullable = false)
-    var nickname: String = nickname
-
-    @Column(nullable = false, unique = true)
-    var phoneNumber: String = phoneNumber
-
-    @Column
-    var profileImageUrl: String? = null
+    var daangnId: String = daangnId
 
     @OneToMany(mappedBy = "customer")
     var errandReqList: MutableList<Errand> = ArrayList()
@@ -37,18 +30,14 @@ class User(
 
     companion object {
         val equalsAndHashcodeProperties = arrayOf(
-            User::nickname,
-            User::phoneNumber,
             User::id,
-            User::profileImageUrl,
+            User::daangnId,
             User::createdAt,
             User::updatedAt
         )
         val toStringProperties = arrayOf(
             User::id,
-            User::nickname,
-            User::phoneNumber,
-            User::profileImageUrl
+            User::daangnId
         )
     }
 

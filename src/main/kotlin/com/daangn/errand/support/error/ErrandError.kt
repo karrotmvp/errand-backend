@@ -10,10 +10,10 @@ enum class ErrandError(var description: String, val status: HttpStatus) {
     DUPLICATE("중복 입력입니다.", HttpStatus.BAD_REQUEST),
     ENTITY_NOT_FOUND("엔터티를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     UNEXPECTED_VALUE("예상하지 못한 값입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    DELETD_USER("삭제된 유저입니다.", HttpStatus.FORBIDDEN),
+    FAIL_TO_LOGIN("로그인 실패", HttpStatus.FORBIDDEN),
     AWS_ERROR("AWS 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    CUSTOM_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR);
-
+    CUSTOM_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR),
+    DAANGN_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR);
     // 발생하는 예외가 무엇인지 모를 때 사용
     fun setDescExceptionMsg(e: Exception): ErrandError {
         description = e.toString()

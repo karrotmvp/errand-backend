@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 internal class UserTest constructor(
@@ -12,12 +13,10 @@ internal class UserTest constructor(
     @Test
     fun `user converter 테스트`() {
         val user = User(
-            nickname = "Rosie",
-            phoneNumber = "01012345678"
+            "mockDaangnId",
         )
         val userVo = userConverter.toUserVo(user)
         Assertions.assertThat(userVo).isInstanceOf(UserVo::class.java)
-        Assertions.assertThat(user.nickname).isEqualTo(userVo.nickname)
-        Assertions.assertThat(user.phoneNumber).isEqualTo(userVo.phoneNumber)
+        Assertions.assertThat(user.daangnId).isEqualTo("mockDaangnId")
     }
 }
