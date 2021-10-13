@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@ActiveProfiles("dev")
 internal class DaangnUtilTest constructor(
     @Autowired val daangnUtil: DaangnUtil
 ){

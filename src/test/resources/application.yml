@@ -1,0 +1,35 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: root
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: AKIA3AQINQBE3UOGWJZG
+      secret-key: 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
+    s3:
+      bucket: errandbucket
+    stack:
+      auto: false
+logging.level.com.amazonaws.util.EC2MetadataUtils: error
+oauth:
+  oapi: https://oapi.alpha.kr.karrotmarket.com
+  open-api: https://openapi.alpha.kr.karrotmarket.com
+
+daangn:
+  app-auth: QmFzaWMgZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI6blRGWExzY25lMWlaaGcxYmlxMm56b0NIVVAyMEFxUmtGQlV5dWFRejFZYw==
+  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=

@@ -10,6 +10,7 @@ internal class ErrandErrorTest {
     private fun throwNullPointerException() {
         try {
             val nullValue: String = null!!
+            println(nullValue)
         } catch (e: Exception) {
             throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
         }

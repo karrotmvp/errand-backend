@@ -6,7 +6,7 @@ data class UserVo(
     @ApiModelProperty(value = "심부름 서비스에서의 id")
     val id: Long? = null,
     @ApiModelProperty(value = "당근마켓 사용자 id")
-    val daangnId: Long,
+    val daangnId: String,
     @ApiModelProperty(value = "당근마켓 닉네임")
     val nickname: String? = null,
     @ApiModelProperty(value = "당근마켓 프로필사진")
