@@ -1,9 +1,9 @@
-package com.daangn.errand.service
+package com.daangn.errand.util
 
-import com.daangn.errand.support.dto.GetAccessTokenRes
-import com.daangn.errand.support.dto.GetRegionInfoRes
-import com.daangn.errand.support.dto.GetUserMannerPointRes
-import com.daangn.errand.support.dto.GetUserProfileRes
+import com.daangn.errand.rest.dto.daangn.GetAccessTokenRes
+import com.daangn.errand.rest.dto.daangn.GetRegionInfoRes
+import com.daangn.errand.rest.dto.daangn.GetUserMannerPointRes
+import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class DaangnService(
+class DaangnUtil(
     private val httpClient: OkHttpClient,
     private val objectMapper: ObjectMapper,
     @Value("\${oauth.open-api}") val openApiBaseUrl: String,

@@ -1,4 +1,4 @@
-package com.daangn.errand.support.dto
+package com.daangn.errand.rest.dto.daangn
 
 import java.time.LocalDateTime
 

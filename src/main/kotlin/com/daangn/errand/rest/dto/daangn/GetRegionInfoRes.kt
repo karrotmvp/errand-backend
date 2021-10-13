@@ -1,6 +1,4 @@
-package com.daangn.errand.support.dto
-
-import java.time.LocalDateTime
+package com.daangn.errand.rest.dto.daangn
 
 data class GetRegionInfoRes(
     val data: Data

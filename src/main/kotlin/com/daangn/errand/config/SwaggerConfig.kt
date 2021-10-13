@@ -18,7 +18,7 @@ class SwaggerConfig {
         Docket(DocumentationType.OAS_30)
             .apiInfo(apiInfo())
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.daangn.errand.controller"))
+            .apis(RequestHandlerSelectors.basePackage("com.daangn.errand.rest.controller"))
             .paths(PathSelectors.any())
             .build()
 

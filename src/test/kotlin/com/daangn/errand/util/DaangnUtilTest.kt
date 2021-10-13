@@ -1,6 +1,7 @@
-package com.daangn.errand.service
+package com.daangn.errand.util
 
-import com.daangn.errand.support.dto.GetRegionInfoRes
+import com.daangn.errand.rest.dto.daangn.GetRegionInfoRes
+import com.daangn.errand.util.DaangnUtil
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,13 +10,13 @@ import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 @ActiveProfiles("dev")
-internal class DaangnServiceTest constructor(
-    @Autowired val daangnService: DaangnService
+internal class DaangnUtilTest constructor(
+    @Autowired val daangnUtil: DaangnUtil
 ){
     @Test
     fun `regionId로 region 정보 가져오기`() {
         val reqRegionId = "6530459d189b"
-        val resData: GetRegionInfoRes.Data = daangnService.getRegionInfoByRegionId(reqRegionId)
+        val resData: GetRegionInfoRes.Data = daangnUtil.getRegionInfoByRegionId(reqRegionId)
         val regionInfo = resData.region
         Assertions.assertThat(regionInfo.id).isEqualTo(reqRegionId)
         Assertions.assertThat(regionInfo.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")

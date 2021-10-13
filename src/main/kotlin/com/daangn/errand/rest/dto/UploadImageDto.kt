@@ -1,4 +1,4 @@
-package com.daangn.errand.support.dto
+package com.daangn.errand.rest.dto
 
 import org.springframework.web.multipart.MultipartFile
 
