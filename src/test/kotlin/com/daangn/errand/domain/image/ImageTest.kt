@@ -17,9 +17,9 @@ internal class ImageTest constructor(
         val image = Image(
             "http://image.url",
             Errand(
-                customer = User("Rosie", "01012345678"),
+                customer = User("mockDaangnId"),
                 category = Category(),
-                regionId = "123456789qwertyuiop",
+                regionId = "6530459d189b",
                 detailAddress = "1F",
                 gratuity = "10000",
                 detail = "심부름 상세 요청 정보"
