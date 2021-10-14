@@ -4,7 +4,9 @@ import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
+import mu.KotlinLogging
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -131,16 +133,14 @@ class DaangnUtil(
     }
 
     fun sendBizChatting(postBizChatReq: PostBizChatReq) {
-        val url = "$openApiBaseUrl/api/v2/chat/send_biz_chat_message"
+        val url = "$oApiBaseUrl/api/v2/chat/send_biz_chat_message"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
 
         val requestBody = objectMapper.writeValueAsString(postBizChatReq)
         val request: Request = Request.Builder()
             .url(httpUrl)
-            .post(requestBody.toRequestBody())
-            .addHeader("Accept", "application/json")
+            .post(requestBody.toRequestBody("application/json".toMediaTypeOrNull()))
             .addHeader("X-Api-Key", appKey)
-            .addHeader("Content-Type", "application/json")
             .build()
         val response = try {
             httpClient.newCall(request).execute()
