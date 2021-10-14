@@ -31,7 +31,7 @@ cloud:
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
 
 daangn:
-  app-auth: QmFzaWMgZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI6blRGWExzY25lMWlaaGcxYmlxMm56b0NIVVAyMEFxUmtGQlV5dWFRejFZYw==
+  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
   app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
 ---
 
