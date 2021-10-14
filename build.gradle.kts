@@ -69,6 +69,7 @@ dependencies {
 //    implementation("org.springframework.security:spring-security-oauth2-client:5.5.2")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
 }
 
 tasks.withType<KotlinCompile> {
