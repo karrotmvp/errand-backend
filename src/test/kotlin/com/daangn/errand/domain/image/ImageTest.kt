@@ -21,7 +21,7 @@ internal class ImageTest constructor(
                 category = Category(),
                 regionId = "6530459d189b",
                 detailAddress = "1F",
-                gratuity = "10000",
+                reward = "10000",
                 detail = "심부름 상세 요청 정보"
             )
         )
