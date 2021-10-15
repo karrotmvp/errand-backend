@@ -45,4 +45,10 @@ internal class DaangnUtilTest constructor(
         }
 
     }
+
+    @Test
+    fun `주변 지역 정보 가져오기`() {
+        val regionId = "6530459d189b"
+        assertDoesNotThrow { daangnUtil.getNeighborRegionByRegionId(regionId) }
+    }
 }
