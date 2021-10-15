@@ -4,7 +4,6 @@ import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
-import mu.KotlinLogging
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
