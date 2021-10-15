@@ -4,4 +4,5 @@ import com.daangn.errand.domain.user.User
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository: JpaRepository<User, String> {
+    fun findByDaangnId(daangnId: String): User?
 }
