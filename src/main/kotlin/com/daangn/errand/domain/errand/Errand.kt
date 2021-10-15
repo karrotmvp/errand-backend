@@ -19,13 +19,17 @@ class Errand (
     @JoinColumn(name = "category_id")
     var category: Category,
     @Column(nullable = false)
+    var title: String,
+    @Column(nullable = false)
     var regionId: String,
     @Column(nullable = false)
     var detailAddress: String,
     @Column(nullable = false)
     var reward: String,
     @Column(nullable = false)
-    var detail: String
+    var detail: String,
+    @Column(nullable = false)
+    var customerPhoneNumber: String
         ): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
