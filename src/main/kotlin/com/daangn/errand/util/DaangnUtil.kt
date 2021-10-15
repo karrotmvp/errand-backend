@@ -17,10 +17,11 @@ import org.springframework.stereotype.Component
 class DaangnUtil(
     private val httpClient: OkHttpClient,
     private val objectMapper: ObjectMapper,
-    @Value("\${oauth.open-api}") val openApiBaseUrl: String,
-    @Value("\${oauth.oapi}") val oApiBaseUrl: String,
+    @Value("\${daangn.open-api.url}") val openApiBaseUrl: String,
+    @Value("\${daangn.oapi.url}") val oApiBaseUrl: String,
     @Value("\${daangn.app-auth}") val appAuthorization: String,
-    @Value("\${daangn.app-key}") val appKey: String
+    @Value("\${daangn.app-key}") val appKey: String,
+    @Value("\${daangn.oapi.neighbor-range}") val range: String,
 ) {
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
@@ -150,4 +151,26 @@ class DaangnUtil(
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 비즈 채팅 보내기 실패"))
         }
     }
+
+    fun getNeighborRegionByRegionId(regionId: String): GetNeighborRegionInfoRes {
+        val url = "$oApiBaseUrl/api/v2/regions/$regionId/neighbor_regions"
+        val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
+            .addQueryParameter("range", range).build() // MY, ADJACENT, RANGE_2, RANGE_3
+        val request = Request.Builder()
+            .url(httpUrl)
+            .get()
+            .addHeader("X-Api-Key", appKey)
+            .build()
+        val httpResponse = try {
+            httpClient.newCall(request).execute()
+        } catch (e: Exception) {
+            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+        }
+        val responseBody: String? = httpResponse.body?.string()
+        return try {
+            objectMapper.readValue(responseBody, GetNeighborRegionInfoRes::class.java)
+        } catch (e: Exception) {
+            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
+        }
+     }
 }

@@ -9,11 +9,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     database: mysql
-    properties:
-      hibernate:
-        format_sql: true
 cloud:
   aws:
     region:
@@ -26,14 +22,13 @@ cloud:
     stack:
       auto: false
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
-oauth:
-  oapi: https://oapi.alpha.kr.karrotmarket.com
-  open-api: https://openapi.alpha.kr.karrotmarket.com
-
 daangn:
   app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
   app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
-
+  oapi:
+    neighbor-range: RANGE_2
+  oapi.url: https://oapi.alpha.kr.karrotmarket.com
+  open-api.url: https://openapi.alpha.kr.karrotmarket.com
 test: true
 token.secret: Dj@bWv5w-$m#kjNWe?y#
 
