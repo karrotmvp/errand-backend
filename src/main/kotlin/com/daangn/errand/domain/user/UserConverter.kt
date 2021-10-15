@@ -11,5 +11,8 @@ interface UserConverter {
         Mapping(target = "profileImageUrl", ignore = true),
         Mapping(target = "mannerPoint", ignore = true)
     )
+    fun toUserProfileVo(user: User): UserProfileVo
+
+    @Mappings
     fun toUserVo(user: User): UserVo
 }

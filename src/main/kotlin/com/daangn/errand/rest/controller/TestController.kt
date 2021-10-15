@@ -2,14 +2,14 @@ package com.daangn.errand.rest.controller
 
 import com.daangn.errand.rest.dto.UploadImageDto
 import com.daangn.errand.rest.dto.UploadImagesDto
+import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.support.response.ErrandResponse
+import com.daangn.errand.util.JwtPayload
 import com.daangn.errand.util.S3Uploader
-import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.view.RedirectView
 import springfox.documentation.annotations.ApiIgnore
 import java.time.LocalDateTime
 
@@ -40,4 +40,8 @@ class TestController(
         }.toList()
         return ErrandResponse(urls)
     }
+
+    @PostMapping("/token")
+    @ApiIgnore
+    fun cookieArgument(@TokenPayload payload: JwtPayload) = ErrandResponse(payload)
 }

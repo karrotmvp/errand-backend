@@ -23,7 +23,7 @@ class Errand (
     @Column(nullable = false)
     var detailAddress: String,
     @Column(nullable = false)
-    var gratuity: String,
+    var reward: String,
     @Column(nullable = false)
     var detail: String
         ): BaseEntity() {
@@ -48,6 +48,7 @@ class Errand (
             Errand::id,
             Errand::customer,
             Errand::regionId,
+            Errand::reward,
             Errand::detail,
             Errand::chosenHelper,
             Errand::isCompleted

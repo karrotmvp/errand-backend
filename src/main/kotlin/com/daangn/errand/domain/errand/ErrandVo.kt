@@ -9,7 +9,7 @@ data class ErrandVo(
     val category: CategoryVo,
     val regionId: String,
     val detailAddress: String,
-    val gratuity: String,
+    val reward: String,
     val detail: String,
     val isCompleted: Boolean,
     val chosenHelper: UserVo?
