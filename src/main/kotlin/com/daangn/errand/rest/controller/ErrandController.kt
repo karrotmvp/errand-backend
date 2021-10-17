@@ -7,10 +7,7 @@ import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
 @RestController
@@ -25,4 +22,12 @@ class ErrandController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @RequestBody postErrandReqDto: PostErrandReqDto
     ) = ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
+
+    @GetMapping("/{id}")
+    @ApiOperation(value = "심부름 상세 조회 API")
+    fun getErrand(
+        @ApiIgnore @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "id") id: Long
+    ) = ErrandResponse(errandService.readErrand(payload, id))
+
 }

@@ -22,6 +22,7 @@ class DaangnUtil(
     @Value("\${daangn.app-auth}") val appAuthorization: String,
     @Value("\${daangn.app-key}") val appKey: String,
     @Value("\${daangn.oapi.neighbor-range}") val range: String,
+    val regionConverter: RegionConverter,
 ) {
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
@@ -106,7 +107,7 @@ class DaangnUtil(
         return res.data
     }
 
-    fun getRegionInfoByRegionId(regionId: String): GetRegionInfoRes.Data {
+    fun getRegionInfoByRegionId(regionId: String): RegionVo {
         val url = "$oApiBaseUrl/api/v2/regions/$regionId"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
         val httpResponse = try {
@@ -126,10 +127,12 @@ class DaangnUtil(
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 지역 정보 조회 실패"))
         }
         return try {
-            objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
+            val data = objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
+            regionConverter.toRegionVo(data.region)
         } catch (e: Exception) {
             throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
         }
+
     }
 
     fun sendBizChatting(postBizChatReq: PostBizChatReq) {

@@ -2,17 +2,21 @@ package com.daangn.errand.domain.errand
 
 import com.daangn.errand.domain.category.CategoryVo
 import com.daangn.errand.domain.user.UserVo
+import com.daangn.errand.rest.dto.daangn.RegionVo
+import com.fasterxml.jackson.annotation.JsonInclude
 
-data class ErrandVo(
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class ErrandDto(
     val id: Long?,
     val customer: UserVo,
-    val customerPhoneNumber: String,
+    var customerPhoneNumber: String?,
     val title: String,
     val category: CategoryVo,
-    val regionId: String,
-    val detailAddress: String,
+    var detailAddress: String?,
     val reward: String,
     val detail: String,
     val isCompleted: Boolean,
     val chosenHelper: UserVo?
-)
+) {
+    var region: RegionVo? = null
+}

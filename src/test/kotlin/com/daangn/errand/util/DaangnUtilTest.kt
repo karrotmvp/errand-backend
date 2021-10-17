@@ -14,14 +14,13 @@ internal class DaangnUtilTest constructor(
     @Test
     fun `regionId로 region 정보 가져오기`() {
         val reqRegionId = "6530459d189b"
-        val resData: GetRegionInfoRes.Data = daangnUtil.getRegionInfoByRegionId(reqRegionId)
-        val regionInfo = resData.region
-        Assertions.assertThat(regionInfo.id).isEqualTo(reqRegionId)
-        Assertions.assertThat(regionInfo.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")
-        Assertions.assertThat(regionInfo.name).isEqualTo("역삼1동")
-        Assertions.assertThat(regionInfo.name1).isEqualTo("서울특별시")
-        Assertions.assertThat(regionInfo.name2).isEqualTo("강남구")
-        Assertions.assertThat(regionInfo.name3).isEqualTo("역삼1동")
+        val region = daangnUtil.getRegionInfoByRegionId(reqRegionId)
+        Assertions.assertThat(region.id).isEqualTo(reqRegionId)
+        Assertions.assertThat(region.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")
+        Assertions.assertThat(region.name).isEqualTo("역삼1동")
+        Assertions.assertThat(region.name1).isEqualTo("서울특별시")
+        Assertions.assertThat(region.name2).isEqualTo("강남구")
+        Assertions.assertThat(region.name3).isEqualTo("역삼1동")
     }
 
     @Test
