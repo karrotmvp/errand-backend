@@ -8,7 +8,7 @@ data class GetRegionInfoRes(
     )
 }
 
-class Region(
+data class Region(
     val id: String,
     val nodeId: String,
     val name: String,
