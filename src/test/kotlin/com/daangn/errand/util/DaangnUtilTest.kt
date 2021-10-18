@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 internal class DaangnUtilTest constructor(
-    @Autowired val daangnUtil: DaangnUtil
+    @Autowired val daangnUtil: DaangnUtil,
+    @Autowired val regionConverter: RegionConverter
 ) {
     @Test
     fun `regionId로 region 정보 가져오기`() {
         val reqRegionId = "6530459d189b"
-        val region = daangnUtil.getRegionInfoByRegionId(reqRegionId)
+        val region =regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(reqRegionId).region)
         Assertions.assertThat(region.id).isEqualTo(reqRegionId)
         Assertions.assertThat(region.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")
         Assertions.assertThat(region.name).isEqualTo("역삼1동")
