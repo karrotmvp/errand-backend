@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface HelpRepository: JpaRepository<Help, Long> {
     fun findByErrandAndHelper(errand: Errand, helper: User): Help?
+    fun findByErrandOrderByCreatedAt(errand: Errand): MutableList<Help>
 }

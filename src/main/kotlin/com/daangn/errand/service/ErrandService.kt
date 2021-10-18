@@ -2,6 +2,8 @@ package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
+import com.daangn.errand.domain.user.UserConverter
+import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.CategoryRepository
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
@@ -24,7 +26,8 @@ class ErrandService(
     val categoryRepository: CategoryRepository,
     val helpRepository: HelpRepository,
     val regionConverter: RegionConverter,
-    val daangnUtil: DaangnUtil
+    val daangnUtil: DaangnUtil,
+    val userConverter: UserConverter
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -66,5 +69,16 @@ class ErrandService(
             didIApply = didIApply,
             wasIChosen = wasIChosen
         )
+    }
+
+    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<UserProfileVo> {
+        val (userId, accessToken) = payload
+        val errand = errandRepository.findById(errandId)
+            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+        return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
+            daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken)
+        }.toList()
     }
 }

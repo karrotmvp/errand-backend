@@ -9,6 +9,7 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
+import javax.websocket.server.PathParam
 
 @RestController
 @Api(tags = ["심부름 관련 API"])
@@ -30,4 +31,10 @@ class ErrandController(
         @PathVariable(value = "id") id: Long
     ) = ErrandResponse(errandService.readErrand(payload, id))
 
+    @GetMapping("/{id}/helpers")
+    @ApiOperation(value = "심부름 지원 유저 목록 조회 API")
+    fun getErrandAppliedUserList(
+        @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "id") id: Long
+    ) = ErrandResponse(errandService.readAppliedHelpers(payload, id))
 }
