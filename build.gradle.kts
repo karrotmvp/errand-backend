@@ -70,6 +70,11 @@ dependencies {
 
     implementation("io.jsonwebtoken:jjwt:0.9.1")
 
+    val querydslVersion = "4.4.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
+
 }
 
 tasks.withType<KotlinCompile> {
