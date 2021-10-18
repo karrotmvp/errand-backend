@@ -1,5 +1,7 @@
 package com.daangn.errand.util
 
+import com.daangn.errand.domain.user.User
+import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
@@ -175,4 +177,13 @@ class DaangnUtil(
             throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
         }
      }
+
+    fun setUserDetailProfile(user: UserProfileVo, accessToken: String): UserProfileVo {
+        val userInfoRes = getUserInfo(accessToken)
+        val getMannerTempRes = getMannerTemp(accessToken).mannerPoint
+        user.nickname = userInfoRes.nickname
+        user.profileImageUrl = userInfoRes.profileImageUrl
+        user.mannerPoint = getMannerTempRes
+        return user
+    }
 }
