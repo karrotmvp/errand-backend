@@ -10,8 +10,10 @@ import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class HelpService(
     val userRepository: UserRepository,
     val helpRepository: HelpRepository,

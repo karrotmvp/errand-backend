@@ -17,10 +17,10 @@ class GlobalExceptionHandler {
     @ExceptionHandler(ErrandException::class)
     fun errandException(e: ErrandException): ResponseEntity<ErrandResponse<Unit>> {
         val error: ErrandError = e.error
-        logger.error { "ErrandException : ${error.description}" }
+        logger.error { "ErrandException : ${e.message}" }
         return ResponseEntity
             .status(error.status)
-            .body(ErrandResponse(error.status, error.description))
+            .body(ErrandResponse(error.status, e.message?: error.description))
     }
 
     @ExceptionHandler(MultipartException::class)
