@@ -51,6 +51,7 @@ class Errand (
         private val toStringProperties = arrayOf(
             Errand::id,
             Errand::customer,
+            Errand::category,
             Errand::regionId,
             Errand::reward,
             Errand::detail,
