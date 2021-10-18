@@ -47,7 +47,7 @@ class JwtUtil (
     }
 }
 
-class JwtPayload (
+data class JwtPayload (
     val userId: Long,
     val accessToken: String
         )
