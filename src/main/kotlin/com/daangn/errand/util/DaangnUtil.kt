@@ -107,7 +107,7 @@ class DaangnUtil(
         return res.data
     }
 
-    fun getRegionInfoByRegionId(regionId: String): RegionVo {
+    fun getRegionInfoByRegionId(regionId: String): GetRegionInfoRes.Data {
         val url = "$oApiBaseUrl/api/v2/regions/$regionId"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
         val httpResponse = try {
@@ -127,8 +127,7 @@ class DaangnUtil(
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 지역 정보 조회 실패"))
         }
         return try {
-            val data = objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
-            regionConverter.toRegionVo(data.region)
+            objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
         } catch (e: Exception) {
             throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
         }

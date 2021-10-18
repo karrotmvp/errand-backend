@@ -6,6 +6,7 @@ import com.daangn.errand.repository.CategoryRepository
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
@@ -22,6 +23,7 @@ class ErrandService(
     val errandConverter: ErrandConverter,
     val categoryRepository: CategoryRepository,
     val helpRepository: HelpRepository,
+    val regionConverter: RegionConverter,
     val daangnUtil: DaangnUtil
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
@@ -53,7 +55,7 @@ class ErrandService(
         val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
         val wasIChosen = didIApply && errand.chosenHelper == user
         val errandDto = errandConverter.toErrandDto(errand)
-        errandDto.region = daangnUtil.getRegionInfoByRegionId(errand.regionId)
+        errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
         if (!isMine && !wasIChosen) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
