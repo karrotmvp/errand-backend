@@ -2,6 +2,7 @@ package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
+import com.daangn.errand.domain.errand.ErrandPreview
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.CategoryRepository
@@ -16,6 +17,7 @@ import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -80,7 +82,8 @@ class ErrandService(
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
-            val userProfileVo = daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
+            val userProfileVo =
+                daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
             userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
             userProfileVo
         }.toList()
@@ -98,4 +101,21 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
     }
+
+    fun readMain(lastId: Long?, size: Long): List<ErrandPreview> {
+        val errands =
+            if (lastId == null) {
+                errandRepository.findErrandOrderByCreatedAtDesc(size)
+            } else {
+                val lastErrand = errandRepository.findById(lastId)
+                    .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+                errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size)
+            }
+        return errands.map { errand ->
+            val errandPreview = errandConverter.toErrandPreview(errand)
+            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+            errandPreview
+        }
+    }
+
 }
