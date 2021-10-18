@@ -9,7 +9,8 @@ interface UserConverter {
     @Mappings(
         Mapping(target = "nickname", ignore = true),
         Mapping(target = "profileImageUrl", ignore = true),
-        Mapping(target = "mannerPoint", ignore = true)
+        Mapping(target = "mannerPoint", ignore = true),
+        Mapping(target = "regionName", ignore = true)
     )
     fun toUserProfileVo(user: User): UserProfileVo
 
