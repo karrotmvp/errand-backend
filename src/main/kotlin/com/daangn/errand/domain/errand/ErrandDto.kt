@@ -15,7 +15,7 @@ data class ErrandDto(
     var detailAddress: String?,
     val reward: String,
     val detail: String,
-    val isCompleted: Boolean,
+    val isCompleted: Boolean = false,
     val chosenHelper: UserVo?
 ) {
     var region: RegionVo? = null
