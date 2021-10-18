@@ -31,7 +31,7 @@ class ErrandService(
     val helpRepository: HelpRepository,
     val regionConverter: RegionConverter,
     val daangnUtil: DaangnUtil,
-    val userConverter: UserConverter
+    val userConverter: UserConverter,
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -113,6 +113,7 @@ class ErrandService(
             }
         return errands.map { errand ->
             val errandPreview = errandConverter.toErrandPreview(errand)
+            errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
             errandPreview
         }

@@ -12,7 +12,8 @@ data class ErrandPreview(
     var thumbnailUrl: String?,
     val chosenHelper: UserVo?,
     val status: String?,
-    val category: CategoryVo
+    val category: CategoryVo,
+    var helpCount: Long
 )
 
 enum class Status {

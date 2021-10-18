@@ -18,7 +18,8 @@ interface ErrandConverter {
 
     @Mappings(
         Mapping(target = "thumbnailUrl", ignore = true),
-        Mapping(target = "status", ignore = true)
+        Mapping(target = "status", ignore = true),
+        Mapping(target = "helpCount", ignore = true)
     )
     fun toErrandPreview(errand: Errand): ErrandPreview
 }
