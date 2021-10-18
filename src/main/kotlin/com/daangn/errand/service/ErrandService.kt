@@ -2,6 +2,7 @@ package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
+import com.daangn.errand.domain.errand.ErrandPreview
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.CategoryRepository
@@ -29,7 +30,7 @@ class ErrandService(
     val helpRepository: HelpRepository,
     val regionConverter: RegionConverter,
     val daangnUtil: DaangnUtil,
-    val userConverter: UserConverter
+    val userConverter: UserConverter,
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -80,7 +81,8 @@ class ErrandService(
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
-            val userProfileVo = daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
+            val userProfileVo =
+                daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
             userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
             userProfileVo
         }.toList()
@@ -98,4 +100,26 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
     }
+
+    fun readMain(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+        val errands =
+            if (lastId == null) {
+                errandRepository.findErrandOrderByCreatedAtDesc(size)
+            } else {
+                val lastErrand = errandRepository.findById(lastId)
+                    .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+                errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size)
+            }
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        return errands.map { errand ->
+            val errandPreview = errandConverter.toErrandPreview(errand)
+            errandPreview.helpCount = helpRepository.countByErrand(errand)
+            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+            val didUserApplyButWasChosen =
+                (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
+            errandPreview.setStatus(errand, didUserApplyButWasChosen)
+            errandPreview
+        }
+    }
+
 }
