@@ -5,6 +5,7 @@ import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
 import com.daangn.errand.domain.BaseEntity
 import com.daangn.errand.domain.HelperHasCategories
+import com.daangn.errand.domain.category.Category
 import com.daangn.errand.domain.errand.Errand
 import javax.persistence.*
 
@@ -24,9 +25,6 @@ class User(
 
     @OneToMany(mappedBy = "chosenHelper")
     var errandList: MutableList<Errand> = ArrayList()
-
-    @OneToMany
-    var categories: MutableList<HelperHasCategories> = ArrayList()
 
     companion object {
         val equalsAndHashcodeProperties = arrayOf(

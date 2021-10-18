@@ -15,7 +15,11 @@ class Help(
     @ManyToOne
     val helper: User,
     @Column(columnDefinition = "TEXT")
-    val appeal: String
+    val appeal: String,
+    @Column(nullable = false)
+    var phoneNumber: String,
+    @Column(nullable = false)
+    var regionId: String
 ): BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +30,10 @@ class Help(
         private val toStringProperties = arrayOf(
             Help::id,
             Help::errand,
-            Help::helper
+            Help::helper,
+            Help::appeal,
+            Help::phoneNumber,
+            Help::regionId
         )
     }
 

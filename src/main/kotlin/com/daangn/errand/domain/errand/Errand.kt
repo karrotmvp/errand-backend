@@ -37,7 +37,7 @@ class Errand (
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    var isCompleted: Boolean = false
+    var complete: Boolean = false
 
     @ManyToOne
     @JoinColumn(name = "chosen_helper_id")
@@ -55,7 +55,7 @@ class Errand (
             Errand::reward,
             Errand::detail,
             Errand::chosenHelper,
-            Errand::isCompleted
+            Errand::complete
         )
     }
 

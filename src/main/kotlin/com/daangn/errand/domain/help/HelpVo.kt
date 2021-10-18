@@ -7,5 +7,7 @@ data class HelpVo(
     val id: Long?,
     val errand: ErrandDto,
     val helper: UserVo,
-    val bio: String?
+    val appeal: String,
+    val phoneNumber: String,
+    val regionId: String
 )
