@@ -17,7 +17,6 @@ import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
-import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -102,7 +101,7 @@ class ErrandService(
         errand.chosenHelper = helper
     }
 
-    fun readMain(lastId: Long?, size: Long): List<ErrandPreview> {
+    fun readMain(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
         val errands =
             if (lastId == null) {
                 errandRepository.findErrandOrderByCreatedAtDesc(size)
@@ -111,10 +110,14 @@ class ErrandService(
                     .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
                 errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size)
             }
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         return errands.map { errand ->
             val errandPreview = errandConverter.toErrandPreview(errand)
             errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+            val didUserApplyButWasChosen =
+                (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
+            errandPreview.setStatus(errand, didUserApplyButWasChosen)
             errandPreview
         }
     }

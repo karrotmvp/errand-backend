@@ -21,6 +21,6 @@ class MainController(
         @RequestParam(value = "lastId") lastId: Long?,
         @RequestParam(value = "size") size: Long
     ): ErrandResponse<List<ErrandPreview>> {
-        return ErrandResponse(errandService.readMain(lastId, size))
+        return ErrandResponse(errandService.readMain(payload.userId, lastId, size))
     }
 }
