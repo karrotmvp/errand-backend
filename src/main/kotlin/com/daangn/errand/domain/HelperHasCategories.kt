@@ -11,8 +11,8 @@ import javax.persistence.*
 
 @Entity
 class HelperHasCategories(
-    @ManyToOne val errand: Errand,
-    @ManyToOne val helper: User
+    @ManyToOne val user: User,
+    @ManyToOne val category: Category
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,8 @@ class HelperHasCategories(
         private val equalsAndHashCodeProperties = arrayOf(HelperHasCategories::id)
         private val toStringProperties = arrayOf(
             HelperHasCategories::id,
-            HelperHasCategories::helper
+            HelperHasCategories::user,
+            HelperHasCategories::category
         )
     }
 
