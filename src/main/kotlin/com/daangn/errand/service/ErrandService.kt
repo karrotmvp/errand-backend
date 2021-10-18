@@ -17,8 +17,10 @@ import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class ErrandService(
     val userRepository: UserRepository,
     val errandRepository: ErrandRepository,
@@ -78,7 +80,20 @@ class ErrandService(
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
-            daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken)
+            daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
         }.toList()
+    }
+
+    // TODO: 알림톡
+    fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
+        println(errandId)
+        val errand = errandRepository.findById(errandId)
+            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾을 수 없습니다.") }
+        if (errand.chosenHelper != null) throw ErrandException(ErrandError.BAD_REQUEST, "이미 지정된 헬퍼가 있습니다.")
+        val user =
+            userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+        val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        errand.chosenHelper = helper
     }
 }
