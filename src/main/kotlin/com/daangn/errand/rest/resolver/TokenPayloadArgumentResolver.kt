@@ -32,7 +32,10 @@ class TokenPayloadArgumentResolver(
     ): JwtPayload? {
         val servletRequest: HttpServletRequest = webRequest.getNativeRequest(HttpServletRequest::class.java)!!
         val cookieValue: Cookie =
-            WebUtils.getCookie(servletRequest, "token") ?: throw ErrandException(ErrandError.BAD_REQUEST)
+            WebUtils.getCookie(servletRequest, "token") ?: throw ErrandException(
+                ErrandError.BAD_REQUEST,
+                "쿠키에 토큰이 없습니다"
+            )
         val jwt = cookieValue.value
         return jwtUtil.decodeToken(jwt)
     }

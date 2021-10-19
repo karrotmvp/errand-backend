@@ -141,4 +141,25 @@ class ErrandService(
             errandPreview
         }.toList()
     }
+
+    fun readMyHelps(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val helps = if (lastId == null) {
+            helpRepository.findByHelperTopSize(user, size)
+        } else {
+            val errand =
+                errandRepository.findById(lastId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+            val lastHelp = helpRepository.findByErrandAndHelper(errand, user)
+                ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
+            helpRepository.findByHelper(user, lastHelp, size)
+        }
+        return helps.asSequence().map { help ->
+            println(help.errand)
+            val errandProfile = errandConverter.toErrandPreview(help.errand)
+
+            errandProfile.setStatus(help.errand, help.errand.chosenHelper != user)
+            errandProfile.regionName = daangnUtil.getRegionInfoByRegionId(help.errand.regionId).region.name
+            errandProfile
+        }.toList()
+    }
 }

@@ -56,7 +56,9 @@ class Errand (
             Errand::reward,
             Errand::detail,
             Errand::chosenHelper,
-            Errand::complete
+            Errand::complete,
+            Errand::createdAt,
+            Errand::updatedAt
         )
     }
 

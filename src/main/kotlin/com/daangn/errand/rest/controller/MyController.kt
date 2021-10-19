@@ -23,4 +23,11 @@ class MyController(
     ): ErrandResponse<List<ErrandPreview>> {
         return ErrandResponse(errandService.readMyErrands(payload.userId, lastId, size))
     }
+
+    @GetMapping("/helps")
+    fun getMyHelps(
+        @TokenPayload payload: JwtPayload,
+        @RequestParam(value = "lastId") lastId: Long?,
+        @RequestParam(value = "size") size: Long
+    ) = ErrandResponse(errandService.readMyHelps(payload.userId, lastId, size))
 }
