@@ -9,6 +9,7 @@ import com.daangn.errand.repository.CategoryRepository
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.rest.dto.daangn.Region
 import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
@@ -101,14 +102,16 @@ class ErrandService(
         errand.chosenHelper = helper
     }
 
-    fun readMain(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+    fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
+        val neighbors = daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions
+        val neighborIds = Region.convertRegionListToRegionIdList(neighbors)
         val errands =
             if (lastId == null) {
-                errandRepository.findErrandOrderByCreatedAtDesc(size)
+                errandRepository.findErrandOrderByCreatedAtDesc(size, neighborIds)
             } else {
                 val lastErrand = errandRepository.findById(lastId)
                     .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-                errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size)
+                errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         return errands.asSequence().map { errand ->

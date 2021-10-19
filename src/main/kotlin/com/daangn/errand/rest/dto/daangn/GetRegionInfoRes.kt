@@ -18,4 +18,10 @@ data class Region(
     val name2Id: String,
     val name3: String,
     val name3Id: String
-)
+) {
+    companion object {
+        fun convertRegionListToRegionIdList(regions: List<Region>) = regions.asSequence().map { region ->
+            region.id
+        }.toList()
+    }
+}

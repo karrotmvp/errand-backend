@@ -8,16 +8,18 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class ErrandQueryRepositoryImpl(
     val query: JPAQueryFactory
 ): ErrandQueryRepository {
-    override fun findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand: Errand, size: Long): MutableList<Errand> {
+    override fun findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand: Errand, size: Long, regionIds: List<String>): MutableList<Errand> {
         return query.selectFrom(errand)
+            .where(errand.regionId.`in`(regionIds))
             .where(errand.createdAt.before(lastErrand.createdAt))
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
     }
 
-    override fun findErrandOrderByCreatedAtDesc(size: Long): MutableList<Errand> {
+    override fun findErrandOrderByCreatedAtDesc(size: Long, regionIds: List<String>): MutableList<Errand> {
         return query.selectFrom(errand)
+            .where(errand.regionId.`in`(regionIds))
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
