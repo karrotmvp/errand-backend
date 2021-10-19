@@ -83,7 +83,7 @@ class ErrandService(
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken) // TODO 다시하기
+                daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken, help.regionId) // TODO 다시하기
             userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
             userProfileVo
         }.toList()

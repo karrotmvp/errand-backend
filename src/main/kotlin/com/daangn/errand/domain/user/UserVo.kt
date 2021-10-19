@@ -13,7 +13,8 @@ data class UserProfileVo(
     var profileImageUrl: String? = null,
     @ApiModelProperty(value = "당근마켓 매너온도")
     var mannerPoint: Float? = null,
-    var regionName: String
+
+    var regionName: String? = null
 )
 
 data class UserVo(
