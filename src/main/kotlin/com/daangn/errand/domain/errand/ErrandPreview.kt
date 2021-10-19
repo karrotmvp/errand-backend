@@ -13,7 +13,8 @@ data class ErrandPreview(
     val chosenHelper: UserVo?,
     var status: String?,
     val category: CategoryVo,
-    var helpCount: Long
+    var helpCount: Long,
+    var regionName: String?
 ) {
     fun setStatus(errand: Errand, didUserApplyButWasNotChosen: Boolean) {
         val statusEnum = if (errand.complete) {

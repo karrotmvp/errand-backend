@@ -118,6 +118,7 @@ class ErrandService(
             val didUserApplyButWasChosen =
                 (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
             errandPreview.setStatus(errand, didUserApplyButWasChosen)
+            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
             errandPreview
         }.toList()
     }
@@ -136,6 +137,7 @@ class ErrandService(
             errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
             errandPreview.setStatus(errand, false)
+            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
             errandPreview
         }.toList()
     }
