@@ -19,8 +19,9 @@ class MainController(
     fun getMain(
         @TokenPayload payload: JwtPayload,
         @RequestParam(value = "lastId") lastId: Long?,
-        @RequestParam(value = "size") size: Long
+        @RequestParam(value = "size") size: Long,
+        @RequestParam(value = "regionId") regionId: String
     ): ErrandResponse<List<ErrandPreview>> {
-        return ErrandResponse(errandService.readMain(payload.userId, lastId, size))
+        return ErrandResponse(errandService.readMain(payload.userId, lastId, size, regionId))
     }
 }

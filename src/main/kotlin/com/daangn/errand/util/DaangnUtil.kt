@@ -1,6 +1,5 @@
 package com.daangn.errand.util
 
-import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
@@ -176,7 +175,7 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
         }
-     }
+    }
 
     fun setUserDetailProfile(user: UserProfileVo, accessToken: String): UserProfileVo {
         val userInfoRes = getUserInfo(accessToken)
