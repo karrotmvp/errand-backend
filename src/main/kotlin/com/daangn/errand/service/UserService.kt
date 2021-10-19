@@ -3,6 +3,7 @@ package com.daangn.errand.service
 import com.daangn.errand.domain.HelperHasCategories
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
+import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.domain.user.UserVo
 import com.daangn.errand.repository.CategoryRepository
 import com.daangn.errand.repository.HelperHasCategoriesRepository
@@ -10,6 +11,7 @@ import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
+import com.daangn.errand.util.DaangnUtil
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +21,8 @@ class UserService(
     val userRepository: UserRepository,
     val userConverter: UserConverter,
     val categoryRepository: CategoryRepository,
-    val helperHasCategoriesRepository: HelperHasCategoriesRepository
+    val helperHasCategoriesRepository: HelperHasCategoriesRepository,
+    val daangnUtil: DaangnUtil
 ) {
     fun loginOrSignup(userProfile: GetUserProfileRes.Data): UserVo {
         val daangnId = userProfile.userId
@@ -43,5 +46,11 @@ class UserService(
         val helperCategory = helperHasCategoriesRepository.findByUserAndCategory(user, category)
             ?: throw ErrandException(ErrandError.BAD_REQUEST)
         helperHasCategoriesRepository.delete(helperCategory)
+    }
+
+    fun getUserWithDaangnProfile(userId: Long, accessToken: String, regionId: String): UserProfileVo {
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val userProfileVo = userConverter.toUserProfileVo(user)
+        return daangnUtil.setUserDetailProfile(userProfileVo, accessToken, regionId)
     }
 }
