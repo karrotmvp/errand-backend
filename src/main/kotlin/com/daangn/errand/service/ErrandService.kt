@@ -111,15 +111,34 @@ class ErrandService(
                 errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        return errands.map { errand ->
+        return errands.asSequence().map { errand ->
             val errandPreview = errandConverter.toErrandPreview(errand)
             errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
             val didUserApplyButWasChosen =
                 (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
             errandPreview.setStatus(errand, didUserApplyButWasChosen)
+            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
             errandPreview
-        }
+        }.toList()
     }
 
+    fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val errands = if (lastId == null) {
+            errandRepository.findByCustomerOrderByCreateAtDesc(user, size)
+        } else {
+            val lastErrand = errandRepository.findById(lastId)
+                .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
+            errandRepository.findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(lastErrand, user, size)
+        }
+        return errands.asSequence().map { errand ->
+            val errandPreview = errandConverter.toErrandPreview(errand)
+            errandPreview.helpCount = helpRepository.countByErrand(errand)
+            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+            errandPreview.setStatus(errand, false)
+            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+            errandPreview
+        }.toList()
+    }
 }
