@@ -3,6 +3,7 @@ package com.daangn.errand.domain.errand
 import com.daangn.errand.domain.category.CategoryVo
 import com.daangn.errand.domain.user.UserVo
 import com.fasterxml.jackson.annotation.JsonInclude
+import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrandPreview(
@@ -14,7 +15,9 @@ data class ErrandPreview(
     var status: String?,
     val category: CategoryVo,
     var helpCount: Long,
-    var regionName: String?
+    var regionName: String?,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
 ) {
     fun setStatus(errand: Errand, didUserApplyButWasNotChosen: Boolean) {
         val statusEnum = if (errand.complete) {

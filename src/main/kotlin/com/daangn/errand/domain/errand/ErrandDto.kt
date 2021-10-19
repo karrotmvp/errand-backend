@@ -5,6 +5,7 @@ import com.daangn.errand.domain.image.ImageVo
 import com.daangn.errand.domain.user.UserVo
 import com.daangn.errand.rest.dto.daangn.RegionVo
 import com.fasterxml.jackson.annotation.JsonInclude
+import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrandDto(
@@ -18,7 +19,9 @@ data class ErrandDto(
     val reward: String,
     val detail: String,
     val isCompleted: Boolean = false,
-    val chosenHelper: UserVo?
+    val chosenHelper: UserVo?,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
 ) {
     var region: RegionVo? = null
 }
