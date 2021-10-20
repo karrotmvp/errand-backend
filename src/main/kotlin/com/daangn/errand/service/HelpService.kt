@@ -31,6 +31,8 @@ class HelpService(
         val errand = errandRepository.findById(postHelpReqDto.errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름이 없어요.") }
         if (user == errand.customer) throw ErrandException(ErrandError.BAD_REQUEST, "본인의 심부름에 지원할 수 없어요.")
+        val helpCnt = helpRepository.countByErrand(errand)
+        if (helpCnt >= 5) throw ErrandException(ErrandError.BAD_REQUEST, "하나의 심부름에는 5명까지만 지원할 수 있어요.")
         val help = helpRepository.save(
             Help(
                 errand,
@@ -47,5 +49,9 @@ class HelpService(
             )
         )
         return helpConverter.toHelpVo(help)
+    }
+    fun countHelp(errandId: Long): Long {
+        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        return helpRepository.countByErrand(errand)
     }
 }
