@@ -75,6 +75,7 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis:2.5.5")
+    implementation("io.sentry:sentry-spring-boot-starter:5.2.4")
 }
 
 tasks.withType<KotlinCompile> {
