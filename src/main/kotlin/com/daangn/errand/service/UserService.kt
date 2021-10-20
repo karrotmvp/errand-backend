@@ -1,6 +1,7 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.HelperHasCategories
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo

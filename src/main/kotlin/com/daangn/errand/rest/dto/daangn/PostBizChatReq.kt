@@ -20,3 +20,8 @@ data class Payload(
     val linkUrl: String,
     val text: String
 )
+
+enum class ActionType {
+    PRIMARY_BUTTON,
+    NORMAL_BUTTON
+}

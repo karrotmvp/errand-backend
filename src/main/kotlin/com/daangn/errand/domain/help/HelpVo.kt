@@ -5,7 +5,7 @@ import com.daangn.errand.domain.user.UserVo
 
 data class HelpVo(
     val id: Long?,
-    val errand: ErrandDto,
+    val errandId: Long,
     val helper: UserVo,
     val appeal: String,
     val phoneNumber: String,

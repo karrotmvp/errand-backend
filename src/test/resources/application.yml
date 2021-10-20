@@ -31,4 +31,5 @@ daangn:
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
 test: true
 token.secret: Dj@bWv5w-$m#kjNWe?y#
+host.url: http://dev.daangn-errand.com
 
