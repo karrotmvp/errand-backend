@@ -50,4 +50,8 @@ class HelpService(
         )
         return helpConverter.toHelpVo(help)
     }
+    fun countHelp(errandId: Long): Long {
+        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        return helpRepository.countByErrand(errand)
+    }
 }
