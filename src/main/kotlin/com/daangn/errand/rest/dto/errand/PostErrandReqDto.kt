@@ -7,5 +7,6 @@ data class PostErrandReqDto (
     val reward: String,
     val detailAddress: String,
     val phoneNumber: String,
-    val regionId: String
+    val regionId: String,
+    val imageUrls: List<String>
         )
