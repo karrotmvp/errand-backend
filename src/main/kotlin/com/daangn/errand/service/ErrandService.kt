@@ -3,6 +3,7 @@ package com.daangn.errand.service
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.errand.ErrandPreview
+import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.*
@@ -35,7 +36,8 @@ class ErrandService(
     val daangnUtil: DaangnUtil,
     val userConverter: UserConverter,
     val eventPublisher: ApplicationEventPublisher,
-    @Value("\${host.url}") val baseUrl: String
+    @Value("\${host.url}") val baseUrl: String,
+    val imageRepository: ImageRepository
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -43,6 +45,7 @@ class ErrandService(
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
+        if (postErrandReqDto.imageUrls.size > 5) throw ErrandException(ErrandError.BAD_REQUEST, "사진은 최대 5장 첨부 가능합니다.")
         val errand = errandRepository.save(
             Errand(
                 category = category,
@@ -55,6 +58,7 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
+        postErrandReqDto.imageUrls.forEach { imageUrl -> imageRepository.save(Image(imageUrl, errand)) }
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
         val res = PostErrandResDto(errandId)
         val list = getUserDaangnIdListInCategory(errand)
