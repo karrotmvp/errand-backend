@@ -58,7 +58,7 @@ class ErrandService(
         val res = PostErrandResDto(errandId)
         val list = getUserDaangnIdListInCategory(errand)
         val linkUrl = "$baseUrl/errands/$errandId"
-        eventPublisher.publishEvent(ErrandRegisteredEvent(list, errandId, linkUrl))
+        eventPublisher.publishEvent(ErrandRegisteredEvent(list, linkUrl))
         return res
     }
 
