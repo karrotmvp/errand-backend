@@ -11,7 +11,6 @@ class DaangnChatReqEventHandler(
 ) {
     @EventListener
     fun sendBizChat(event: DaangnChatReqRegisteredEvent) {
-        println("알림톡 전송한다링~")
          event.buildBizChat().forEach { reqDto ->
              daangnUtil.sendBizChatting(reqDto)
          }

@@ -6,7 +6,7 @@ interface DaangnChatReqRegisteredEvent {
     val targetUserIds: List<String>
     val title: String
     val text: String
-    val linkUrl: String
+    val linkUrl: String // TODO: 리팩토링 - 링크 이벤트 객체가 만들도록 하기
     val buttonText: String
     val actionType: ActionType
     fun buildBizChat() =
