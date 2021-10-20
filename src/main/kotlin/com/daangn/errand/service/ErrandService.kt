@@ -13,6 +13,7 @@ import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandRegisteredEvent
+import com.daangn.errand.support.event.MatchingRegisteredEvent
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
@@ -108,7 +109,6 @@ class ErrandService(
 
     // TODO: 알림톡
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
-        println(errandId)
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾을 수 없습니다.") }
         if (errand.chosenHelper != null) throw ErrandException(ErrandError.BAD_REQUEST, "이미 지정된 헬퍼가 있습니다.")
@@ -117,6 +117,7 @@ class ErrandService(
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
+        eventPublisher.publishEvent(MatchingRegisteredEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
     }
 
     fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
