@@ -43,7 +43,7 @@ class HelpService(
         eventPublisher.publishEvent(
             HelpRegisteredEvent(
                 listOf(errand.customer.daangnId),
-                "$baseUrl/errands/${errand.id}/helpers/${user.id}"
+                "$baseUrl/appliers/${errand.id}"
             )
         )
         return helpConverter.toHelpVo(help)
