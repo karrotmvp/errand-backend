@@ -49,4 +49,12 @@ class ErrandController(
         return ErrandResponse(HttpStatus.OK, "심부름에 헬퍼 지정 성공")
     }
 
+    @PatchMapping("/{id}/complete")
+    fun patchProgressOfErrand(
+        @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "id") id: Long
+    ): ErrandResponse<Any> {
+        errandService.confirmErrand(payload.userId, id)
+        return ErrandResponse(HttpStatus.OK, "심부름 완료 확정 성공")
+    }
 }

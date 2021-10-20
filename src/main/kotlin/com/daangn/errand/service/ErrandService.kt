@@ -165,4 +165,11 @@ class ErrandService(
             errandProfile
         }.toList()
     }
+
+    fun confirmErrand(userId: Long, errandId: Long) {
+        val helper = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
+        errand.complete = true
+    }
 }
