@@ -5,19 +5,19 @@ import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.errand.ErrandPreview
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
-import com.daangn.errand.repository.CategoryRepository
-import com.daangn.errand.repository.ErrandRepository
-import com.daangn.errand.repository.HelpRepository
-import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.repository.*
 import com.daangn.errand.rest.dto.daangn.Region
 import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.event.ErrandRegisteredEvent
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,10 +28,13 @@ class ErrandService(
     val errandRepository: ErrandRepository,
     val errandConverter: ErrandConverter,
     val categoryRepository: CategoryRepository,
+    val helperHasCategoriesRepository: HelperHasCategoriesRepository,
     val helpRepository: HelpRepository,
     val regionConverter: RegionConverter,
     val daangnUtil: DaangnUtil,
     val userConverter: UserConverter,
+    val eventPublisher: ApplicationEventPublisher,
+    @Value("\${host.url}") val baseUrl: String
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -51,7 +54,17 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
-        return PostErrandResDto(errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE))
+        val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
+        val res = PostErrandResDto(errandId)
+        val list = getUserDaangnIdListInCategory(errand)
+        val linkUrl = "$baseUrl/errands/$errandId"
+        eventPublisher.publishEvent(ErrandRegisteredEvent(list, errandId, linkUrl))
+        return res
+    }
+
+    fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
+        val helperHasCategories = helperHasCategoriesRepository.findByCategory(errand.category)
+        return helperHasCategories.asSequence().map { row -> row.user.daangnId }.toList()
     }
 
     fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto { // TODO: 리팩토링
@@ -83,7 +96,11 @@ class ErrandService(
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setUserDetailProfile(userConverter.toUserProfileVo(help.helper), accessToken, help.regionId) // TODO 다시하기
+                daangnUtil.setUserDetailProfile(
+                    userConverter.toUserProfileVo(help.helper),
+                    accessToken,
+                    help.regionId
+                ) // TODO 다시하기
             userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
             userProfileVo
         }.toList()
