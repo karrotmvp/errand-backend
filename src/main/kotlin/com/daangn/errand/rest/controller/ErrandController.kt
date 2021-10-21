@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
+import javax.websocket.server.PathParam
 
 @RestController
 @Api(tags = ["심부름 관련 API"])
@@ -65,4 +66,10 @@ class ErrandController(
     fun getHelperCount(
         @PathVariable(value = "id") id: Long
     ) = ErrandResponse(HelpCountResDto(helpService.countHelp(id)))
+
+    @GetMapping("/{id}/helpers/{helpId}")
+    fun getHelperDetail(
+        @TokenPayload payload: JwtPayload,
+        @PathParam(value = "helpId") id: Long
+    ) = ErrandResponse(errandService.readHelperDetail(payload, id))
 }

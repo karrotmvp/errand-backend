@@ -12,6 +12,7 @@ import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
+import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandRegisteredEvent
 import com.daangn.errand.support.event.MatchingRegisteredEvent
@@ -193,5 +194,27 @@ class ErrandService(
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         errand.complete = true
+    }
+
+    fun readHelperDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
+        val userId = payload.userId
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        if (user != help.errand.customer && user != help.helper) throw ErrandException(ErrandError.NOT_PERMITTED)
+        val daangnInfo = daangnUtil.getUserInfo(help.helper.daangnId).data.user
+        val regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
+        val helperVo = UserProfileVo(
+            help.helper.id,
+            daangnInfo.id,
+            daangnInfo.nickname,
+            regionName = regionName,
+            // TODO: 매너온도 추가하기
+        )
+        return GetHelpDetailResDto(
+            help.errand.chosenHelper == help.helper,
+            helperVo,
+            help.appeal,
+            help.phoneNumber
+        )
     }
 }
