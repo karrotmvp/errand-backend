@@ -15,7 +15,7 @@ internal class DaangnUtilTest constructor(
     @Test
     fun `regionId로 region 정보 가져오기`() {
         val reqRegionId = "6530459d189b"
-        val region =regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(reqRegionId).region)
+        val region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(reqRegionId).region)
         Assertions.assertThat(region.id).isEqualTo(reqRegionId)
         Assertions.assertThat(region.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")
         Assertions.assertThat(region.name).isEqualTo("역삼1동")
@@ -50,5 +50,21 @@ internal class DaangnUtilTest constructor(
     fun `주변 지역 정보 가져오기`() {
         val regionId = "6530459d189b"
         assertDoesNotThrow { daangnUtil.getNeighborRegionByRegionId(regionId) }
+    }
+
+    @Test
+    fun `당근 프로필 불러오기`() {
+        val userId = "8a190fa9bb5d4d89b3944dc8c5b3a102"
+        assertDoesNotThrow { daangnUtil.getUserInfo(userId) }
+    }
+
+    @Test
+    fun `당근 프로필 여러 개 불러오기`() {
+        val userIdList = listOf(
+            "8a190fa9bb5d4d89b3944dc8c5b3a102",
+            "8a190fa9bb5d4d89b3944dc8c5b3a102",
+            "8a190fa9bb5d4d89b3944dc8c5b3a102"
+        )
+        assertDoesNotThrow { daangnUtil.getUsersInfo(userIdList) }
     }
 }
