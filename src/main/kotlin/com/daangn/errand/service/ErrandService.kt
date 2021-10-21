@@ -15,7 +15,9 @@ import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandRegisteredEvent
+import com.daangn.errand.support.event.MatchingAfterEvent
 import com.daangn.errand.support.event.MatchingRegisteredEvent
+import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 @Transactional
@@ -38,7 +41,8 @@ class ErrandService(
     val userConverter: UserConverter,
     val eventPublisher: ApplicationEventPublisher,
     @Value("\${host.url}") val baseUrl: String,
-    val imageRepository: ImageRepository
+    val imageRepository: ImageRepository,
+    val eventScheduler: EventScheduler
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -115,7 +119,7 @@ class ErrandService(
     // TODO: 알림톡
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
         val errand = errandRepository.findById(errandId)
-            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾을 수 없습니다.") }
+            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾d을 수 없습니다.") }
         if (errand.chosenHelper != null) throw ErrandException(ErrandError.BAD_REQUEST, "이미 지정된 헬퍼가 있습니다.")
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
@@ -123,6 +127,10 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
         eventPublisher.publishEvent(MatchingRegisteredEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
+        eventScheduler.addElement(
+            MatchingAfterEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
+            LocalDateTime.now().plusHours(24)
+        )
     }
 
     fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
