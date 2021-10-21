@@ -14,6 +14,6 @@ class AuthService(
         return daangnUtil.getAccessTokenByOpenApi(authCode).accessToken
     }
     fun getUserProfile(accessToken: String): GetUserProfileRes.Data {
-        return daangnUtil.getUserInfo(accessToken)
+        return daangnUtil.getMyInfo(accessToken)
     }
 }

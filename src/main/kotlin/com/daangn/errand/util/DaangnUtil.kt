@@ -5,6 +5,7 @@ import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -23,7 +24,6 @@ class DaangnUtil(
     @Value("\${daangn.app-auth}") val appAuthorization: String,
     @Value("\${daangn.app-key}") val appKey: String,
     @Value("\${daangn.oapi.neighbor-range}") val range: String,
-    val regionConverter: RegionConverter,
 ) {
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
@@ -58,7 +58,7 @@ class DaangnUtil(
         }
     }
 
-    fun getUserInfo(accessToken: String): GetUserProfileRes.Data {
+    fun getMyInfo(accessToken: String): GetUserProfileRes.Data {
         val url = "$openApiBaseUrl/api/v1/users/me"
         val httpUrlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         val httpResponse = try {
@@ -178,12 +178,49 @@ class DaangnUtil(
     }
 
     fun setUserDetailProfile(user: UserProfileVo, accessToken: String, regionId: String): UserProfileVo {
-        val userInfoRes = getUserInfo(accessToken)
+        val userInfoRes = getMyInfo(accessToken)
         val getMannerTempRes = getMannerTemp(accessToken).mannerPoint
         user.nickname = userInfoRes.nickname
         user.profileImageUrl = userInfoRes.profileImageUrl
         user.mannerPoint = getMannerTempRes
         user.regionName = getRegionInfoByRegionId(regionId).region.name
         return user
+    }
+
+    fun getUserInfo(daangnId: String): GetUserInfoByUserIdRes {
+        val url = "$oApiBaseUrl/api/v2/users/$daangnId"
+        val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
+        val request = Request.Builder()
+            .url(httpUrl)
+            .get()
+            .addHeader("X-Api-Key", appKey)
+            .build()
+        val httpResponse = try {
+            httpClient.newCall(request).execute()
+        } catch (e: Exception) {
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
+        }
+        val responseBody: String? = httpResponse.body?.string()
+        return objectMapper.readValue(responseBody, GetUserInfoByUserIdRes::class.java)
+    }
+
+    fun getUsersInfo(daangnIdList: List<String>): GetUserInfoByUserIdListRes {
+        val userIds = daangnIdList.joinToString(separator = ",")
+        val urlString = "$oApiBaseUrl/api/v2/users/by_ids"
+        val httpUrl = urlString.toHttpUrlOrNull()!!.newBuilder()
+            .addQueryParameter("ids", userIds)
+            .build()
+        val request = Request.Builder()
+            .url(httpUrl)
+            .get()
+            .addHeader("X-Api-Key", appKey)
+            .build()
+        val httpResponse = try {
+            httpClient.newCall(request).execute()
+        } catch (e: Exception) {
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
+        }
+        val responseBody: String? = httpResponse.body?.string()
+        return objectMapper.readValue(responseBody, GetUserInfoByUserIdListRes::class.java)
     }
 }
