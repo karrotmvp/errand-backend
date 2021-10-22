@@ -26,7 +26,7 @@ class EventScheduler(
     fun eventHandling() {
         val now = LocalDateTime.now()
         while (heap.isNotEmpty() && heap.peek().publishesAfter.isBefore(now)) {
-            eventPublisher.publishEvent(heap.poll())
+            eventPublisher.publishEvent(heap.poll().event)
         }
     }
 }

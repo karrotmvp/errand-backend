@@ -115,8 +115,7 @@ class ErrandService(
             userProfileVo
         }.toList()
     }
-
-    // TODO: 알림톡
+    
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾d을 수 없습니다.") }
@@ -124,8 +123,10 @@ class ErrandService(
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
+
         eventPublisher.publishEvent(MatchingRegisteredEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
         eventScheduler.addElement(
             MatchingAfterEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
