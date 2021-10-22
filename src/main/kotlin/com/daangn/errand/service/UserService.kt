@@ -25,9 +25,10 @@ class UserService(
     val helperHasCategoriesRepository: HelperHasCategoriesRepository,
     val daangnUtil: DaangnUtil
 ) {
-    fun loginOrSignup(userProfile: GetUserProfileRes.Data): UserVo {
+    fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
         val user = userRepository.findByDaangnId(daangnId) ?: userRepository.save(User(daangnId))
+        user.mannerPoint = daangnUtil.getMannerTemp(accessToken).mannerPoint
         return userConverter.toUserVo(user)
     }
 

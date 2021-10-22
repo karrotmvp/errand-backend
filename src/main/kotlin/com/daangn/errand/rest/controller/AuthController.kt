@@ -33,7 +33,7 @@ class AuthController(
         val accessToken = authService.getAccessToken(authCode)
         val userProfile = authService.getUserProfile(accessToken)
 
-        val user: UserVo = userService.loginOrSignup(userProfile)
+        val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
 
         val cookie = Cookie("token", jwtUtil.generateToken(JwtPayload(user.id!!, accessToken)))
         cookie.maxAge = 60 * 60 * 24
