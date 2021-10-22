@@ -12,6 +12,7 @@ import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
+import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandRegisteredEvent
 import com.daangn.errand.support.event.MatchingRegisteredEvent
@@ -193,5 +194,23 @@ class ErrandService(
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         errand.complete = true
+    }
+
+    fun readHelperDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
+        val userId = payload.userId
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        if (user != help.errand.customer && user != help.helper) throw ErrandException(ErrandError.NOT_PERMITTED)
+        val helperVo = UserProfileVo(
+            help.helper.id,
+            help.helper.daangnId,
+            mannerTemp = help.helper.mannerTemp
+        )
+        return GetHelpDetailResDto(
+            help.errand.chosenHelper == help.helper,
+            daangnUtil.setUserDetailProfile(helperVo, payload.accessToken, help.regionId),
+            help.appeal,
+            help.phoneNumber
+        )
     }
 }

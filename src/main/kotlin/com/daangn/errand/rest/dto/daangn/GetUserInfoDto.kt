@@ -19,5 +19,5 @@ data class GetUserInfoByUserIdListRes (
 data class DaangnUserInfo(
     val id: String,
     val nickname: String?,
-    val profileImageUrl: String?
+    val profileImageUrl: String? // TODO: 프로필 이미지 필드 추가 되면 이름 확인하고 수정하기
 )
