@@ -21,7 +21,7 @@ class User(
     var daangnId: String = daangnId
 
     @Column
-    var mannerPoint: Float? = null
+    var mannerTemp: Float? = null
 
     @OneToMany(mappedBy = "customer")
     var errandReqList: MutableList<Errand> = ArrayList()
