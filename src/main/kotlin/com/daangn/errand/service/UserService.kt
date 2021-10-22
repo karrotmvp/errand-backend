@@ -1,7 +1,6 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.HelperHasCategories
-import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -25,9 +24,11 @@ class UserService(
     val helperHasCategoriesRepository: HelperHasCategoriesRepository,
     val daangnUtil: DaangnUtil
 ) {
-    fun loginOrSignup(userProfile: GetUserProfileRes.Data): UserVo {
+    fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
         val user = userRepository.findByDaangnId(daangnId) ?: userRepository.save(User(daangnId))
+        val mannerTemp: Float = daangnUtil.getMannerTemp(accessToken).mannerPoint + 36.5f
+        user.mannerTemp = mannerTemp
         return userConverter.toUserVo(user)
     }
 
