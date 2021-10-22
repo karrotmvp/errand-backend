@@ -70,6 +70,6 @@ class ErrandController(
     @GetMapping("/{id}/helpers/{helpId}")
     fun getHelperDetail(
         @TokenPayload payload: JwtPayload,
-        @PathParam(value = "helpId") id: Long
+        @PathVariable(value = "helpId") id: Long
     ) = ErrandResponse(errandService.readHelperDetail(payload, id))
 }

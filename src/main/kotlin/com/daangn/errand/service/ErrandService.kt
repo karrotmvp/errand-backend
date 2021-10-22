@@ -201,18 +201,14 @@ class ErrandService(
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         if (user != help.errand.customer && user != help.helper) throw ErrandException(ErrandError.NOT_PERMITTED)
-        val daangnInfo = daangnUtil.getUserInfo(help.helper.daangnId).data.user
-        val regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
         val helperVo = UserProfileVo(
             help.helper.id,
-            daangnInfo.id,
-            daangnInfo.nickname,
-            regionName = regionName,
-            // TODO: 매너온도 추가하기
+            help.helper.daangnId,
+            mannerTemp = help.helper.mannerTemp
         )
         return GetHelpDetailResDto(
             help.errand.chosenHelper == help.helper,
-            helperVo,
+            daangnUtil.setUserDetailProfile(helperVo, payload.accessToken, help.regionId),
             help.appeal,
             help.phoneNumber
         )
