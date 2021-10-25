@@ -5,19 +5,23 @@ import com.daangn.errand.rest.dto.UploadImagesDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
+import com.daangn.errand.util.RedisUtil
 import com.daangn.errand.util.S3Uploader
 import io.swagger.annotations.ApiOperation
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 import java.time.LocalDateTime
+import javax.websocket.server.PathParam
 
 @RestController
 @ApiIgnore
 @RequestMapping("/test")
 class TestController(
-    val s3Uploader: S3Uploader
+    val s3Uploader: S3Uploader,
+    val redisTemplate: RedisTemplate<String, String>
 ) {
 
     @PostMapping("/file")
@@ -44,4 +48,14 @@ class TestController(
     @PostMapping("/token")
     @ApiIgnore
     fun cookieArgument(@TokenPayload payload: JwtPayload) = ErrandResponse(payload)
+
+    @PostMapping("/redis")
+    @ApiIgnore
+    fun setKeyValueInElasticache(
+        @PathParam(value = "key") key: String,
+        @PathParam(value = "value ") value: String
+    ): ErrandResponse<String> {
+        redisTemplate.opsForValue().set(key, value)
+        return ErrandResponse("[Key: $key, value: $value] redis-cli로 확인해보세요")
+    }
 }

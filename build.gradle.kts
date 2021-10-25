@@ -62,7 +62,6 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testImplementation("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
-    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
@@ -75,6 +74,7 @@ dependencies {
     kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:2.5.5")
 }
 
 tasks.withType<KotlinCompile> {

@@ -21,6 +21,7 @@ import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
+import com.daangn.errand.util.RedisUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -42,7 +43,8 @@ class ErrandService(
     val eventPublisher: ApplicationEventPublisher,
     @Value("\${host.url}") val baseUrl: String,
     val imageRepository: ImageRepository,
-    val eventScheduler: EventScheduler
+    val eventScheduler: EventScheduler,
+    val redisUtil: RedisUtil
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -73,8 +75,20 @@ class ErrandService(
     }
 
     fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
-        val helperHasCategories = helperHasCategoriesRepository.findByCategory(errand.category)
-        return helperHasCategories.asSequence().map { row -> row.user.daangnId }.toList()
+        val category = errand.category
+        val neighborUsers: MutableSet<String> = HashSet()
+        val neighborIdList = daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map {
+            region -> region.id
+        }
+        val iterator = neighborIdList.iterator()
+        while (iterator.hasNext()) {
+            neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
+        }
+        val users = userRepository.findByDaangnIdListAndHasCategory(neighborUsers, category)
+
+        return users.asSequence().map { user ->
+            user.daangnId
+        }.toList()
     }
 
     fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto { // TODO: 리팩토링
@@ -115,7 +129,7 @@ class ErrandService(
             userProfileVo
         }.toList()
     }
-    
+
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾d을 수 없습니다.") }

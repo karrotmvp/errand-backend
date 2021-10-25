@@ -35,6 +35,8 @@ daangn:
     neighbor-range: RANGE_2
 test: false
 token.secret: Dj@bWv5w-$m#kjNWe?y#
+host.url: daangn-errand.com
+
 ---
 
 spring:
@@ -48,3 +50,10 @@ spring:
   config:
     activate:
       on-profile: prod
+
+---
+
+spring:
+  config:
+    active:
+      on-profile: local
