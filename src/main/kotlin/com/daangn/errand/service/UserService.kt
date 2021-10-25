@@ -13,6 +13,7 @@ import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
+import com.daangn.errand.util.RedisUtil
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,7 +24,8 @@ class UserService(
     val userConverter: UserConverter,
     val categoryRepository: CategoryRepository,
     val helperHasCategoriesRepository: HelperHasCategoriesRepository,
-    val daangnUtil: DaangnUtil
+    val daangnUtil: DaangnUtil,
+    val redisUtil: RedisUtil
 ) {
     fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
@@ -31,6 +33,10 @@ class UserService(
         val mannerTemp: Float = daangnUtil.getMannerTemp(accessToken).mannerPoint + 36.5f
         user.mannerTemp = mannerTemp
         return userConverter.toUserVo(user)
+    }
+
+    fun saveLastRegionId(daangnId: String, regionId: String) {
+        redisUtil.createOrUpdateUserRegion(daangnId, regionId)
     }
 
     fun setCategory(userId: Long, categoryId: Long) { // TODO: category 설정 api 하고 테스트

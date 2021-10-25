@@ -14,7 +14,7 @@ class RedisUtil(
         return allKeys.asSequence().map { key -> key.split(":")[1] }.toList()
     }
 
-    fun CreateOrUpdateUserRegion(daangnId: String, regionId: String) {
+    fun createOrUpdateUserRegion(daangnId: String, regionId: String) {
         val allKeys = redisTemplate.keys("*:$daangnId")
         redisTemplate.delete(allKeys)
         redisTemplate.opsForValue().set("$regionId:$daangnId", "", Duration.ofDays(7))

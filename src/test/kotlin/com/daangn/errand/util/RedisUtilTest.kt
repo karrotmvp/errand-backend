@@ -23,7 +23,7 @@ internal class RedisUtilTest constructor(
         val regionId = "6530459d189b"
 
         // when
-        redisUtil.CreateOrUpdateUserRegion(daangnId, regionId)
+        redisUtil.createOrUpdateUserRegion(daangnId, regionId)
 
         //then
         val userRegion = redisTemplate.keys("*:$daangnId")
