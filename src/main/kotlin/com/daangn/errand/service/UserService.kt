@@ -1,6 +1,7 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.HelperHasCategories
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -54,5 +55,12 @@ class UserService(
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userProfileVo = userConverter.toUserProfileVo(user)
         return daangnUtil.setUserDetailProfile(userProfileVo, accessToken, regionId)
+    }
+
+    fun updateUserAlarm(userId: Long, on: Boolean): String {
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        if (user.isAlarmOn == on) throw ErrandException(ErrandError.BAD_REQUEST, "중복 요청입니다.")
+        user.isAlarmOn = on
+        return if (user.isAlarmOn) "알림 ON 완료" else "알림 OFF 완료"
     }
 }
