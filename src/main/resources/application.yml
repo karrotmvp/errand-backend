@@ -35,7 +35,7 @@ daangn:
     neighbor-range: RANGE_2
 test: false
 token.secret: Dj@bWv5w-$m#kjNWe?y#
-host.url: http://dev.daangn-errand.com
+host.url: daangn-errand.com
 
 ---
 
