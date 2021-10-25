@@ -2,11 +2,10 @@ daangn:
   oapi.url: https://oapi.alpha.kr.karrotmarket.com
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
 spring.datasource.url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand-dev
-host.url: http://dev.daangn-errand.com
 spring:
   redis:
     port: 6379
-    host: errand-dev-001.wbblt4.0001.apn2.cache.amazonaws.com
+    host: 127.0.0.1
     lettuce:
       pool:
         max-active: 10
