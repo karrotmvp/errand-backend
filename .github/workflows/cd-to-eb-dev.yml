@@ -23,7 +23,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Dspring.profiles.active=dev
         shell: bash
 
       - name: Get current time
