@@ -50,3 +50,10 @@ spring:
   config:
     activate:
       on-profile: prod
+
+---
+
+spring:
+  config:
+    active:
+      on-profile: local
