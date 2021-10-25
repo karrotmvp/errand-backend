@@ -1,14 +1,18 @@
 package com.daangn.errand.util
 
-import mu.KotlinLogging
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
+@EnabledIfEnvironmentVariable(
+    named="SPRING_PROFILES_ACTIVE",
+    matches="local"
+)
 internal class RedisUtilTest constructor(
     @Autowired val redisTemplate: RedisTemplate<String, String>,
     @Autowired val redisUtil: RedisUtil
