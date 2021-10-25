@@ -28,12 +28,15 @@ class AuthController(
     @ApiOperation(value = "로그인 api")
     fun login(
         @RequestParam(value = "authCode") authCode: String,
+        @RequestParam(value = "regionId") regionId: String,
         res: HttpServletResponse
     ): ErrandResponse<Any> {
         val accessToken = authService.getAccessToken(authCode)
         val userProfile = authService.getUserProfile(accessToken)
 
         val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
+
+        userService.saveLastRegionId(user.daangnId, regionId) // save last region id
 
         val cookie = Cookie("token", jwtUtil.generateToken(JwtPayload(user.id!!, accessToken)))
         cookie.maxAge = 60 * 60 * 24
