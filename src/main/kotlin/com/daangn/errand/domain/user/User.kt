@@ -7,6 +7,7 @@ import com.daangn.errand.domain.BaseEntity
 import com.daangn.errand.domain.HelperHasCategories
 import com.daangn.errand.domain.category.Category
 import com.daangn.errand.domain.errand.Errand
+import org.hibernate.annotations.ColumnDefault
 import javax.persistence.*
 
 @Entity
@@ -22,6 +23,10 @@ class User(
 
     @Column
     var mannerTemp: Float? = null
+
+    @Column
+    @ColumnDefault("true")
+    var isAlarmOn: Boolean = true
 
     @OneToMany(mappedBy = "customer")
     var errandReqList: MutableList<Errand> = ArrayList()

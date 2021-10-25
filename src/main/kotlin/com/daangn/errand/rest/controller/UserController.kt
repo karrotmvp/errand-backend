@@ -1,13 +1,13 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.user.UserProfileVo
+import com.daangn.errand.rest.dto.patchUserAlarmReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.UserService
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 import javax.websocket.server.PathParam
 
 @RestController
@@ -21,5 +21,14 @@ class UserController(
         @PathParam(value = "regionId") regionId: String
     ): ErrandResponse<UserProfileVo> {
         return ErrandResponse(userService.getUserWithDaangnProfile(payload.userId, payload.accessToken, regionId))
+    }
+
+    @PatchMapping("/alarm")
+    fun setAlarm(
+        @TokenPayload payload: JwtPayload,
+        @RequestBody patchUserAlarmReqDto: patchUserAlarmReqDto
+    ): ErrandResponse<Any> {
+        val result = userService.updateUserAlarm(payload.userId, patchUserAlarmReqDto.on)
+        return ErrandResponse(HttpStatus.OK, result)
     }
 }
