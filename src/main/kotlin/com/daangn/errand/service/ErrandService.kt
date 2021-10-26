@@ -77,9 +77,10 @@ class ErrandService(
     fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
         val category = errand.category
         val neighborUsers: MutableSet<String> = HashSet()
-        val neighborIdList = daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map {
-            region -> region.id
-        }
+        val neighborIdList =
+            daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map { region ->
+                region.id
+            }
         val iterator = neighborIdList.iterator()
         while (iterator.hasNext()) {
             neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
@@ -158,6 +159,30 @@ class ErrandService(
                 val lastErrand = errandRepository.findById(lastId)
                     .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
                 errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size, neighborIds)
+            }
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        return errands.asSequence().map { errand ->
+            val errandPreview = errandConverter.toErrandPreview(errand)
+            errandPreview.helpCount = helpRepository.countByErrand(errand)
+            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+            val didUserApplyButWasChosen =
+                (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
+            errandPreview.setStatus(errand, didUserApplyButWasChosen)
+            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+            errandPreview
+        }.toList()
+    }
+
+    fun readMainOnlyAppliable(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
+        val neighborIds =
+            Region.convertRegionListToRegionIdList(daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions)
+        val errands =
+            if (lastId == null) {
+                errandRepository.findErrandsEnableToApply(size, neighborIds)
+            } else {
+                val lastErrand = errandRepository.findById(lastId)
+                    .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+                errandRepository.findErrandsEnableToApplyAfterLastErrand(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         return errands.asSequence().map { errand ->

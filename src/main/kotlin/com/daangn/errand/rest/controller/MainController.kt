@@ -24,4 +24,14 @@ class MainController(
     ): ErrandResponse<List<ErrandPreview>> {
         return ErrandResponse(errandService.readMain(payload.userId, lastId, size, regionId))
     }
+
+    @GetMapping("/appliable")
+    fun getMainOnlyAppliable(
+        @TokenPayload payload: JwtPayload,
+        @RequestParam(value = "lastId") lastId: Long?,
+        @RequestParam(value = "size") size: Long,
+        @RequestParam(value = "regionId") regionId: String
+    ): ErrandResponse<List<ErrandPreview>> {
+        return ErrandResponse(errandService.readMainOnlyAppliable(payload.userId, lastId, size, regionId))
+    }
 }
