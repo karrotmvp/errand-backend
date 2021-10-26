@@ -2,6 +2,7 @@ package com.daangn.errand.support.exception
 
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.response.ErrandResponse
+import io.sentry.Sentry
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,15 +17,17 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(ErrandException::class)
     fun errandException(e: ErrandException): ResponseEntity<ErrandResponse<Unit>> {
+        Sentry.captureException(e)
         val error: ErrandError = e.error
         logger.error { "ErrandException : ${e.message}" }
         return ResponseEntity
             .status(error.status)
-            .body(ErrandResponse(error.status, e.message?: error.description))
+            .body(ErrandResponse(error.status, e.message ?: error.description))
     }
 
     @ExceptionHandler(MultipartException::class)
     fun multipartException(e: MultipartException): ResponseEntity<ErrandResponse<Unit>> {
+        Sentry.captureException(e)
         logger.error { "MultipartException : ${e.stackTrace}" }
         return ResponseEntity
             .status(400)
@@ -42,7 +45,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException::class)
     fun unknownException(e: Exception): ResponseEntity<ErrandResponse<Unit>> {
         logger.error { "UnknownException : $e" }
-        e.printStackTrace() // TODO: 지우기
+        Sentry.captureException(e)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrandResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.localizedMessage))
