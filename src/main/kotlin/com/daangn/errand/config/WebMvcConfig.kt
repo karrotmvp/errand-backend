@@ -23,7 +23,7 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
+            .allowedOrigins("https://front.daangn-errand.com")
             .allowedMethods("GET", "POST", "PATCH")
             .maxAge(3000)
     }
@@ -44,7 +44,7 @@ class WebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*") // TODO
+            .allowedOrigins("https://daangn-errand.com")
             .allowedMethods("GET", "POST", "PATCH")
             .maxAge(3000)
     }
