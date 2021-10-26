@@ -23,8 +23,9 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://front.daangn-errand.com")
-            .allowedMethods("GET", "POST", "PATCH")
+            .allowedOrigins("https://front.daangn-errand.com", "http://front.daangn-errand.com", "http://localhost:3000")
+            .allowCredentials(true)
+            .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
             .maxAge(3000)
     }
 }
@@ -44,8 +45,9 @@ class WebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://daangn-errand.com")
-            .allowedMethods("GET", "POST", "PATCH")
+            .allowedOrigins("https://daangn-errand.com", "http://daangn-errand.com")
+            .allowCredentials(true)
+            .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
             .maxAge(3000)
     }
 }
