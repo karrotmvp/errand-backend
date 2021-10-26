@@ -4,6 +4,8 @@ import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.QErrand.errand
 import com.daangn.errand.domain.help.QHelp.help
 import com.daangn.errand.domain.user.User
+import com.querydsl.core.types.dsl.Wildcard
+import com.querydsl.core.types.dsl.Wildcard.count
 import com.querydsl.jpa.impl.JPAQueryFactory
 
 class ErrandQueryRepositoryImpl(
@@ -52,10 +54,14 @@ class ErrandQueryRepositoryImpl(
     }
 
     override fun findErrandsEnableToApply(size: Long, regionIds: List<String>): MutableList<Errand> {
-        return query.selectFrom(help).groupBy(help.errand)
-            .where(help.errand.count().lt(5))
-            .join(errand).on(help.errand.eq(errand))
-            .select(errand)
+        return query.selectFrom(errand)
+            .leftJoin(errand.helps, help).distinct()
+            .where(
+                errand.regionId.`in`(regionIds)
+                    .and(errand.chosenHelper.isNull)
+                    .and(errand.helps.size().lt(5))
+            )
+            .fetchJoin()
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
@@ -66,11 +72,15 @@ class ErrandQueryRepositoryImpl(
         size: Long,
         regionIds: List<String>
     ): MutableList<Errand> {
-        return query.selectFrom(help).groupBy(help.errand)
-            .where(help.errand.count().lt(5))
-            .join(errand).on(help.errand.eq(errand))
-            .select(errand)
-            .where(errand.createdAt.before(lastErrand.createdAt))
+        return query.selectFrom(errand)
+            .leftJoin(errand.helps, help).distinct()
+            .where(
+                errand.regionId.`in`(regionIds)
+                    .and(errand.chosenHelper.isNull)
+                    .and(errand.helps.size().lt(5))
+                    .and(errand.createdAt.before(lastErrand.createdAt))
+            )
+            .fetchJoin()
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
