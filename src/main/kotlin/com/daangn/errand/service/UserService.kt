@@ -1,7 +1,6 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.HelperHasCategories
-import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -9,6 +8,8 @@ import com.daangn.errand.domain.user.UserVo
 import com.daangn.errand.repository.CategoryRepository
 import com.daangn.errand.repository.HelperHasCategoriesRepository
 import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.rest.dto.CategoryStatus
+import com.daangn.errand.rest.dto.GetUserAlarmResDto
 import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
@@ -68,5 +69,17 @@ class UserService(
         if (user.isAlarmOn == on) throw ErrandException(ErrandError.BAD_REQUEST, "중복 요청입니다.")
         user.isAlarmOn = on
         return if (user.isAlarmOn) "알림 ON 완료" else "알림 OFF 완료"
+    }
+
+    fun readUserAlarm(userId: Long): GetUserAlarmResDto {
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val allCategories = categoryRepository.findAll()
+        return GetUserAlarmResDto(allCategories.asSequence().map { category ->
+            CategoryStatus(
+                category.id!!,
+                category.name,
+                helperHasCategoriesRepository.findByUserAndCategory(user, category) != null
+            )
+        }.toList(), user.isAlarmOn)
     }
 }

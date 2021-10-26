@@ -31,4 +31,9 @@ class UserController(
         val result = userService.updateUserAlarm(payload.userId, patchUserAlarmReqDto.on)
         return ErrandResponse(HttpStatus.OK, result)
     }
+
+    @GetMapping("/alarm")
+    fun getAlarm(
+        @TokenPayload payload: JwtPayload
+    ) = ErrandResponse(userService.readUserAlarm(payload.userId))
 }
