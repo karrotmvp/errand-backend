@@ -2,10 +2,13 @@ package com.daangn.errand.rest.controller
 
 import com.daangn.errand.rest.dto.errand.PatchHelperOfErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
+import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.HelpCountResDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
+import com.daangn.errand.service.MixpanelService
+import com.daangn.errand.service.MixpanelTrackEvent
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
@@ -13,6 +16,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
+import javax.servlet.http.HttpServletRequest
 import javax.websocket.server.PathParam
 
 @RestController
@@ -20,14 +24,21 @@ import javax.websocket.server.PathParam
 @RequestMapping("/errand")
 class ErrandController(
     val errandService: ErrandService,
-    val helpService: HelpService
+    val helpService: HelpService,
+    val mixpanelService: MixpanelService
 ) {
     @PostMapping("")
     @ApiOperation(value = "심부름을 등록하는 API")
     fun postErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @RequestBody postErrandReqDto: PostErrandReqDto
-    ) = ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
+    ): ErrandResponse<PostErrandResDto>  {
+        val res = errandService.createErrand(payload.userId, postErrandReqDto)
+        val entities = HashMap<String, String>()
+        entities.put("userId", payload.userId.toString())
+        mixpanelService.trackEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities)
+        return ErrandResponse(res)
+    }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "심부름 상세 조회 API")
