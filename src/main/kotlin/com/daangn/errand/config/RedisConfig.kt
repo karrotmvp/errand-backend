@@ -21,7 +21,7 @@ class RedisConfig(
         logger.info { "hostUrl -> $host" }
     }
     @Bean
-    fun redisConnectionFactory() = LettuceConnectionFactory()
+    fun redisConnectionFactory() = LettuceConnectionFactory(host, 6379)
 
     @Bean
     fun defaultRedisConfig(): RedisConfiguration {
