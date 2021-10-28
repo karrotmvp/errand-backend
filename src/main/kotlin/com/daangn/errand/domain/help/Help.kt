@@ -6,9 +6,13 @@ import au.com.console.kassava.kotlinToString
 import com.daangn.errand.domain.BaseEntity
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.user.User
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.Where
 import javax.persistence.*
 
 @Entity
+@SQLDelete(sql = "UPDATE help SET deleted = true WHERE id=?")
+@Where(clause = "deleted=false")
 class Help(
     @ManyToOne
     val errand: Errand,
@@ -24,6 +28,9 @@ class Help(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    @Column(nullable = false)
+    var deleted: Boolean = false
 
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Help::id)

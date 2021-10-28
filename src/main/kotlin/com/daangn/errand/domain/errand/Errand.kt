@@ -9,10 +9,14 @@ import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.Where
 import javax.persistence.*
 
 @Entity
-class Errand (
+@SQLDelete(sql = "UPDATE errand SET deleted = true WHERE id=?")
+@Where(clause = "deleted=false")
+class Errand(
     @ManyToOne
     @JoinColumn(name = "customer_id")
     val customer: User,
@@ -27,11 +31,11 @@ class Errand (
     var detailAddress: String,
     @Column(nullable = false)
     var reward: String,
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     var detail: String,
     @Column(nullable = false)
     var customerPhoneNumber: String
-        ): BaseEntity() {
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -51,7 +55,10 @@ class Errand (
     @OneToMany(mappedBy = "errand")
     var helps: MutableList<Help> = ArrayList()
 
-    companion object{
+    @Column(nullable = false)
+    var deleted: Boolean = false
+
+    companion object {
         private val equalsAndHashCodeProperties = arrayOf(Errand::id)
         private val toStringProperties = arrayOf(
             Errand::id,
