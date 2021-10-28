@@ -23,10 +23,11 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://front.daangn-errand.com", "http://front.daangn-errand.com", "http://localhost:3000")
+            .allowedOrigins("*")
             .allowCredentials(true)
-            .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
+            .allowedMethods("*")
             .maxAge(3000)
+            .allowedHeaders("x-requested-with, origin, content-type, accept")
     }
 }
 
@@ -49,5 +50,6 @@ class WebMvcConfig(
             .allowCredentials(true)
             .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
             .maxAge(3000)
+            .allowedHeaders("x-requested-with, origin, content-type, accept")
     }
 }
