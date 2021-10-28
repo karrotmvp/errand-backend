@@ -1,5 +1,6 @@
 package com.daangn.errand.config
 
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,13 +16,16 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class RedisConfig(
     @Value("\${spring.redis.host}") val host: String
 ) {
+    val logger = KotlinLogging.logger {}
+    init {
+        logger.info { "hostUrl -> $host" }
+    }
     @Bean
-    fun redisConnectionFactory() = LettuceConnectionFactory()
+    fun redisConnectionFactory() = LettuceConnectionFactory(host, 6379)
 
     @Bean
     fun defaultRedisConfig(): RedisConfiguration {
-        val config = RedisStandaloneConfiguration()
-        config.hostName = host
+        val config = RedisStandaloneConfiguration(host)
         return config
     }
 

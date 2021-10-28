@@ -5,10 +5,8 @@ import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.HelpService
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/help")
@@ -20,4 +18,13 @@ class HelpController(
         @TokenPayload payload: JwtPayload,
         @RequestBody postHelpReqDto: PostHelpReqDto
     ) = ErrandResponse(helpService.createHelp(payload.userId, postHelpReqDto))
+
+    @DeleteMapping("/{id}")
+    fun deleteHelp(
+        @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "id") helpId: Long
+    ): ErrandResponse<Any> {
+        helpService.destroyHelp(payload.userId, helpId)
+        return ErrandResponse(HttpStatus.OK, "지원 취소 성공")
+    }
 }

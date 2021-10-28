@@ -261,4 +261,11 @@ class ErrandService(
             help.phoneNumber
         )
     }
+
+    fun destroyErrand(userId: Long, errandId: Long) {
+        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+        errandRepository.delete(errand)
+    }
 }

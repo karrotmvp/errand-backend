@@ -72,4 +72,13 @@ class ErrandController(
         @TokenPayload payload: JwtPayload,
         @PathVariable(value = "helpId") id: Long
     ) = ErrandResponse(errandService.readHelperDetail(payload, id))
+
+    @DeleteMapping("/{id}")
+    fun deleteErrand(
+        @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "id") errandId: Long
+    ): ErrandResponse<Any> {
+
+        return ErrandResponse(HttpStatus.OK, "심부름 삭제 성공")
+    }
 }

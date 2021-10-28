@@ -54,4 +54,11 @@ class HelpService(
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         return helpRepository.countByErrand(errand)
     }
+
+    fun destroyHelp(userId: Long, helpId: Long) {
+        val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST)}
+        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        if (help.helper != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+        helpRepository.delete(help)
+    }
 }
