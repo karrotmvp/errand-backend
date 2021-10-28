@@ -24,7 +24,6 @@ class DevWebMvcConfig(
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins("*")
-            .allowCredentials(true)
             .allowedMethods("*")
             .maxAge(3000)
             .allowedHeaders("x-requested-with, origin, content-type, accept")
