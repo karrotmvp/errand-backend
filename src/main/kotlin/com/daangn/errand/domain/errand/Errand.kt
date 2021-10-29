@@ -56,7 +56,12 @@ class Errand(
     var helps: MutableList<Help> = ArrayList()
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     var deleted: Boolean = false
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    var unexposed: Boolean = false
 
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Errand::id)
@@ -69,6 +74,8 @@ class Errand(
             Errand::detail,
             Errand::chosenHelper,
             Errand::complete,
+            Errand::deleted,
+            Errand::unexposed,
             Errand::createdAt,
             Errand::updatedAt
         )
