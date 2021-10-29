@@ -40,7 +40,7 @@ class AuthController(
         val token = Cookie("token", jwtUtil.generateToken(JwtPayload(user.id!!, accessToken)))
         token.maxAge = 60 * 60 * 24
         token.isHttpOnly = true
-        token.domain = "*.daangn-errand.com"
+        token.domain = ".daangn-errand.com"
         res.addCookie(token)
         return ErrandResponse(HttpStatus.OK, "로그인 성공")
     }

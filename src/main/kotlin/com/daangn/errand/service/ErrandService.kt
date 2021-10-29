@@ -35,7 +35,6 @@ class ErrandService(
     val errandRepository: ErrandRepository,
     val errandConverter: ErrandConverter,
     val categoryRepository: CategoryRepository,
-    val helperHasCategoriesRepository: HelperHasCategoriesRepository,
     val helpRepository: HelpRepository,
     val regionConverter: RegionConverter,
     val daangnUtil: DaangnUtil,

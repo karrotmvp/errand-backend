@@ -27,16 +27,18 @@ class HelpService(
 ) {
     fun createHelp(userId: Long, postHelpReqDto: PostHelpReqDto): HelpVo {
         val user = userRepository.findById(userId)
-            .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+            .orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errand = errandRepository.findById(postHelpReqDto.errandId)
-            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름이 없어요.") }
+            .orElseThrow { ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름이 없어요.") }
         if (user == errand.customer) throw ErrandException(ErrandError.BAD_REQUEST, "본인의 심부름에 지원할 수 없어요.")
+
         val helpCnt = helpRepository.countByErrand(errand)
         if (helpCnt >= 5) throw ErrandException(ErrandError.BAD_REQUEST, "하나의 심부름에는 5명까지만 지원할 수 있어요.")
         if (helpRepository.findByErrandAndHelper(errand, user) != null) throw ErrandException(
             ErrandError.BAD_REQUEST,
             "하나의 심부름에는 한번만 지원할 수 있어요."
         )
+
         val help = helpRepository.save(
             Help(
                 errand,
@@ -52,17 +54,18 @@ class HelpService(
                 "$baseUrl/appliers/${errand.id}"
             )
         )
+
         return helpConverter.toHelpVo(help)
     }
 
     fun countHelp(errandId: Long): Long {
-        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
         return helpRepository.countByErrand(errand)
     }
 
     fun destroyHelp(userId: Long, helpId: Long) {
-        val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
-        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val help = helpRepository.findById(helpId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
+        val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (help.helper != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         helpRepository.delete(help)
     }
