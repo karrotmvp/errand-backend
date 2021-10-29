@@ -16,10 +16,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class RedisConfig(
     @Value("\${spring.redis.host}") val host: String
 ) {
-    val logger = KotlinLogging.logger {}
-    init {
-        logger.info { "hostUrl -> $host" }
-    }
     @Bean
     fun redisConnectionFactory() = LettuceConnectionFactory(host, 6379)
 
