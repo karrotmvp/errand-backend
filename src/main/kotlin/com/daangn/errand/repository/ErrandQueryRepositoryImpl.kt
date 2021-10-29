@@ -17,7 +17,7 @@ class ErrandQueryRepositoryImpl(
         regionIds: List<String>
     ): MutableList<Errand> {
         return query.selectFrom(errand)
-            .where(errand.regionId.`in`(regionIds))
+            .where(errand.regionId.`in`(regionIds).and(errand.unexposed.isFalse))
             .where(errand.createdAt.before(lastErrand.createdAt))
             .orderBy(errand.createdAt.desc())
             .limit(size)
@@ -26,7 +26,7 @@ class ErrandQueryRepositoryImpl(
 
     override fun findErrandOrderByCreatedAtDesc(size: Long, regionIds: List<String>): MutableList<Errand> {
         return query.selectFrom(errand)
-            .where(errand.regionId.`in`(regionIds))
+            .where(errand.regionId.`in`(regionIds).and(errand.unexposed.isFalse))
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
@@ -34,7 +34,7 @@ class ErrandQueryRepositoryImpl(
 
     override fun findByCustomerOrderByCreateAtDesc(customer: User, size: Long): MutableList<Errand> {
         return query.selectFrom(errand)
-            .where(errand.customer.eq(customer))
+            .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
@@ -46,7 +46,7 @@ class ErrandQueryRepositoryImpl(
         size: Long
     ): MutableList<Errand> {
         return query.selectFrom(errand)
-            .where(errand.customer.eq(customer))
+            .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
             .where(errand.createdAt.before(lastErrand.createdAt))
             .orderBy(errand.createdAt.desc())
             .limit(size)
@@ -60,6 +60,7 @@ class ErrandQueryRepositoryImpl(
                 errand.regionId.`in`(regionIds)
                     .and(errand.chosenHelper.isNull)
                     .and(errand.helps.size().lt(5))
+                    .and(errand.unexposed.isFalse)
             )
             .fetchJoin()
             .orderBy(errand.createdAt.desc())
@@ -79,6 +80,7 @@ class ErrandQueryRepositoryImpl(
                     .and(errand.chosenHelper.isNull)
                     .and(errand.helps.size().lt(5))
                     .and(errand.createdAt.before(lastErrand.createdAt))
+                    .and(errand.unexposed.isFalse)
             )
             .fetchJoin()
             .orderBy(errand.createdAt.desc())
