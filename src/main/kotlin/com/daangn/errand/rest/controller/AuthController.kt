@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -37,12 +36,11 @@ class AuthController(
         val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
 
         userService.saveLastRegionId(user.daangnId, regionId) // save last region id
-
-        val cookie = Cookie("token", jwtUtil.generateToken(JwtPayload(user.id!!, accessToken)))
-        cookie.maxAge = 60 * 60 * 24
-        cookie.isHttpOnly = true
-
-        res.addCookie(cookie)
+        res.setHeader(
+            "Set-Cookie", "token=${
+                jwtUtil.generateToken(JwtPayload(user.id!!, accessToken))
+            }; Max-Age=${60 * 60 * 24}; HttpOnly; SameSite=none"
+        )
         return ErrandResponse(HttpStatus.OK, "로그인 성공")
     }
 }

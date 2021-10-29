@@ -40,5 +40,7 @@ daangn:
 test: true
 token.secret: Dj@bWv5w-$m#kjNWe?y#
 host.url: http://dev.daangn-errand.com
-
+sentry:
+  dsn: https://4cef7bbae56446619e0f58a765d4428a@o1045456.ingest.sentry.io/6020835
+  traces-sample-rate: 1.0
 
