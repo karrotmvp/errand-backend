@@ -14,7 +14,6 @@ class DaangnChatReqEventHandler(
     @Async
     @EventListener
     fun sendBizChat(event: DaangnChatReqRegisteredEvent) {
-        println(LocalDateTime.now())
          event.buildBizChat().forEach { reqDto ->
              daangnUtil.sendBizChatting(reqDto)
          }

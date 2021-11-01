@@ -1,6 +1,7 @@
 package com.daangn.errand.support.event.publisher
 
 import com.daangn.errand.domain.errand.Errand
+import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.service.MixpanelTrackEvent
 import com.daangn.errand.support.event.MixpanelEvent
 import com.daangn.errand.util.DaangnUtil
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component
 @Component
 class MixpanelEventPublisher(
     private val eventPublisher: ApplicationEventPublisher,
-    private val daangnUtil: DaangnUtil
+    private val daangnUtil: DaangnUtil,
 ){
     @Async
     fun publishErrandRegisteredEvent(errand: Errand) {
@@ -22,6 +23,7 @@ class MixpanelEventPublisher(
         entities["심부름 요청 유저의 당근 닉네임"] = userInfo.nickname ?: "유저"
         entities["심부름 카테고리 ID"] = errand.category.id.toString()
         entities["심부름 카테고리"]  = errand.category.name
+        entities["심부름 등록 횟수"] = errand.customer.errandReqList.size.toString()
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities))
     }
 }
