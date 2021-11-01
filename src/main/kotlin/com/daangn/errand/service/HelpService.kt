@@ -8,7 +8,7 @@ import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.event.HelpRegisteredEvent
+import com.daangn.errand.support.event.HelpRegisteredChatEvent
 import com.daangn.errand.support.exception.ErrandException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -49,7 +49,7 @@ class HelpService(
             )
         )
         eventPublisher.publishEvent(
-            HelpRegisteredEvent(
+            HelpRegisteredChatEvent(
                 listOf(errand.customer.daangnId),
                 "$baseUrl/appliers/${errand.id}"
             )
