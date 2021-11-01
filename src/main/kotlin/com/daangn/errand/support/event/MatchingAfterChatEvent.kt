@@ -2,7 +2,7 @@ package com.daangn.errand.support.event
 
 import com.daangn.errand.rest.dto.daangn.ActionType
 
-class MatchingAfterEvent(
+class MatchingAfterChatEvent(
     override val targetUserIds: List<String>,
     override val linkUrl: String
 ): DaangnChatReqRegisteredEvent {
