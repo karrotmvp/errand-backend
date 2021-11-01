@@ -9,6 +9,7 @@ import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
 import com.daangn.errand.service.MixpanelService
 import com.daangn.errand.service.MixpanelTrackEvent
+import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
@@ -24,8 +25,7 @@ import javax.websocket.server.PathParam
 @RequestMapping("/errand")
 class ErrandController(
     val errandService: ErrandService,
-    val helpService: HelpService,
-    val mixpanelService: MixpanelService
+    val helpService: HelpService
 ) {
     @PostMapping("")
     @ApiOperation(value = "심부름을 등록하는 API")
@@ -33,11 +33,7 @@ class ErrandController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @RequestBody postErrandReqDto: PostErrandReqDto
     ): ErrandResponse<PostErrandResDto>  {
-        val res = errandService.createErrand(payload.userId, postErrandReqDto)
-        val entities = HashMap<String, String>()
-        entities.put("userId", payload.userId.toString())
-        mixpanelService.trackEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities)
-        return ErrandResponse(res)
+        return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
     }
 
     @GetMapping("/{id}")

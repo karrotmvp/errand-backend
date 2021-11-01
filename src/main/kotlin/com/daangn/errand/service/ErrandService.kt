@@ -14,9 +14,10 @@ import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.event.ErrandRegisteredEvent
-import com.daangn.errand.support.event.MatchingAfterEvent
-import com.daangn.errand.support.event.MatchingRegisteredEvent
+import com.daangn.errand.support.event.ErrandRegisteredChatEvent
+import com.daangn.errand.support.event.MatchingAfterChatEvent
+import com.daangn.errand.support.event.MatchingRegisteredChatEvent
+import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
@@ -31,19 +32,26 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 class ErrandService(
-    val userRepository: UserRepository,
-    val errandRepository: ErrandRepository,
-    val errandConverter: ErrandConverter,
-    val categoryRepository: CategoryRepository,
-    val helpRepository: HelpRepository,
-    val regionConverter: RegionConverter,
-    val daangnUtil: DaangnUtil,
-    val userConverter: UserConverter,
-    val eventPublisher: ApplicationEventPublisher,
-    @Value("\${host.url}") val baseUrl: String,
-    val imageRepository: ImageRepository,
-    val eventScheduler: EventScheduler,
-    val redisUtil: RedisUtil
+    @Value("\${host.url}")
+    private val baseUrl: String,
+
+    private val userRepository: UserRepository,
+    private val errandRepository: ErrandRepository,
+    private val categoryRepository: CategoryRepository,
+    private val helpRepository: HelpRepository,
+    private val imageRepository: ImageRepository,
+
+    private val errandConverter: ErrandConverter,
+    private val regionConverter: RegionConverter,
+    private val userConverter: UserConverter,
+
+    private val eventPublisher: ApplicationEventPublisher,
+    private val eventScheduler: EventScheduler,
+    private val mixpanelEventPublisher: MixpanelEventPublisher,
+
+    private val daangnUtil: DaangnUtil,
+    private val redisUtil: RedisUtil,
+
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -69,7 +77,8 @@ class ErrandService(
         val res = PostErrandResDto(errandId)
         val list = getUserDaangnIdListInCategory(errand)
         val linkUrl = "$baseUrl/errands/$errandId"
-        eventPublisher.publishEvent(ErrandRegisteredEvent(list, linkUrl))
+        eventPublisher.publishEvent(ErrandRegisteredChatEvent(list, linkUrl)) // TODO: 비동기로 바꾸기
+        mixpanelEventPublisher.publishErrandRegisteredEvent(errand)
         return res
     }
 
@@ -141,9 +150,9 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
 
-        eventPublisher.publishEvent(MatchingRegisteredEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
+        eventPublisher.publishEvent(MatchingRegisteredChatEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
         eventScheduler.addElement(
-            MatchingAfterEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
+            MatchingAfterChatEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
             LocalDateTime.now().plusHours(24)
         )
     }
