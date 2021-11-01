@@ -23,10 +23,12 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
+            .allowedOrigins("http://192.168.60.168:3000", "https://test-cors.org")
+            .allowedOriginPatterns("https://*.daangn-errand.com")
             .allowedMethods("*")
-            .maxAge(3000)
-            .allowedHeaders("x-requested-with, origin, content-type, accept")
+            .maxAge(3600)
+            .allowCredentials(true)
+            .allowedHeaders("*")
     }
 }
 
