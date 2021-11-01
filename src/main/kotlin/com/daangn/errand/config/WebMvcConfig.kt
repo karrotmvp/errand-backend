@@ -23,12 +23,11 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://192.168.60.168:3000", "https://test-cors.org")
+            .allowedOrigins("http://192.168.60.168:3000", "https://test-cors.org", "http://localhost") // 살려
             .allowedOriginPatterns("https://*.daangn-errand.com")
             .allowedMethods("*")
             .maxAge(3600)
-            .allowCredentials(true)
-            .allowedHeaders("*")
+            .allowCredentials(true) // ok
     }
 }
 
@@ -41,16 +40,11 @@ class WebMvcConfig(
         resolvers.add(tokenPayloadArgumentResolver)
     }
 
-    override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry.addResourceHandler("swagger-ui.html")
-    }
-
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins("https://daangn-errand.com", "http://daangn-errand.com")
             .allowCredentials(true)
             .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
             .maxAge(3000)
-            .allowedHeaders("x-requested-with, origin, content-type, accept")
     }
 }
