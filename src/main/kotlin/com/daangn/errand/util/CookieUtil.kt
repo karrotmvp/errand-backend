@@ -19,13 +19,14 @@ class CookieUtil: ICookieUtil {
     }
 }
 
-@Profile(value = ["dev", "local"])
+@Profile("!prod")
 @Component
 class DevCookieUtil: ICookieUtil {
     override fun setCookie(token: String, res: HttpServletResponse) {
         val tokenCookie = ResponseCookie.from("token", token)
             .maxAge(60 * 60 * 24)
             .sameSite("None")
+            .httpOnly(false)
             .path("/")
             .build()
         res.addHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString())
