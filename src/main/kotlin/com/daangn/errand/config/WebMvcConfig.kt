@@ -5,11 +5,13 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @Profile(value = ["dev", "local"])
+@EnableWebMvc
 class DevWebMvcConfig(
     val tokenPayloadArgumentResolver: TokenPayloadArgumentResolver
 ) : WebMvcConfigurer {
@@ -23,8 +25,14 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://192.168.60.168:3000", "https://test-cors.org", "http://localhost") // 살려
-            .allowedOriginPatterns("https://*.daangn-errand.com")
+            .allowedOrigins(
+                "http://192.168.60.168:3000",
+                "https://www.test-cors.org",
+                "http://front.daangn-errand.com",
+                "https://front.daangn-errand.com",
+                "http://daangn-errand.com",
+                "https://daangn-errand.com"
+            )
             .allowedMethods("*")
             .maxAge(3600)
             .allowCredentials(true) // ok
@@ -33,6 +41,7 @@ class DevWebMvcConfig(
 
 @Configuration
 @Profile("prod")
+@EnableWebMvc
 class WebMvcConfig(
     val tokenPayloadArgumentResolver: TokenPayloadArgumentResolver
 ) : WebMvcConfigurer {
