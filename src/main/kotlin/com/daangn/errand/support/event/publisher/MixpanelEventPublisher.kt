@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 class MixpanelEventPublisher(
     private val eventPublisher: ApplicationEventPublisher,
     private val daangnUtil: DaangnUtil,
-    private val userRepository: UserRepository,
+    private val helpRepository: HelpRepository,
 ) {
     @Async
     fun publishErrandRegisteredEvent(errand: Errand) {
@@ -35,18 +35,23 @@ class MixpanelEventPublisher(
     }
 
     @Async
-    fun publishHelpRegisteredEvent(help: Help) {
-        val userInfo = daangnUtil.getUserInfo(help.helper.daangnId).data.user
-        val helper = userRepository.findById(help.helper.id!!)
-            .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+    @Transactional(readOnly = true)
+    fun publishHelpRegisteredEvent(helpId: Long) {
+        val help = helpRepository.findById(helpId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
         val entities: HashMap<String, String> = HashMap()
-        entities["심부름 Id (errand id)"] = help.errand.id.toString()
-        entities["심부름 카테고리"] = help.errand.category.name
 
-        entities["헬퍼 유저의 당근 ID"] = userInfo.id
-        entities["헬퍼 유저의 당근 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
+        entities["errand_id"] = help.errand.id.toString()
+        entities["errand_category"] = help.errand.category.name
+        entities["errand_help_count"] = help.errand.helps.size.toString()
 
-        entities["이 헬퍼의 총 도움 횟수"] = helper.errandList.size.toString()
+        val userInfo = daangnUtil.getUserInfo(help.helper.daangnId).data.user
+        entities["user_daangn_id"] = userInfo.id
+        entities["helper_nickname"] = userInfo.nickname ?: "닉네임 미등록"
+
+        val helpCnt = helpRepository.countByHelper(help.helper)
+        entities["helper_help_size"] = helpCnt.toString()
+        entities["helper_errandList_size"] = help.helper.errandList.size.toString()
 
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.HELP_REGISTERED, entities))
     }

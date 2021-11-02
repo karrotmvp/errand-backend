@@ -56,7 +56,7 @@ class HelpService(
                 "$baseUrl/appliers/${errand.id}"
             )
         )
-        mixpanelEventPublisher.publishHelpRegisteredEvent(help)
+        mixpanelEventPublisher.publishHelpRegisteredEvent(help.id!!)
         return helpConverter.toHelpVo(help)
     }
 
