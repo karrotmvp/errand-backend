@@ -52,7 +52,7 @@ class UserService(
         redisUtil.createOrUpdateUserRegion(daangnId, regionId)
     }
 
-    fun setCategory(userId: Long, categoryId: Long) { // TODO: category 설정 api 하고 테스트
+    fun setCategory(userId: Long, categoryId: Long) {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category =
             categoryRepository.findById(categoryId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
@@ -61,7 +61,7 @@ class UserService(
         helperHasCategoriesRepository.save(HelperHasCategories(user, category))
     }
 
-    fun deactivateCategory(userId: Long, categoryId: Long) { // TODO: 테스트
+    fun deactivateCategory(userId: Long, categoryId: Long) {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category =
             categoryRepository.findById(categoryId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
