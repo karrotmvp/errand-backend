@@ -1,6 +1,7 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.user.UserVo
+import com.daangn.errand.rest.dto.auth.LoginResDto
 import com.daangn.errand.service.AuthService
 import com.daangn.errand.service.UserService
 import com.daangn.errand.support.response.ErrandResponse
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletResponse
 class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
-    private val cookieUtil: ICookieUtil,
     private val jwtUtil: JwtUtil
 ) {
     @GetMapping("")
@@ -32,13 +32,13 @@ class AuthController(
         @RequestParam(value = "authCode") authCode: String,
         @RequestParam(value = "regionId") regionId: String,
         res: HttpServletResponse
-    ): ErrandResponse<Any> {
+    ): ErrandResponse<LoginResDto> {
         val accessToken = authService.getAccessToken(authCode)
         val userProfile = authService.getUserProfile(accessToken)
 
         val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
-        cookieUtil.setCookie(jwtUtil.generateToken(JwtPayload(user.id!!, accessToken)), res)
+        val token = jwtUtil.generateToken(JwtPayload(user.id!!, accessToken))
         userService.saveLastRegionId(user.daangnId, regionId) // save last region id
-        return ErrandResponse(HttpStatus.OK, "로그인 성공")
+        return ErrandResponse(LoginResDto(token))
     }
 }
