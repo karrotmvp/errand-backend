@@ -3,6 +3,7 @@ package com.daangn.errand.service
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.errand.ErrandPreview
+import com.daangn.errand.domain.errand.Status
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -213,7 +214,7 @@ class ErrandService(
             errandPreview.setStatus(errand, didUserApplyButWasChosen)
             errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
             errandPreview
-        }.toList()
+        }.filter { e -> e.status != Status.FAIL.name }.toList()
     }
 
     fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
