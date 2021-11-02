@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrandPreview(
     val id: Long,
-    val title: String,
     val reward: String,
     var thumbnailUrl: String?,
     val chosenHelper: UserVo?,

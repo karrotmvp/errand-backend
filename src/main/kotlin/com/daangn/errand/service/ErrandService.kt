@@ -65,7 +65,6 @@ class ErrandService(
         val errand = errandRepository.save(
             Errand(
                 category = category,
-                title = postErrandReqDto.title,
                 detail = postErrandReqDto.detail,
                 reward = postErrandReqDto.reward,
                 detailAddress = postErrandReqDto.detailAddress,
