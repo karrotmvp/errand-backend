@@ -3,6 +3,7 @@ package com.daangn.errand.service
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.errand.ErrandPreview
+import com.daangn.errand.domain.errand.Status
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -65,7 +66,6 @@ class ErrandService(
         val errand = errandRepository.save(
             Errand(
                 category = category,
-                title = postErrandReqDto.title,
                 detail = postErrandReqDto.detail,
                 reward = postErrandReqDto.reward,
                 detailAddress = postErrandReqDto.detailAddress,
@@ -205,7 +205,7 @@ class ErrandService(
                 errandRepository.findErrandsEnableToApplyAfterLastErrand(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        return errands.asSequence().map { errand ->
+        return errands.asSequence().map { errand -> // TODO: 리팩토링.. 드러버
             val errandPreview = errandConverter.toErrandPreview(errand)
             errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
@@ -214,7 +214,7 @@ class ErrandService(
             errandPreview.setStatus(errand, didUserApplyButWasChosen)
             errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
             errandPreview
-        }.toList()
+        }.filter { e -> e.status != Status.FAIL.name }.toList()
     }
 
     fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {

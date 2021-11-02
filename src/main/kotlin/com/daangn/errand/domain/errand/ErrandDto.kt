@@ -13,7 +13,6 @@ data class ErrandDto(
     val customer: UserVo,
     var customerPhoneNumber: String?,
     var images: List<ImageVo>,
-    val title: String,
     val category: CategoryVo,
     var detailAddress: String?,
     val reward: String,

@@ -24,8 +24,6 @@ class Errand(
     @JoinColumn(name = "category_id")
     var category: Category,
     @Column(nullable = false)
-    var title: String,
-    @Column(nullable = false)
     var regionId: String,
     @Column(nullable = false)
     var detailAddress: String,

@@ -4,7 +4,6 @@ import org.springframework.web.multipart.MultipartFile
 
 data class PostErrandReqDto(
     val categoryId: Long,
-    val title: String,
     val detail: String,
     val reward: String,
     val detailAddress: String,
