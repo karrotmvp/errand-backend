@@ -12,6 +12,7 @@ import com.daangn.errand.rest.dto.CategoryStatus
 import com.daangn.errand.rest.dto.GetUserAlarmResDto
 import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
 import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
@@ -21,20 +22,31 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class UserService(
-    val userRepository: UserRepository,
-    val userConverter: UserConverter,
-    val categoryRepository: CategoryRepository,
-    val helperHasCategoriesRepository: HelperHasCategoriesRepository,
-    val daangnUtil: DaangnUtil,
-    val redisUtil: RedisUtil
+    private val userRepository: UserRepository,
+    private val userConverter: UserConverter,
+    private val categoryRepository: CategoryRepository,
+    private val helperHasCategoriesRepository: HelperHasCategoriesRepository,
+    private val daangnUtil: DaangnUtil,
+    private val redisUtil: RedisUtil,
+    private val mixpanelEventPublisher: MixpanelEventPublisher,
 ) {
     fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
-        val user = userRepository.findByDaangnId(daangnId) ?: userRepository.save(User(daangnId))
+        var isSignUp = false
+        val user: User = userRepository.findByDaangnId(daangnId) ?: run {
+            isSignUp = true
+            userRepository.save(User(daangnId))
+        }
         val mannerTemp: Float = daangnUtil.getMannerTemp(accessToken).mannerPoint + 36.5f
         user.mannerTemp = mannerTemp
+
+        mixpanelEventPublisher.publishErrandSignInEvent(
+            user.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE),
+            isSignUp
+        )
         return userConverter.toUserVo(user)
     }
+
 
     fun saveLastRegionId(daangnId: String, regionId: String) {
         redisUtil.createOrUpdateUserRegion(daangnId, regionId)

@@ -13,7 +13,7 @@ class MixpanelService(
     val mixpanelConfig: MixpanelConfig
 ) {
     @Throws(IOException::class)
-    fun trackEvent(event: MixpanelTrackEvent, entities: HashMap<String, String>) {
+    fun trackEvent(event: MixpanelTrackEvent, entities: HashMap<String, Any>) {
         val messageBuilder = MessageBuilder(mixpanelConfig.token)
 
         val props = JSONObject()
@@ -33,5 +33,7 @@ class MixpanelService(
 
 enum class MixpanelTrackEvent {
     ERRAND_REGISTERED,
-    HELP_REGISTERED
+    HELP_REGISTERED,
+    ERRAND_COMPLETED,
+    USER_SIGN_IN,
 }

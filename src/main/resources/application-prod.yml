@@ -3,6 +3,10 @@ daangn:
   open-api.url: https://openapi.kr.karrotmarket.com
 spring.datasource.url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: errandmysql4_
   redis:
     port: 6379
     host: errand-prod-001.wbblt4.0001.apn2.cache.amazonaws.com
