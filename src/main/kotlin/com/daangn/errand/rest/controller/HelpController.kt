@@ -1,8 +1,12 @@
 package com.daangn.errand.rest.controller
 
+import com.daangn.errand.domain.help.HelpVo
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.HelpService
+import com.daangn.errand.service.MixpanelService
+import com.daangn.errand.service.MixpanelTrackEvent
+import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import org.springframework.http.HttpStatus
@@ -11,13 +15,17 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/help")
 class HelpController(
-    val helpService: HelpService
+    val helpService: HelpService,
+    val mixpanelEventPublisher: MixpanelEventPublisher
 ) {
     @PostMapping
     fun postHelp(
         @TokenPayload payload: JwtPayload,
         @RequestBody postHelpReqDto: PostHelpReqDto
-    ) = ErrandResponse(helpService.createHelp(payload.userId, postHelpReqDto))
+    ): ErrandResponse<HelpVo> {
+        val helpVo = helpService.createHelp(payload.userId, postHelpReqDto)
+        return ErrandResponse(helpVo)
+    }
 
     @DeleteMapping("/{id}")
     fun deleteHelp(

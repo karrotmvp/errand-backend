@@ -3,7 +3,7 @@ package com.daangn.errand.support.event
 import com.daangn.errand.rest.dto.daangn.ActionType
 
 
-class ErrandRegisteredEvent(
+class ErrandRegisteredChatEvent(
     override var targetUserIds: List<String>,
     override val linkUrl: String
 ) : DaangnChatReqRegisteredEvent {

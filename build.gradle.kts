@@ -76,6 +76,8 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis:2.5.5")
     implementation("io.sentry:sentry-spring-boot-starter:5.2.4")
+    implementation("com.mixpanel:mixpanel-java:1.5.0")
+    annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 tasks.withType<KotlinCompile> {
