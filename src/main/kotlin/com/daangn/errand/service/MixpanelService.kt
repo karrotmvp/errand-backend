@@ -33,5 +33,6 @@ class MixpanelService(
 
 enum class MixpanelTrackEvent {
     ERRAND_REGISTERED,
-    HELP_REGISTERED
+    HELP_REGISTERED,
+    ERRAND_COMPLETED,
 }

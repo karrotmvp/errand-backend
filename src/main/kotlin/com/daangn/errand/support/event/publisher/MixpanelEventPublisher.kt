@@ -57,4 +57,30 @@ class MixpanelEventPublisher(
 
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.HELP_REGISTERED, entities))
     }
+
+    @Async
+    @Transactional(readOnly = true)
+    fun publishErrandCompletedEvent(errandId: Long) {
+        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
+        val entities = HashMap<String, String>()
+
+        entities["errand_id"] = errand.id.toString()
+        entities["errand_category"] = errand.category.name
+        entities["customer_id"] = errand.customer.id.toString()
+
+        val customerInfo = daangnUtil.getUserInfo(errand.customer.daangnId).data.user
+        val helperInfo = daangnUtil.getUserInfo(
+            errand.chosenHelper?.daangnId ?: throw ErrandException(
+                ErrandError.ENTITY_NOT_FOUND,
+                "chosen helper 없음"
+            )
+        ).data.user
+        entities["customer_nickname"] = customerInfo.nickname ?: "닉네임 미등록"
+        entities["helper_nickname"] = helperInfo.nickname ?: "닉네임 미등록"
+        entities["customer_created_at"] = errand.customer.createdAt.toString()
+        entities["helper_created_at"] = errand.chosenHelper?.createdAt.toString()
+
+        eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_COMPLETED, entities))
+    }
 }

@@ -250,6 +250,7 @@ class ErrandService(
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         errand.complete = true
+        mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
     }
 
     fun readHelperDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
