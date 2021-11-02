@@ -205,7 +205,7 @@ class ErrandService(
                 errandRepository.findErrandsEnableToApplyAfterLastErrand(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        return errands.asSequence().map { errand ->
+        return errands.asSequence().map { errand -> // TODO: 리팩토링.. 드러버
             val errandPreview = errandConverter.toErrandPreview(errand)
             errandPreview.helpCount = helpRepository.countByErrand(errand)
             errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
