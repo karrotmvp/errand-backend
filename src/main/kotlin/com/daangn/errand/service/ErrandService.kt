@@ -78,7 +78,7 @@ class ErrandService(
         val list = getUserDaangnIdListInCategory(errand)
         val linkUrl = "$baseUrl/errands/$errandId"
         eventPublisher.publishEvent(ErrandRegisteredChatEvent(list, linkUrl)) // TODO: 비동기로 바꾸기
-        mixpanelEventPublisher.publishErrandRegisteredEvent(errand)
+        mixpanelEventPublisher.publishErrandRegisteredEvent(errand.id!!)
         return res
     }
 
@@ -141,7 +141,7 @@ class ErrandService(
 
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
         val errand = errandRepository.findById(errandId)
-            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾d을 수 없습니다.") }
+            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾을 수 없습니다.") }
         if (errand.chosenHelper != null) throw ErrandException(ErrandError.BAD_REQUEST, "이미 지정된 헬퍼가 있습니다.")
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }

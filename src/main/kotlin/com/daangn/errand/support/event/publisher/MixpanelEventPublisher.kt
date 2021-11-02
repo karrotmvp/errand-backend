@@ -1,8 +1,7 @@
 package com.daangn.errand.support.event.publisher
 
-import com.daangn.errand.domain.errand.Errand
-import com.daangn.errand.domain.help.Help
-import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.repository.ErrandRepository
+import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.service.MixpanelTrackEvent
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.MixpanelEvent
@@ -11,26 +10,29 @@ import com.daangn.errand.util.DaangnUtil
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class MixpanelEventPublisher(
     private val eventPublisher: ApplicationEventPublisher,
     private val daangnUtil: DaangnUtil,
     private val helpRepository: HelpRepository,
+    private val errandRepository: ErrandRepository
 ) {
     @Async
-    fun publishErrandRegisteredEvent(errand: Errand) {
-        val userInfo = daangnUtil.getUserInfo(errand.customer.daangnId).data.user
-        val customer = userRepository.findById(errand.customer.id!!)
-            .orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+    @Transactional(readOnly = true)
+    fun publishErrandRegisteredEvent(errandId: Long) {
+        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
         val entities: HashMap<String, String> = HashMap()
-        entities["심부름 ID (errand id)"] = errand.id.toString()
-        entities["심부름 카테고리"] = errand.category.name
+        entities["errand_id"] = errand.id.toString()
+        entities["errand_category"] = errand.category.name
 
-        entities["심부름 요청 유저의 당근 ID"] = userInfo.id
-        entities["심부름 요청 유저의 당근 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
+        val userInfo = daangnUtil.getUserInfo(errand.customer.daangnId).data.user
+        entities["customer_daangn_id"] = userInfo.id
+        entities["customer_daangn_nickname"] = userInfo.nickname ?: "닉네임 미등록"
 
-        entities["이 유저의 심부름 등록 횟수"] = errand.customer.errandReqList.size.toString()
+        entities["customer_errandReqList_size"] = errand.customer.errandReqList.size.toString()
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities))
     }
 
