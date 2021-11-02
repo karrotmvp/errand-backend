@@ -11,8 +11,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
-import org.springframework.web.util.WebUtils
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 
 @Component
@@ -30,13 +28,11 @@ class TokenPayloadArgumentResolver(
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): JwtPayload? {
-        val servletRequest: HttpServletRequest = webRequest.getNativeRequest(HttpServletRequest::class.java)!!
-        val cookieValue: Cookie =
-            WebUtils.getCookie(servletRequest, "token") ?: throw ErrandException(
+        val token = webRequest.getHeader("Authorization") ?: throw ErrandException(
                 ErrandError.BAD_REQUEST,
-                "쿠키에 토큰이 없습니다"
+                "Authorization 헤더가 없습니다."
             )
-        val jwt = cookieValue.value
+        val jwt = token.substring(7)
         return jwtUtil.decodeToken(jwt)
     }
 }

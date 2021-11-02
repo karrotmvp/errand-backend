@@ -5,17 +5,14 @@ import com.daangn.errand.rest.dto.auth.LoginResDto
 import com.daangn.errand.service.AuthService
 import com.daangn.errand.service.UserService
 import com.daangn.errand.support.response.ErrandResponse
-import com.daangn.errand.util.ICookieUtil
 import com.daangn.errand.util.JwtPayload
 import com.daangn.errand.util.JwtUtil
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -26,7 +23,7 @@ class AuthController(
     private val userService: UserService,
     private val jwtUtil: JwtUtil
 ) {
-    @GetMapping("")
+    @PostMapping("")
     @ApiOperation(value = "로그인 api")
     fun login(
         @RequestParam(value = "authCode") authCode: String,
