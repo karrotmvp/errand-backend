@@ -1,6 +1,8 @@
 package com.daangn.errand.rest.dto.errand
 
-data class PostErrandReqDto (
+import org.springframework.web.multipart.MultipartFile
+
+data class PostErrandReqDto(
     val categoryId: Long,
     val title: String,
     val detail: String,
@@ -8,5 +10,5 @@ data class PostErrandReqDto (
     val detailAddress: String,
     val phoneNumber: String,
     val regionId: String,
-    val imageUrls: List<String>
-        )
+    val images: List<MultipartFile>
+)

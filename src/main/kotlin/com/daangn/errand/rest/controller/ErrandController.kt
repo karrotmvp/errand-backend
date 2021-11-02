@@ -31,7 +31,7 @@ class ErrandController(
     @ApiOperation(value = "심부름을 등록하는 API")
     fun postErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @RequestBody postErrandReqDto: PostErrandReqDto
+        @ModelAttribute postErrandReqDto: PostErrandReqDto
     ): ErrandResponse<PostErrandResDto>  {
         return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
     }

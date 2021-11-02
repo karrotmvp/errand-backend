@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartException
 
 @RestControllerAdvice
@@ -29,9 +30,10 @@ class GlobalExceptionHandler {
     fun multipartException(e: MultipartException): ResponseEntity<ErrandResponse<Unit>> {
         Sentry.captureException(e)
         logger.error { "MultipartException : ${e.stackTrace}" }
+        val msg: String = if (e is MaxUploadSizeExceededException) "이미지 사이즈가 너무 커요." else "이미지가 입력되지 않았습니다."
         return ResponseEntity
             .status(400)
-            .body(ErrandResponse(HttpStatus.BAD_REQUEST, "이미지가 입력되지 않았습니다."))
+            .body(ErrandResponse(HttpStatus.BAD_REQUEST, msg))
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)

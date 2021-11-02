@@ -23,6 +23,7 @@ import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
 import com.daangn.errand.util.RedisUtil
+import com.daangn.errand.util.S3Uploader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -44,6 +45,7 @@ class ErrandService(
     private val errandConverter: ErrandConverter,
     private val regionConverter: RegionConverter,
     private val userConverter: UserConverter,
+    private val s3Uploader: S3Uploader,
 
     private val eventPublisher: ApplicationEventPublisher,
     private val eventScheduler: EventScheduler,
@@ -52,14 +54,14 @@ class ErrandService(
     private val daangnUtil: DaangnUtil,
     private val redisUtil: RedisUtil,
 
-) {
+    ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
-        if (postErrandReqDto.imageUrls.size > 5) throw ErrandException(ErrandError.BAD_REQUEST, "사진은 최대 5장 첨부 가능합니다.")
+        if (postErrandReqDto.images.size > 5) throw ErrandException(ErrandError.BAD_REQUEST, "사진은 최대 5장 첨부 가능합니다.")
         val errand = errandRepository.save(
             Errand(
                 category = category,
@@ -72,9 +74,14 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
-        postErrandReqDto.imageUrls.forEach { imageUrl -> imageRepository.save(Image(imageUrl, errand)) }
+        postErrandReqDto.images.forEach { image ->
+            val fileName = "${errand.id}-${user.id}-${LocalDateTime.now()}"
+            val imageUrl = s3Uploader.upload(image, fileName, "errand/img")
+            imageRepository.save(Image(imageUrl, errand))
+        }
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
         val res = PostErrandResDto(errandId)
+
         val list = getUserDaangnIdListInCategory(errand)
         val linkUrl = "$baseUrl/errands/$errandId"
         eventPublisher.publishEvent(ErrandRegisteredChatEvent(list, linkUrl)) // TODO: 비동기로 바꾸기
@@ -150,7 +157,12 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
 
-        eventPublisher.publishEvent(MatchingRegisteredChatEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"))
+        eventPublisher.publishEvent(
+            MatchingRegisteredChatEvent(
+                listOf(helper.daangnId),
+                "$baseUrl/errands/${errand.id}"
+            )
+        )
         eventScheduler.addElement(
             MatchingAfterChatEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
             LocalDateTime.now().plusHours(24)
