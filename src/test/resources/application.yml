@@ -41,8 +41,9 @@ test: true
 token.secret: Dj@bWv5w-$m#kjNWe?y#
 host.url: http://dev.daangn-errand.com
 sentry:
-  dsn: https://4cef7bbae56446619e0f58a765d4428a@o1045456.ingest.sentry.io/6020835
+  dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   traces-sample-rate: 1.0
+  environment: test
 application:
   mixpanel:
     token: a26050d2615ddc400fdfc0d88cd3d3f3
