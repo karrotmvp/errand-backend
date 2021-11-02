@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
-@Profile("prod")
-@Component
 class CookieUtil: ICookieUtil {
     override fun setCookie(token: String, res: HttpServletResponse) {
         val tokenCookie = Cookie("token", token)
@@ -19,8 +17,7 @@ class CookieUtil: ICookieUtil {
     }
 }
 
-@Profile("!prod")
-@Component
+
 class DevCookieUtil: ICookieUtil {
     override fun setCookie(token: String, res: HttpServletResponse) {
         val tokenCookie = ResponseCookie.from("token", token)
