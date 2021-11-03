@@ -18,6 +18,7 @@ import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandRegisteredChatEvent
 import com.daangn.errand.support.event.MatchingAfterChatEvent
 import com.daangn.errand.support.event.MatchingRegisteredChatEvent
+import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
@@ -34,9 +35,6 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 class ErrandService(
-    @Value("\${host.url}")
-    private val baseUrl: String,
-
     private val userRepository: UserRepository,
     private val errandRepository: ErrandRepository,
     private val categoryRepository: CategoryRepository,
@@ -48,13 +46,9 @@ class ErrandService(
     private val userConverter: UserConverter,
     private val s3Uploader: S3Uploader,
 
-    private val eventPublisher: ApplicationEventPublisher,
-    private val eventScheduler: EventScheduler,
-    private val mixpanelEventPublisher: MixpanelEventPublisher,
-
     private val daangnUtil: DaangnUtil,
-    private val redisUtil: RedisUtil,
-
+    private val daangnChatEventPublisher: DaangnChatEventPublisher,
+    private val mixpanelEventPublisher: MixpanelEventPublisher,
     ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -80,31 +74,11 @@ class ErrandService(
             imageRepository.save(Image(imageUrl, errand))
         }
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
-        val res = PostErrandResDto(errandId)
 
-        val list = getUserDaangnIdListInCategory(errand)
-        val linkUrl = "$baseUrl/errands/$errandId"
-        eventPublisher.publishEvent(ErrandRegisteredChatEvent(list, linkUrl)) // TODO: 비동기로 바꾸기
-        mixpanelEventPublisher.publishErrandRegisteredEvent(errand.id!!)
-        return res
-    }
+        daangnChatEventPublisher.publishErrandRegisteredEvent(errandId)
+        mixpanelEventPublisher.publishErrandRegisteredEvent(errandId)
 
-    fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
-        val category = errand.category
-        val neighborUsers: MutableSet<String> = HashSet()
-        val neighborIdList =
-            daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map { region ->
-                region.id
-            }
-        val iterator = neighborIdList.iterator()
-        while (iterator.hasNext()) {
-            neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
-        }
-        val users = userRepository.findByDaangnIdListAndHasCategory(neighborUsers, category)
-
-        return users.asSequence().map { user ->
-            user.daangnId
-        }.toList()
+        return PostErrandResDto(errandId)
     }
 
     fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto { // TODO: 리팩토링
@@ -157,16 +131,8 @@ class ErrandService(
         val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.chosenHelper = helper
 
-        eventPublisher.publishEvent(
-            MatchingRegisteredChatEvent(
-                listOf(helper.daangnId),
-                "$baseUrl/errands/${errand.id}"
-            )
-        )
-        eventScheduler.addElement(
-            MatchingAfterChatEvent(listOf(helper.daangnId), "$baseUrl/errands/${errand.id}"),
-            LocalDateTime.now().plusHours(24)
-        )
+        daangnChatEventPublisher.publishMatchingRegisteredEvent(helper.daangnId, errandId)
+        daangnChatEventPublisher.publishMatchingAfterChatEvent(helper.daangnId, errandId)
     }
 
     fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
