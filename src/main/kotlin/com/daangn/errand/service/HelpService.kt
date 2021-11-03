@@ -9,6 +9,7 @@ import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.HelpRegisteredChatEvent
+import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
 import org.springframework.beans.factory.annotation.Value
@@ -23,9 +24,8 @@ class HelpService(
     private val helpRepository: HelpRepository,
     private val errandRepository: ErrandRepository,
     private val helpConverter: HelpConverter,
-    private val eventPublisher: ApplicationEventPublisher,
+    private val daangnChatEventPublisher: DaangnChatEventPublisher,
     private val mixpanelEventPublisher: MixpanelEventPublisher,
-    @Value("\${host.url}") val baseUrl: String
 ) {
     fun createHelp(userId: Long, postHelpReqDto: PostHelpReqDto): HelpVo {
         val user = userRepository.findById(userId)
@@ -50,13 +50,10 @@ class HelpService(
                 postHelpReqDto.regionId
             )
         )
-        eventPublisher.publishEvent(
-            HelpRegisteredChatEvent(
-                listOf(errand.customer.daangnId),
-                "$baseUrl/appliers/${errand.id}"
-            )
-        )
+
+        daangnChatEventPublisher.publishHelpRegisteredEvent(errand.id!!)
         mixpanelEventPublisher.publishHelpRegisteredEvent(help.id!!)
+
         return helpConverter.toHelpVo(help)
     }
 

@@ -7,9 +7,6 @@ import com.daangn.errand.rest.dto.help.HelpCountResDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
-import com.daangn.errand.service.MixpanelService
-import com.daangn.errand.service.MixpanelTrackEvent
-import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
@@ -17,8 +14,6 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
-import javax.servlet.http.HttpServletRequest
-import javax.websocket.server.PathParam
 
 @RestController
 @Api(tags = ["심부름 관련 API"])
@@ -32,7 +27,7 @@ class ErrandController(
     fun postErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ModelAttribute postErrandReqDto: PostErrandReqDto
-    ): ErrandResponse<PostErrandResDto>  {
+    ): ErrandResponse<PostErrandResDto> {
         return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
     }
 
