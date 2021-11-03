@@ -9,5 +9,5 @@ data class PostErrandReqDto(
     val detailAddress: String,
     val phoneNumber: String,
     val regionId: String,
-    val images: List<MultipartFile>
+    val images: List<MultipartFile>?
 )
