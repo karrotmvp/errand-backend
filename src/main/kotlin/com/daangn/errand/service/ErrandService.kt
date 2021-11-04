@@ -15,19 +15,12 @@ import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.event.ErrandRegisteredChatEvent
-import com.daangn.errand.support.event.MatchingAfterChatEvent
-import com.daangn.errand.support.event.MatchingRegisteredChatEvent
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
-import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
-import com.daangn.errand.util.RedisUtil
 import com.daangn.errand.util.S3Uploader
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -49,14 +42,17 @@ class ErrandService(
     private val daangnUtil: DaangnUtil,
     private val daangnChatEventPublisher: DaangnChatEventPublisher,
     private val mixpanelEventPublisher: MixpanelEventPublisher,
-    ) {
+) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
-        if (postErrandReqDto.images.size > 5) throw ErrandException(ErrandError.BAD_REQUEST, "사진은 최대 5장 첨부 가능합니다.")
+        if (!postErrandReqDto.images.isNullOrEmpty() && postErrandReqDto.images.size > 5) throw ErrandException(
+            ErrandError.BAD_REQUEST,
+            "사진은 최대 5장까지만 첨부 가능합니다."
+        )
         val errand = errandRepository.save(
             Errand(
                 category = category,
@@ -68,7 +64,7 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
-        postErrandReqDto.images.forEach { image ->
+        postErrandReqDto.images?.forEach { image ->
             val fileName = "${errand.id}-${user.id}-${LocalDateTime.now()}"
             val imageUrl = s3Uploader.upload(image, fileName, "errand/img")
             imageRepository.save(Image(imageUrl, errand))
