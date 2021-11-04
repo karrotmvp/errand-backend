@@ -1,6 +1,7 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.errand.ErrandPreview
+import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.support.response.ErrandResponse
@@ -21,7 +22,7 @@ class MainController(
         @RequestParam(value = "lastId") lastId: Long?,
         @RequestParam(value = "size") size: Long,
         @RequestParam(value = "regionId") regionId: String
-    ): ErrandResponse<List<ErrandPreview>> {
+    ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
         return ErrandResponse(errandService.readMain(payload.userId, lastId, size, regionId))
     }
 
@@ -31,7 +32,7 @@ class MainController(
         @RequestParam(value = "lastId") lastId: Long?,
         @RequestParam(value = "size") size: Long,
         @RequestParam(value = "regionId") regionId: String
-    ): ErrandResponse<List<ErrandPreview>> {
+    ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
         return ErrandResponse(errandService.readMainOnlyAppliable(payload.userId, lastId, size, regionId))
     }
 }

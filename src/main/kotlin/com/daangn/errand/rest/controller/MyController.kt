@@ -1,6 +1,7 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.errand.ErrandPreview
+import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.support.response.ErrandResponse
@@ -20,7 +21,7 @@ class MyController(
         @TokenPayload payload: JwtPayload,
         @RequestParam(value = "lastId") lastId: Long?,
         @RequestParam(value = "size") size: Long
-    ): ErrandResponse<List<ErrandPreview>> {
+    ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
         return ErrandResponse(errandService.readMyErrands(payload.userId, lastId, size))
     }
 

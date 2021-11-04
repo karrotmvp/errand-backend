@@ -1,10 +1,8 @@
 package com.daangn.errand.service
 
-import com.daangn.errand.domain.errand.Errand
-import com.daangn.errand.domain.errand.ErrandConverter
-import com.daangn.errand.domain.errand.ErrandPreview
-import com.daangn.errand.domain.errand.Status
+import com.daangn.errand.domain.errand.*
 import com.daangn.errand.domain.image.Image
+import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.*
@@ -77,18 +75,30 @@ class ErrandService(
         return PostErrandResDto(errandId)
     }
 
-    fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto { // TODO: 리팩토링
+    fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto<ErrandDto> {
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         val user =
             userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val errandDto = makeErrandToErrandDto(errand)
+        return getErrandDetailByUserRole(errand, user, errandDto)
+    }
 
+    private fun makeErrandToErrandDto(errand: Errand): ErrandDto {
+        val errandDto = errandConverter.toErrandDto(errand)
+        errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
+        errandDto.helpCount = helpRepository.countByErrand(errand)
+        return errandDto
+    }
+
+    private fun getErrandDetailByUserRole(
+        errand: Errand,
+        user: User,
+        errandDto: ErrandDto
+    ): GetErrandResDto<ErrandDto> {
         val isMine = errand.customer == user
         val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
         val wasIChosen = errand.chosenHelper == user
 
-        val errandDto = errandConverter.toErrandDto(errand)
-        errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
-        errandDto.helpCount = helpRepository.countByErrand(errand)
         errandDto.setStatus(errand, didIApply && !wasIChosen)
         if (!isMine && !wasIChosen) {
             errandDto.customerPhoneNumber = null
@@ -135,7 +145,7 @@ class ErrandService(
         daangnChatEventPublisher.publishMatchingAfterChatEvent(helper.daangnId, errandId)
     }
 
-    fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
+    fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<GetErrandResDto<ErrandPreview>> {
         val neighbors = daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions
         val neighborIds = Region.convertRegionListToRegionIdList(neighbors)
         val errands =
@@ -147,19 +157,41 @@ class ErrandService(
                 errandRepository.findErrandsAfterLastErrandOrderByCreatedAtDesc(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        return makeErrandPreviewByUserRole(errands, user)
+    }
+
+    private fun makeErrandPreviewByUserRole(
+        errands: MutableList<Errand>,
+        user: User
+    ): List<GetErrandResDto<ErrandPreview>> {
         return errands.asSequence().map { errand ->
-            val errandPreview = errandConverter.toErrandPreview(errand)
-            errandPreview.helpCount = helpRepository.countByErrand(errand)
-            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-            val didUserApplyButWasChosen =
-                (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
-            errandPreview.setStatus(errand, didUserApplyButWasChosen)
-            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
-            errandPreview
+            val isMine = errand.customer == user
+            val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
+            val wasIChosen = errand.chosenHelper == user
+            GetErrandResDto(makeErrandToErrandPreview(errand, user), isMine, didIApply, wasIChosen)
         }.toList()
     }
 
-    fun readMainOnlyAppliable(userId: Long, lastId: Long?, size: Long, regionId: String): List<ErrandPreview> {
+    private fun makeErrandToErrandPreview(
+        errand: Errand,
+        user: User
+    ): ErrandPreview {
+        val errandPreview = errandConverter.toErrandPreview(errand)
+        errandPreview.helpCount = helpRepository.countByErrand(errand)
+        errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
+        val didUserApplyButWasChosen =
+            (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
+        errandPreview.setStatus(errand, didUserApplyButWasChosen)
+        errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+        return errandPreview
+    }
+
+    fun readMainOnlyAppliable(
+        userId: Long,
+        lastId: Long?,
+        size: Long,
+        regionId: String
+    ): List<GetErrandResDto<ErrandPreview>> {
         val neighborIds =
             Region.convertRegionListToRegionIdList(daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions)
         val errands =
@@ -171,19 +203,10 @@ class ErrandService(
                 errandRepository.findErrandsEnableToApplyAfterLastErrand(lastErrand, size, neighborIds)
             }
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        return errands.asSequence().map { errand -> // TODO: 리팩토링.. 드러버
-            val errandPreview = errandConverter.toErrandPreview(errand)
-            errandPreview.helpCount = helpRepository.countByErrand(errand)
-            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-            val didUserApplyButWasChosen =
-                (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
-            errandPreview.setStatus(errand, didUserApplyButWasChosen)
-            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
-            errandPreview
-        }.filter { e -> e.status != Status.FAIL.name }.toList()
+        return makeErrandPreviewByUserRole(errands, user).filter { e -> e.errand.status != Status.FAIL.name }
     }
 
-    fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+    fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errands = if (lastId == null) {
             errandRepository.findByCustomerOrderByCreateAtDesc(user, size)
@@ -192,17 +215,10 @@ class ErrandService(
                 .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
             errandRepository.findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(lastErrand, user, size)
         }
-        return errands.asSequence().map { errand ->
-            val errandPreview = errandConverter.toErrandPreview(errand)
-            errandPreview.helpCount = helpRepository.countByErrand(errand)
-            errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-            errandPreview.setStatus(errand, false)
-            errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
-            errandPreview
-        }.toList()
+        return makeErrandPreviewByUserRole(errands, user)
     }
 
-    fun readMyHelps(userId: Long, lastId: Long?, size: Long): List<ErrandPreview> {
+    fun readMyHelps(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val helps = if (lastId == null) {
             helpRepository.findByHelperTopSize(user, size)
@@ -213,14 +229,8 @@ class ErrandService(
                 ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
             helpRepository.findByHelper(user, lastHelp, size)
         }
-        return helps.asSequence().map { help ->
-            println(help.errand)
-            val errandProfile = errandConverter.toErrandPreview(help.errand)
-
-            errandProfile.setStatus(help.errand, help.errand.chosenHelper != user)
-            errandProfile.regionName = daangnUtil.getRegionInfoByRegionId(help.errand.regionId).region.name
-            errandProfile
-        }.toList()
+        val errands = helps.asSequence().map { help -> help.errand }.toMutableList()
+        return makeErrandPreviewByUserRole(errands, user)
     }
 
     fun confirmErrand(userId: Long, errandId: Long) {
