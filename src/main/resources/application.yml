@@ -11,7 +11,13 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
-
+  devtools.livereload.enabled: true
+  mvc.static-path-pattern: /static/**
+  thymeleaf:
+    prefix: classpath:templates/
+    suffix: .html
+    check-template-location: true
+    cache: false
 server:
   port: 5000
 url:

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="/static/errand-fav.ico">
+    <title>Errand Admin</title>
+    <style>
+        .tableTitle{ font-size: larger; }
+        th, td { padding: 10px; }
+        @font-face {
+            font-family: 'KOTRAHOPE';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2110@1.0/KOTRAHOPE.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-size: larger;
+        }
+        * {
+            font-family: 'KOTRAHOPE';
+        }
+        .idNumberTd {
+            text-align: center;
+        }
+        a{
+             color: black;
+             text-decoration: none;
+         }
+        a:hover{
+            color: darkorange; text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center">심부름 목록 🧚🏻‍♀️</h1>
+<div id="errandList">
+    <table>
+        <thead>
+        <tr>
+            <th class="tableTitle">심부름 id</th>
+            <th class="tableTitle">심부름 디테일</th>
+            <th class="tableTitle">심부름 유저 id</th>
+            <th class="tableTitle">생성 시간</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="errand : ${errandList}">
+            <td class = "idNumberTd" th:text="${errand.id}"></td>
+            <td ><a th:text="${errand.detail}" th:href="@{/admin/errand/{errandId}(errandId = ${errand.id})}"></a></td>
+            <td class = "idNumberTd" th:text="${errand.customer.id}"></td>
+            <td th:text="${errand.createdAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

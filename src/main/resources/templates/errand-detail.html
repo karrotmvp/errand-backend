@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="/static/errand-fav.ico">
+    <title>Errand Admin</title>
+    <style>
+        .tableTitle{ font-size: larger; }
+        th, td { padding: 15px; }
+        #ifUnexposedOrNot {
+            font-weight: bold;
+        }
+        @font-face {
+            font-family: 'KOTRAHOPE';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2110@1.0/KOTRAHOPE.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        * {
+            font-family: 'KOTRAHOPE';
+        }
+        .idNumberTd {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<button id="backButton" type="button">< back</button>
+<h1>심부름 상세보기</h1>
+<table class="errand_detail">
+    <tr>
+        <th class="tableTitle">심부름 ID</th>
+        <th class="tableTitle">고객 ID</th>
+        <th class="tableTitle">심부름 상세정보</th>
+        <th class="tableTitle">심부름 상세주소</th>
+        <th class="tableTitle">생성 시간</th>
+        <th class="tableTitle">미노출 여부</th>
+    </tr>
+    <tr>
+        <td class = "idNumberTd" th:utext="${errand.id}"></td>
+        <td class = "idNumberTd" th:utext="${errand.customer.id}"></td>
+        <td th:utext="${errand.detail}"></td>
+        <td th:utext="${errand.detailAddress}"></td>
+        <td th:utext="${errand.createdAt}"></td>
+        <td id = "ifUnexposedOrNot" th:utext="${unexposed}"></td>
+    </tr>
+</table>
+<div th:each="image: ${errand.images}">
+    <img th:src="${image.url}" width="200px"/>
+</div>
+<button id="makeUnexposed" type="button">미노출시키기</button>
+<button id="makeExposed" type="button">노출 시키기</button>
+<script>
+    const urlPath = document.location.pathname.split("/")
+    const errandId = urlPath[urlPath.length - 1]
+    const unexposedButton = document.getElementById("makeUnexposed")
+    const ifUnExposedOrNotField = document.getElementById("ifUnexposedOrNot")
+    unexposedButton.addEventListener('click', async () => {
+        const res = await fetch(`http://localhost:5000/admin/errand/${errandId}/unexposed`)
+        ifUnExposedOrNotField.innerHTML = await res.text()
+    })
+    const exposedButton = document.getElementById("makeExposed")
+    exposedButton.addEventListener('click', async () => {
+        const res = await fetch(`http://localhost:5000/admin/errand/${errandId}/exposed`)
+        ifUnExposedOrNotField.innerHTML = await res.text()
+    })
+
+    const backButton = document.getElementById("backButton")
+    backButton.addEventListener('click', () => {
+        location.href = "http://localhost:5000/admin"
+    })
+</script>
+</body>
+</html>

@@ -78,6 +78,13 @@ dependencies {
     implementation("io.sentry:sentry-spring-boot-starter:5.2.4")
     implementation("com.mixpanel:mixpanel-java:1.5.0")
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor")
+
+    // admin static pages
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-devtools")
+
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
+
 }
 
 tasks.withType<KotlinCompile> {
