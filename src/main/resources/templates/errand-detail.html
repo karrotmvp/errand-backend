@@ -51,23 +51,24 @@
 <button id="makeUnexposed" type="button">미노출시키기</button>
 <button id="makeExposed" type="button">노출 시키기</button>
 <script>
+    const origin = document.location.origin
     const urlPath = document.location.pathname.split("/")
     const errandId = urlPath[urlPath.length - 1]
     const unexposedButton = document.getElementById("makeUnexposed")
     const ifUnExposedOrNotField = document.getElementById("ifUnexposedOrNot")
     unexposedButton.addEventListener('click', async () => {
-        const res = await fetch(`http://localhost:5000/admin/errand/${errandId}/unexposed`)
+        const res = await fetch(`${origin}/admin/errand/${errandId}/unexposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
     })
     const exposedButton = document.getElementById("makeExposed")
     exposedButton.addEventListener('click', async () => {
-        const res = await fetch(`http://localhost:5000/admin/errand/${errandId}/exposed`)
+        const res = await fetch(`${origin}/admin/errand/${errandId}/exposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
     })
 
     const backButton = document.getElementById("backButton")
     backButton.addEventListener('click', () => {
-        location.href = "http://localhost:5000/admin"
+        location.href = `${origin}/admin`
     })
 </script>
 </body>
