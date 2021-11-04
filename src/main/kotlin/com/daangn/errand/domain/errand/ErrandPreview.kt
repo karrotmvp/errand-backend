@@ -12,26 +12,13 @@ data class ErrandPreview(
     val reward: String,
     var thumbnailUrl: String?,
     val chosenHelper: UserVo?,
-    var status: String?,
+    override var status: String?,
     val category: CategoryVo,
     var helpCount: Long,
     var regionName: String?,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-) {
-    fun setStatus(errand: Errand, didUserApplyButWasNotChosen: Boolean) {
-        val statusEnum = if (errand.complete) {
-            Status.COMPLETE
-        } else if (didUserApplyButWasNotChosen) {
-            Status.FAIL
-        } else if (errand.chosenHelper != null){
-            Status.PROCEED
-        } else {
-            Status.WAIT
-        }
-        this.status = statusEnum.name
-    }
-}
+): ErrandHasStatus
 
 enum class Status {
     WAIT,

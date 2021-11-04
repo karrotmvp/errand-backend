@@ -81,11 +81,15 @@ class ErrandService(
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         val user =
             userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
         val isMine = errand.customer == user
         val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
-        val wasIChosen = didIApply && errand.chosenHelper == user
+        val wasIChosen = errand.chosenHelper == user
+
         val errandDto = errandConverter.toErrandDto(errand)
         errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
+        errandDto.helpCount = helpRepository.countByErrand(errand)
+        errandDto.setStatus(errand, didIApply && !wasIChosen)
         if (!isMine && !wasIChosen) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null

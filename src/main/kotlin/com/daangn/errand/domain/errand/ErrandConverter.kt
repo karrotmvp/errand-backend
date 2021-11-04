@@ -12,7 +12,8 @@ import org.mapstruct.Mappings
 interface ErrandConverter {
     @Mappings(
         Mapping(target = "region", ignore = true),
-        Mapping(target = "isCompleted", source = "complete")
+        Mapping(target = "isCompleted", source = "complete"),
+        Mapping(target = "helpCount", ignore = true),
     )
     fun toErrandDto(errand: Errand): ErrandDto
 
