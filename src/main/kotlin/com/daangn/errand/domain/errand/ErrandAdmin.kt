@@ -18,7 +18,7 @@ class ErrandAdmin(
     val updatedAt: LocalDateTime,
     val images: List<ImageVo>,
     val viewCnt: Long,
-    val completed: Boolean,
+    val complete: Boolean,
     val deleted: Boolean,
     val unexposed: Boolean,
     val chosenHelper: UserProfileVo?

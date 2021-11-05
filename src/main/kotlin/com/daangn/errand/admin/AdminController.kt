@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
 @RequestMapping("/admin")
-class AdminController(
+class  AdminController(
     private val errandRepository: ErrandRepository,
     private val errandConverter: ErrandConverter,
     private val adminService: AdminService,
 ) {
     @GetMapping("")
     fun getErrandList(model: Model): String {
-        val errands = errandRepository.findAll().map { errand -> errandConverter.toErrandDto(errand) }
+        val errands = adminService.getErrandAdminList()
         model.addAttribute("errandList", errands)
         return "errand-list"
     }

@@ -35,6 +35,16 @@ class AdminService(
         errand.unexposed = false
     }
 
+    fun getErrandAdminList(): List<ErrandAdmin> {
+        return errandRepository.findAll().asSequence().map { errand ->
+            val errandAdmin = errandConverter.toErrandAdmin(errand)
+            val region = daangnUtil.getRegionInfoByRegionId(errand.regionId).region
+            errandAdmin.region = regionConverter.toRegionVo(region)
+            errandAdmin.helpCount = helpRepository.countByErrand(errand)
+            errandAdmin
+        }.toList()
+    }
+
     fun getErrandAdminDetail(errandId: Long): ErrandAdmin {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND, "아이디로 엔티티 조회 실패") }
