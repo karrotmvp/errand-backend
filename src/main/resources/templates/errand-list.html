@@ -7,6 +7,13 @@
     <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/list.css"/>
     <style>
+        @font-face {
+            font-family: 'Cafe24Ssurround';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         * {
             line-height: 150%;
         }
@@ -14,10 +21,6 @@
         th, td {
             padding: 10px;
             line-height: 150%;
-        }
-
-        .tableTitle {
-            font-size: larger;
         }
 
         .idNumberTd {
@@ -46,49 +49,64 @@
             color: darkgray;
         }
 
-        #errandList {
+        .sideBar {
+            float: left; width: 15%;
+            box-sizing: border-box;
+            padding-left: 10px;
+            padding-top: 20px;
 
+        }
+        #admin {
+            font-family: 'Cafe24Ssurround';
+            font-size: x-large;
+        }
+
+        #errandList {
+            /*width: 90%;*/
+            padding-top: 30px;
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
-
-<div style="width: 100%; float: left;">
-    <div style="float: left; width: 15%;  box-sizing: border-box">
-        <div style="background: #FF7E36; margin-left: 20px; margin-bottom: 10px; padding: 5%"><h1 style="margin-left: 2%">심부름 목록 🧚🏻‍♀️</h1></div>
+<div class="sideBar">
+    <div>
+        <img src="https://errandbucket.s3.ap-northeast-2.amazonaws.com/errand/static/daangn.svg" alt="당근심부름"
+             width="80%"/>
+        <div id="admin">Admin</div>
     </div>
-    <div id="errandList" style="width: 90%; float: left;">
-        <table style="border: 0">
-            <thead style="background: floralwhite;">
-            <tr>
-                <th class="tableTitle">심부름 id</th>
-                <th class="tableTitle">Region name</th>
-                <th class="tableTitle">고객<br/>유저 id</th>
-                <th class="tableTitle">심부름 상태</th>
-                <th class="tableTitle">지원자 수</th>
-                <th class="tableTitle">심부름 디테일</th>
-
-                <th class="tableTitle">생성 시간</th>
-                <th class="tableTitle">조회수</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="errand : ${errandList}">
-                <td class="idNumberTd" th:text="${errand.id}"></td>
-                <td th:text="${errand.region.name}"></td>
-                <td class="idNumberTd" th:text="${errand.customer.id}"></td>
-                <td th:attr="class=${errand.complete ? 'statusGreen' : (errand.chosenHelper != null ? 'statusBlue' : 'statusGray')}"
-                    th:text="${errand.complete ? '완료' : (errand.chosenHelper != null ? '수행 중!' : '매칭 전')}"></td>
-                <td><a th:text="${errand.helpCount}+'명'"
-                       th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}"></a></td>
-                <td><a th:text="${#strings.abbreviate(errand.detail, 50)}"
-                       th:href="@{/admin/errand/{errandId}(errandId = ${errand.id})}"></a></td>
-                <td th:text="${#temporals.format(errand.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${errand.viewCnt}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+</div>
+<div id="errandList">
+    <div style="font-family: 'Cafe24Ssurround'; font-size: larger; margin-left: 40px">등록된 심부름 리스트🥕</div>
+    <table style="border: 0">
+        <thead style="background: floralwhite;">
+        <tr>
+            <th>심부름 id</th>
+            <th>Region name</th>
+            <th>유저 id</th>
+            <th>심부름 상태</th>
+            <th>지원자 수</th>
+            <th>심부름 디테일</th>
+            <th>생성 시간</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="errand : ${errandList}">
+            <td class="idNumberTd" th:text="${errand.id}"></td>
+            <td th:text="${errand.region.name}"></td>
+            <td class="idNumberTd" th:text="${errand.customer.id}"></td>
+            <td th:attr="class=${errand.complete ? 'statusGreen' : (errand.chosenHelper != null ? 'statusBlue' : 'statusGray')}"
+                th:text="${errand.complete ? '완료' : (errand.chosenHelper != null ? '수행 중!' : '매칭 전')}"></td>
+            <td><a th:text="${errand.helpCount}+'명'"
+                   th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}"></a></td>
+            <td><a th:text="${#strings.abbreviate(errand.detail, 50)}"
+                   th:href="@{/admin/errand/{errandId}(errandId = ${errand.id})}"></a></td>
+            <td th:text="${#temporals.format(errand.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${errand.viewCnt}"></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
