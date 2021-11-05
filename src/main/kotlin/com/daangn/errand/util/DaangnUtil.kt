@@ -177,11 +177,20 @@ class DaangnUtil(
         }
     }
 
-    fun setUserDetailProfile(user: UserProfileVo, accessToken: String, regionId: String): UserProfileVo {
+    fun setMyDaangnProfile(user: UserProfileVo, accessToken: String, regionId: String): UserProfileVo {
         val userInfoRes = getMyInfo(accessToken)
         user.nickname = userInfoRes.nickname
         user.profileImageUrl = userInfoRes.profileImageUrl
         user.regionName = getRegionInfoByRegionId(regionId).region.name
+        return user
+    }
+
+    fun setUserDaangnProfile(user: UserProfileVo, regionId: String? = null): UserProfileVo {
+        val getUserInfoRes = getUserInfo(user.daangnId)
+        val userInfoRes = getUserInfoRes.data.user
+        user.nickname = userInfoRes.nickname
+        user.profileImageUrl = userInfoRes.profileImageUrl
+        if (regionId!= null) user.regionName = getRegionInfoByRegionId(regionId).region.name
         return user
     }
 
