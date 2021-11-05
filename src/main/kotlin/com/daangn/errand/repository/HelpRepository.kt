@@ -10,4 +10,5 @@ interface HelpRepository: JpaRepository<Help, Long>, HelpQueryRepository {
     fun findByErrandOrderByCreatedAt(errand: Errand): MutableList<Help>
     fun countByErrand(errand: Errand): Long
     fun countByHelper(helper: User): Long
+    fun findByErrand(errand: Errand): MutableList<Help>
 }
