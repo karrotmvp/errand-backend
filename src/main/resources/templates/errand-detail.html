@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="/static/errand-fav.ico">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <title>Errand Admin</title>
     <style>
         .tableTitle{ font-size: larger; }
@@ -33,7 +33,10 @@
         <th class="tableTitle">고객 ID</th>
         <th class="tableTitle">심부름 상세정보</th>
         <th class="tableTitle">심부름 상세주소</th>
+        <th class="tableTitle">지원자 수</th>
+        <th class="tableTitle">조회수</th>
         <th class="tableTitle">생성 시간</th>
+        <th class="tableTitle">완료 여부</th>
         <th class="tableTitle">미노출 여부</th>
     </tr>
     <tr>
@@ -41,8 +44,12 @@
         <td class = "idNumberTd" th:utext="${errand.customer.id}"></td>
         <td th:utext="${errand.detail}"></td>
         <td th:utext="${errand.detailAddress}"></td>
+        <td th:utext="${errand.helpCount}"><a th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}"></a></td>
+        <td th:utext="${errand.viewCnt}"></td>
         <td th:utext="${errand.createdAt}"></td>
-        <td id = "ifUnexposedOrNot" th:utext="${unexposed}"></td>
+        <td th:utext="${errand.completed}"></td>
+        <td id = "ifUnexposedOrNot" th:utext="${errand.unexposed}"></td>
+
     </tr>
 </table>
 <div th:each="image: ${errand.images}">

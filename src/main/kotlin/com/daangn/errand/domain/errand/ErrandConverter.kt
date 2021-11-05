@@ -24,4 +24,10 @@ interface ErrandConverter {
         Mapping(target = "regionName", ignore = true)
     )
     fun toErrandPreview(errand: Errand): ErrandPreview
+
+    @Mappings(
+        Mapping(target = "helpCount", ignore = true),
+        Mapping(target = "region", ignore = true)
+    )
+    fun toErrandAdmin(errand: Errand): ErrandAdmin
 }

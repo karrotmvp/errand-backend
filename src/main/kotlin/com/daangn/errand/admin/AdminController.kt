@@ -1,9 +1,8 @@
 package com.daangn.errand.admin
 
 import com.daangn.errand.domain.errand.ErrandConverter
+import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.repository.ErrandRepository
-import com.daangn.errand.service.AuthService
-import com.daangn.errand.service.ErrandService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -29,11 +28,8 @@ class AdminController(
 
     @GetMapping("/errand/{id}")
     fun getErrandDetail(model: Model, @PathVariable(value = "id") id: Long): String {
-        val errand = errandRepository.findById(id)
-        if (errand.isEmpty) return "error"
-        val errandDto = errandConverter.toErrandDto(errand.get())
-        model.addAttribute("errand", errandDto)
-        model.addAttribute("unexposed", errand.get().unexposed)
+        val errandAdmin = adminService.getErrandAdminDetail(id)
+        model.addAttribute("errand", errandAdmin)
         return "errand-detail"
     }
 
@@ -53,5 +49,15 @@ class AdminController(
     ): ResponseEntity<Boolean> {
         adminService.makeExposed(id)
         return ResponseEntity<Boolean>(false, HttpStatus.OK)
+    }
+
+    @GetMapping("/errand/{id}/help-list")
+    fun getErrandHelpList(
+        @PathVariable(value = "id") id: Long,
+        model: Model,
+    ): String {
+        val helps: List<HelpAdmin> = adminService.getHelpList(id)
+        model.addAttribute("helpList", helps)
+        return "help-list"
     }
 }
