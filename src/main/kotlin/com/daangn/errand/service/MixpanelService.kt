@@ -21,7 +21,7 @@ class MixpanelService(
             props.put(entity.key, entity.value)
         }
 
-        val jsonObject: JSONObject = messageBuilder.event(null, event.name, props)
+        val jsonObject: JSONObject = messageBuilder.event(null, event.korName, props)
 
         val delivery = ClientDelivery()
         delivery.addMessage(jsonObject)
@@ -31,9 +31,9 @@ class MixpanelService(
     }
 }
 
-enum class MixpanelTrackEvent {
-    ERRAND_REGISTERED,
-    HELP_REGISTERED,
-    ERRAND_COMPLETED,
-    USER_SIGN_IN,
+enum class MixpanelTrackEvent(val korName: String) {
+    ERRAND_REGISTERED("새로운 심부름 등록"),
+    HELP_REGISTERED("새로운 지원"),
+    ERRAND_COMPLETED("심부름 완료"),
+    USER_SIGN_IN("로그인"),
 }

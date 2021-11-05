@@ -27,14 +27,14 @@ class MixpanelEventPublisher(
         val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
 
         val entities: HashMap<String, Any> = HashMap()
-        entities["errand_id"] = errand.id.toString()
-        entities["errand_category"] = errand.category.name
+        entities["심부름 id"] = errand.id.toString()
+        entities["심부름 카테고리"] = errand.category.name
 
         val userInfo = daangnUtil.getUserInfo(errand.customer.daangnId).data.user
-        entities["customer_daangn_id"] = userInfo.id
-        entities["customer_daangn_nickname"] = userInfo.nickname ?: "닉네임 미등록"
+        entities["유저 ID"] = userInfo.id
+        entities["유저 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
 
-        entities["customer_errandReqList_size"] = errand.customer.errandReqList.size.toString()
+//        entities["customer_errandReqList_size"] = errand.customer.errandReqList.size.toString() // 믹스패널에서 조회 가능
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities))
     }
 
@@ -45,17 +45,17 @@ class MixpanelEventPublisher(
 
         val entities: HashMap<String, Any> = HashMap()
 
-        entities["errand_id"] = help.errand.id.toString()
-        entities["errand_category"] = help.errand.category.name
-        entities["errand_help_count"] = help.errand.helps.size.toString()
+        entities["심부름 id"] = help.errand.id.toString()
+        entities["심부름 카테고리"] = help.errand.category.name
+        entities["지원 순서"] = help.errand.helps.size.toString()
 
         val userInfo = daangnUtil.getUserInfo(help.helper.daangnId).data.user
-        entities["user_daangn_id"] = userInfo.id
-        entities["helper_nickname"] = userInfo.nickname ?: "닉네임 미등록"
+        entities["헬퍼 ID"] = userInfo.id
+        entities["헬퍼 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
 
         val helpCnt = helpRepository.countByHelper(help.helper)
-        entities["helper_help_size"] = helpCnt.toString()
-        entities["helper_errandList_size"] = help.helper.errandList.size.toString()
+//        entities["helper_help_size"] = helpCnt.toString()
+//        entities["helper_errandList_size"] = help.helper.errandList.size.toString()
 
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.HELP_REGISTERED, entities))
     }
@@ -67,9 +67,9 @@ class MixpanelEventPublisher(
 
         val entities = HashMap<String, Any>()
 
-        entities["errand_id"] = errand.id.toString()
-        entities["errand_category"] = errand.category.name
-        entities["customer_id"] = errand.customer.id.toString()
+        entities["심부름 ID"] = errand.id.toString()
+        entities["심부름 카테고리"] = errand.category.name
+        entities["고객 ID"] = errand.customer.id.toString()
 
         val customerInfo = daangnUtil.getUserInfo(errand.customer.daangnId).data.user
         val helperInfo = daangnUtil.getUserInfo(
@@ -78,10 +78,10 @@ class MixpanelEventPublisher(
                 "chosen helper 없음"
             )
         ).data.user
-        entities["customer_nickname"] = customerInfo.nickname ?: "닉네임 미등록"
-        entities["helper_nickname"] = helperInfo.nickname ?: "닉네임 미등록"
-        entities["customer_created_at"] = errand.customer.createdAt.toString()
-        entities["helper_created_at"] = errand.chosenHelper?.createdAt.toString()
+        entities["고객 닉네임"] = customerInfo.nickname ?: "닉네임 미등록"
+        entities["헬퍼 닉네임"] = helperInfo.nickname ?: "닉네임 미등록"
+        entities["고객 가입일자"] = errand.customer.createdAt.toString()
+        entities["헬퍼 가입일자"] = errand.chosenHelper?.createdAt.toString()
 
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_COMPLETED, entities))
     }
@@ -94,10 +94,10 @@ class MixpanelEventPublisher(
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userInfo = daangnUtil.getUserInfo(user.daangnId).data.user
         val entities = HashMap<String, Any>()
-        entities["is_sign_up"] = isSignUp
-        entities["user_id"] = userId
-        entities["user_nickname"] = userInfo.nickname ?: "미등록 닉네임"
-        entities["user_created_at"] = user.createdAt
+        entities["최초 로그인?"] = isSignUp
+        entities["유저 ID"] = userId
+        entities["유저 닉네임"] = userInfo.nickname ?: "미등록 닉네임"
+        entities["유저 가입일"] = user.createdAt
 
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.USER_SIGN_IN, entities))
     }
