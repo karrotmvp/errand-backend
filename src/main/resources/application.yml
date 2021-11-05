@@ -5,14 +5,10 @@ spring:
       ddl-auto: update
     show-sql: true
     database: mysql
-    properties:
-      hibernate:
-        format_sql: true
   servlet:
     multipart:
       max-file-size: 10MB
   devtools.livereload.enabled: true
-  mvc.static-path-pattern: /static/**
   thymeleaf:
     prefix: classpath:templates/
     suffix: .html
