@@ -61,6 +61,10 @@ class Errand(
     @ColumnDefault("false")
     var unexposed: Boolean = false
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    var viewCnt: Long = 0
+
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Errand::id)
         private val toStringProperties = arrayOf(
@@ -70,6 +74,7 @@ class Errand(
             Errand::regionId,
             Errand::reward,
             Errand::detail,
+            Errand::viewCnt,
             Errand::chosenHelper,
             Errand::complete,
             Errand::deleted,

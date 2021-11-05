@@ -80,6 +80,7 @@ class ErrandService(
         val user =
             userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errandDto = makeErrandToErrandDto(errand)
+        errand.viewCnt += 1
         return getErrandDetailByUserRole(errand, user, errandDto)
     }
 
@@ -120,7 +121,7 @@ class ErrandService(
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setUserDetailProfile(
+                daangnUtil.setMyDaangnProfile(
                     userConverter.toUserProfileVo(help.helper),
                     accessToken,
                     help.regionId
@@ -253,7 +254,7 @@ class ErrandService(
         )
         return GetHelpDetailResDto(
             help.errand.chosenHelper == help.helper,
-            daangnUtil.setUserDetailProfile(helperVo, payload.accessToken, help.regionId),
+            daangnUtil.setMyDaangnProfile(helperVo, payload.accessToken, help.regionId),
             help.appeal,
             help.phoneNumber
         )
