@@ -2,6 +2,10 @@ daangn:
   oapi.url: https://oapi.alpha.kr.karrotmarket.com
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
 spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    username: root
@@ -18,6 +22,11 @@ spring:
         max-active: 10
         max-idle: 10
         min-idle: 2
+server:
+  error:
+    include-exception: true
+    include-stacktrace: always
+
 sentry:
   dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   traces-sample-rate: 1.0

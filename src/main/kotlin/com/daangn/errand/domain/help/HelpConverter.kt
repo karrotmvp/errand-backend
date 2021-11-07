@@ -12,4 +12,10 @@ interface HelpConverter {
         Mapping(target = "errandId", source = "errand.id")
     )
     fun toHelpVo(help: Help): HelpVo
+
+    @Mappings(
+        Mapping(target = "helper", ignore = true),
+        Mapping(target = "region", ignore = true)
+    )
+    fun toHelpAdmin(help: Help): HelpAdmin
 }

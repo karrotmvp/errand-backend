@@ -21,6 +21,8 @@ data class ErrandDto(
     val chosenHelper: UserVo?,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-) {
+): ErrandHasStatus {
+    override var status: String? = null
     var region: RegionVo? = null
+    var helpCount: Long? = null
 }

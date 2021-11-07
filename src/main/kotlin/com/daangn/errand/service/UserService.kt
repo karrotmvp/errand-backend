@@ -73,7 +73,7 @@ class UserService(
     fun getUserWithDaangnProfile(userId: Long, accessToken: String, regionId: String): UserProfileVo {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userProfileVo = userConverter.toUserProfileVo(user)
-        return daangnUtil.setUserDetailProfile(userProfileVo, accessToken, regionId)
+        return daangnUtil.setMyDaangnProfile(userProfileVo, accessToken, regionId)
     }
 
     fun updateUserAlarm(userId: Long, on: Boolean): String {

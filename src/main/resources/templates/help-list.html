@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Errand Admin</title>
+    <style>
+        * {
+            line-height: 150%;
+        }
+
+        th, td { padding: 10px; }
+        .tableTitle{ font-size: larger; }
+        a{
+            color: black;
+            text-decoration: none;
+        }
+        a:hover{
+            color: darkorange; text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<button id="backButton" type="button">< 심부름 상세정보로 돌아가기</button>
+<h2>지원자 목록</h2>
+<div id="helpList">
+    <table class="application-list">
+        <tr class="tableTitle">
+            <th>Help ID</th>
+            <th>지원자(Helper) ID</th>
+            <th>지원자 닉네임</th>
+            <th>지원자 아이디</th>
+            <th>각오</th>
+            <th>지원자 전화번호</th>
+        </tr>
+        <tr th:each="help: ${helpList}">
+            <td th:text="${help.id}"></td>
+            <td th:text="${help.helper.id}"></td>
+            <td th:text="${help.helper.nickname}"></td>
+            <td th:text="${help.helper.id}"></td>
+            <td th:text="${help.appeal}"></td>
+            <td th:text="${help.phoneNumber}"></td>
+        </tr>
+    </table>
+</div>
+</body>
+<script>
+    const backButton = document.getElementById("backButton")
+    backButton.addEventListener('click' , () => {
+        location.href = `${document.location.origin}/admin`
+    })
+</script>
+</html>
