@@ -21,3 +21,6 @@ sentry:
   # We recommend adjusting this value in production.
   traces-sample-rate: 1.0
   environment: production
+springfox:
+  documentation:
+    enabled: false
