@@ -190,7 +190,7 @@ class DaangnUtil(
         val userInfoRes = getUserInfoRes.data.user
         user.nickname = userInfoRes.nickname
         user.profileImageUrl = userInfoRes.profileImageUrl
-        if (regionId!= null) user.regionName = getRegionInfoByRegionId(regionId).region.name
+        if (regionId != null) user.regionName = getRegionInfoByRegionId(regionId).region.name
         return user
     }
 

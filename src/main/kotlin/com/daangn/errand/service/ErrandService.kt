@@ -97,20 +97,22 @@ class ErrandService(
         user: User,
         errandDto: ErrandDto
     ): GetErrandResDto<ErrandDto> {
-        val isMine = errand.customer == user
-        val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
-        val wasIChosen = errand.chosenHelper == user
+        errandDto.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
 
-        errandDto.setStatus(errand, didIApply && !wasIChosen)
-        if (!isMine && errand.complete || !isMine && !wasIChosen) {
+        val isNotCustomer = errand.customer != user
+        val didUserApply: Boolean = helpRepository.findByErrandAndHelper(errand, user) != null
+        val isNotChosenHelper = errand.chosenHelper != user
+
+        if (isNotCustomer && (isNotChosenHelper || errand.complete)) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
         }
+
         return GetErrandResDto(
             errand = errandDto,
-            isMine = isMine,
-            didIApply = didIApply,
-            wasIChosen = wasIChosen
+            isMine = !isNotCustomer,
+            didIApply = didUserApply,
+            wasIChosen = !isNotChosenHelper
         )
     }
 
@@ -190,9 +192,8 @@ class ErrandService(
         val errandPreview = errandConverter.toErrandPreview(errand)
         errandPreview.helpCount = helpRepository.countByErrand(errand)
         errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-        val didUserApplyButWasChosen =
-            (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
-        errandPreview.setStatus(errand, didUserApplyButWasChosen)
+
+        errandPreview.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
         errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
         return errandPreview
     }
