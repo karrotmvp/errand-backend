@@ -49,7 +49,7 @@ class DaangnUtil(
         }
         val responseBody: String? = httpResponse.body?.string()
         if (!httpResponse.isSuccessful) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 Access Token 획득 실패"))
+            throw ErrandException(ErrandError.DAANGN_ERROR, httpResponse.body.toString())
         }
         return try {
             objectMapper.readValue(responseBody, GetAccessTokenRes::class.java)
