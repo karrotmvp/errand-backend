@@ -47,15 +47,15 @@ data class DaangnChatEventPublisher(
     fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
         val category = errand.category
         val neighborUsers: MutableSet<String> = HashSet()
-        val neighborIdList =
+        val neighborRegionIdList =
             daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map { region ->
                 region.id
             }
-        val iterator = neighborIdList.iterator()
+        val iterator = neighborRegionIdList.iterator()
         while (iterator.hasNext()) {
             neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
         }
-        val users = userRepository.findByDaangnIdListAndHasCategory(neighborUsers, category)
+        val users = userRepository.findByDaangnIdListAndHasCategory(errand.customer, neighborUsers, category)
 
         return users.asSequence().map { user ->
             user.daangnId

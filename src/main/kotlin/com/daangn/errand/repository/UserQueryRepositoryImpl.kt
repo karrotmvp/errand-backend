@@ -10,13 +10,14 @@ class UserQueryRepositoryImpl(
     val query: JPAQueryFactory
 ) : UserQueryRepository {
     override fun findByDaangnIdListAndHasCategory(
+        customer: User,
         daangnIds: MutableSet<String>,
         category: Category
     ): MutableList<User> {
         return query.selectFrom(user)
             .join(helperHasCategories)
             .on(user.eq(helperHasCategories.user).and(helperHasCategories.category.eq(category)))
-            .where(user.daangnId.`in`(daangnIds))
+            .where(user.daangnId.`in`(daangnIds).and(!user.eq(customer)))
             .fetch()
     }
 }
