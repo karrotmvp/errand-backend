@@ -3,7 +3,6 @@ package com.daangn.errand.support.event.publisher
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
-import com.daangn.errand.rest.dto.patchUserAlarmReqDto
 import com.daangn.errand.service.MixpanelTrackEvent
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.MixpanelEvent
