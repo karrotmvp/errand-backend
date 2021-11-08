@@ -119,7 +119,8 @@ class ErrandService(
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
         if (errand.complete) throw ErrandException(ErrandError.NOT_PERMITTED, "완료된 심부름의 지원자 목록은 볼 수 없어요.")
 
-        val user = userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val user =
+            userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
 
         return convertHelpListToHelpPreviewList(errand)
@@ -255,17 +256,23 @@ class ErrandService(
         val userId = payload.userId
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
-        if (user != help.errand.customer && user != help.helper) throw ErrandException(ErrandError.NOT_PERMITTED)
+
+        val isHelper = user == help.helper
+        val isCustomer = user == help.errand.customer
+
+        if (!isCustomer && !isHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         val helperVo = UserProfileVo(
             help.helper.id,
             help.helper.daangnId,
             mannerTemp = help.helper.mannerTemp
         )
+
+        val isChosenHelper = help.errand.chosenHelper == help.helper
         return GetHelpDetailResDto(
             help.errand.chosenHelper == help.helper,
             daangnUtil.setUserDaangnProfile(helperVo, help.helper.daangnId),
             help.appeal,
-            help.phoneNumber
+            if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
         )
     }
 

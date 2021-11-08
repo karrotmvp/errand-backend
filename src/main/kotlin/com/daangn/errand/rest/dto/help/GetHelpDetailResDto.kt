@@ -6,5 +6,5 @@ data class GetHelpDetailResDto(
     val isMatched: Boolean,
     val helper: UserProfileVo,
     val appeal: String,
-    val phoneNumber: String
+    val phoneNumber: String?
 )
