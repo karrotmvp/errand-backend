@@ -12,7 +12,7 @@ import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
-import com.daangn.errand.rest.dto.help.HelperWithHelpId
+import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
@@ -114,24 +114,28 @@ class ErrandService(
         )
     }
 
-    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperWithHelpId> {
-        val (userId, accessToken) = payload
+    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperPreview> {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
         if (errand.complete) throw ErrandException(ErrandError.NOT_PERMITTED, "완료된 심부름의 지원자 목록은 볼 수 없어요.")
-        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
+        val user = userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+
+        return convertHelpListToHelpPreviewList(errand)
+    }
+
+    private fun convertHelpListToHelpPreviewList(errand: Errand): List<HelperPreview> {
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setMyDaangnProfile(
+                daangnUtil.setUserDaangnProfile(
                     userConverter.toUserProfileVo(help.helper),
-                    accessToken,
                     help.regionId
-                ) // TODO 다시하기
-            userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
-            HelperWithHelpId(
+                )
+            HelperPreview(
                 help.id!!,
-                userProfileVo
+                userProfileVo,
+                help.appeal
             )
         }.toList()
     }

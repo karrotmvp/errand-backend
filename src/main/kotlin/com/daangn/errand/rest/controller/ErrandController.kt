@@ -4,7 +4,7 @@ import com.daangn.errand.rest.dto.errand.PatchHelperOfErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.HelpCountResDto
-import com.daangn.errand.rest.dto.help.HelperWithHelpId
+import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
@@ -44,7 +44,7 @@ class ErrandController(
     fun getErrandAppliedUserList(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
-    ): ErrandResponse<List<HelperWithHelpId>> = ErrandResponse(errandService.readAppliedHelpers(payload, errandId))
+    ): ErrandResponse<List<HelperPreview>> = ErrandResponse(errandService.readAppliedHelpers(payload, errandId))
 
     @PatchMapping("/{id}/helper")
     @ApiOperation(value = "심부름 헬퍼 지정하기 API")
