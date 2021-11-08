@@ -1,6 +1,5 @@
 package com.daangn.errand.rest.controller
 
-import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.rest.dto.errand.PatchHelperOfErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
@@ -13,6 +12,7 @@ import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
@@ -37,20 +37,21 @@ class ErrandController(
     @ApiOperation(value = "심부름 상세 조회 API")
     fun getErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "id") id: Long
-    ) = ErrandResponse(errandService.readErrand(payload, id))
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
+    ) = ErrandResponse(errandService.readErrand(payload, errandId))
 
     @GetMapping("/{id}/helpers")
     @ApiOperation(value = "심부름 지원 유저 목록 조회 API")
     fun getErrandAppliedUserList(
-        @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "id") id: Long
-    ): ErrandResponse<List<HelperWithHelpId>> = ErrandResponse(errandService.readAppliedHelpers(payload, id))
+        @ApiIgnore @TokenPayload payload: JwtPayload,
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
+    ): ErrandResponse<List<HelperWithHelpId>> = ErrandResponse(errandService.readAppliedHelpers(payload, errandId))
 
     @PatchMapping("/{id}/helper")
+    @ApiOperation(value = "심부름 헬퍼 지정하기 API")
     fun patchHelperOfErrand(
-        @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "id") id: Long,
+        @ApiIgnore @TokenPayload payload: JwtPayload,
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") id: Long,
         @RequestBody patchHelperOfErrandReqDto: PatchHelperOfErrandReqDto
     ): ErrandResponse<Any> {
         errandService.chooseHelper(payload.userId, patchHelperOfErrandReqDto.helperId, id)
@@ -58,25 +59,28 @@ class ErrandController(
     }
 
     @PatchMapping("/{id}/complete")
+    @ApiOperation(value = "심부름 완료 확정하기 API")
     fun patchProgressOfErrand(
-        @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "id") id: Long
+        @ApiIgnore @TokenPayload payload: JwtPayload,
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
     ): ErrandResponse<Any> {
-        errandService.confirmErrand(payload.userId, id)
+        errandService.confirmErrand(payload.userId, errandId)
         return ErrandResponse(HttpStatus.OK, "심부름 완료 확정 성공")
     }
 
     @GetMapping("/{id}/helper-count")
+    @ApiOperation(value = "심부름 지원자 수 조회하기 API")
     fun getHelperCount(
-        @PathVariable(value = "id") id: Long
-    ) = ErrandResponse(HelpCountResDto(helpService.countHelp(id)))
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
+    ) = ErrandResponse(HelpCountResDto(helpService.countHelp(errandId)))
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "심부름 삭제하기 API")
     fun deleteErrand(
         @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "id") errandId: Long
+        @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
     ): ErrandResponse<Any> {
-
+        errandService.destroyErrand(payload.userId, errandId)
         return ErrandResponse(HttpStatus.OK, "심부름 삭제 성공")
     }
 }

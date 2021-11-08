@@ -1,7 +1,10 @@
 package com.daangn.errand.rest.dto
 
+import io.swagger.annotations.ApiModelProperty
 
-data class patchUserAlarmReqDto(
+
+data class PatchUserAlarmReqDto(
+    @ApiModelProperty(value = "알림 활성여부")
     val on: Boolean
 )
 
