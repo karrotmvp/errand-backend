@@ -36,7 +36,12 @@ data class DaangnChatEventPublisher(
         val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val targetUserList = getUserDaangnIdListInCategory(errand)
         val buttonLinkedUrl = "$baseUrl/errands/$errandId"
-        eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl))
+        val regionName = try {
+            daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+        } catch (e: Exception) {
+            null
+        }
+        eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl, regionName))
     }
 
     fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
