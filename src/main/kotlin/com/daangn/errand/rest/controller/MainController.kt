@@ -23,7 +23,7 @@ class MainController(
     @GetMapping("")
     fun getMain(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @ApiParam(value = "마지막 심부름 ID") @RequestParam(value = "lastId") lastId: Long?,
+        @ApiParam(value = "마지막 심부름 ID", required = false) @RequestParam(value = "lastId") lastId: Long?,
         @ApiParam(value = "가져오려는 심부름 개수") @RequestParam(value = "size") size: Long,
         @ApiParam(value = "사용자의 지역 ID") @RequestParam(value = "regionId") regionId: String
     ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
@@ -33,7 +33,7 @@ class MainController(
     @GetMapping("/appliable")
     fun getMainOnlyAppliable(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @ApiParam(value = "마지막 심부름 ID") @RequestParam(value = "lastId") lastId: Long?,
+        @ApiParam(value = "마지막 심부름 ID", required = false) @RequestParam(value = "lastId") lastId: Long?,
         @ApiParam(value = "가져오려는 심부름 개수") @RequestParam(value = "size") size: Long,
         @ApiParam(value = "사용자의 지역 ID") @RequestParam(value = "regionId") regionId: String
     ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
