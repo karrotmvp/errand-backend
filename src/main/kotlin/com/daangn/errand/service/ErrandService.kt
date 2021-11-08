@@ -259,7 +259,7 @@ class ErrandService(
         )
         return GetHelpDetailResDto(
             help.errand.chosenHelper == help.helper,
-            daangnUtil.setMyDaangnProfile(helperVo, payload.accessToken, help.regionId),
+            daangnUtil.setUserDaangnProfile(helperVo, help.helper.daangnId),
             help.appeal,
             help.phoneNumber
         )
