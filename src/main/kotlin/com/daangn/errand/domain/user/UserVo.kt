@@ -1,7 +1,9 @@
 package com.daangn.errand.domain.user
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.annotations.ApiModelProperty
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class UserProfileVo(
     val id: Long? = null,
     val daangnId: String,

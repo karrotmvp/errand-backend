@@ -19,15 +19,23 @@ import javax.websocket.server.PathParam
 @RequestMapping("/user")
 @Api(tags = ["유저 관련 API"])
 class UserController(
-    val userService: UserService
+    val userService: UserService,
 ) {
+    @GetMapping("/{id}")
+    @ApiOperation(value = "사용자의 당근 프로필 가져오기")
+    fun getUserProfile(
+        @ApiParam(value = "사용자의 id") @PathVariable(value = "id") id: Long
+    ): ErrandResponse<UserProfileVo> {
+        return ErrandResponse(userService.getUserProfileWithDaangnInfo(id))
+    }
+
     @GetMapping("/my")
     @ApiOperation(value = "나의 당근 프로필 가져오기")
     fun getMyProfile(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ApiParam(value = "지역 ID") @PathParam(value = "regionId") regionId: String
     ): ErrandResponse<UserProfileVo> {
-        return ErrandResponse(userService.getUserWithDaangnProfile(payload.userId, payload.accessToken, regionId))
+        return ErrandResponse(userService.getMyProfileDaangnInfo(payload.userId, payload.accessToken, regionId))
     }
 
     @PatchMapping("/category")
