@@ -102,7 +102,7 @@ class ErrandService(
         val wasIChosen = errand.chosenHelper == user
 
         errandDto.setStatus(errand, didIApply && !wasIChosen)
-        if (!isMine && !wasIChosen) {
+        if (!isMine && errand.complete || !isMine && !wasIChosen) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
         }
@@ -118,6 +118,7 @@ class ErrandService(
         val (userId, accessToken) = payload
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
+        if (errand.complete) throw ErrandException(ErrandError.NOT_PERMITTED, "완료된 심부름의 지원자 목록은 볼 수 없어요.")
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->

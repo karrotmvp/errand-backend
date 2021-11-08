@@ -25,7 +25,10 @@ class MyController(
     @ApiOperation("내가 작성한 심부름 가져오기 API")
     fun getMyErrands(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @ApiParam(value = "마지막 심부름 아이디") @RequestParam(value = "lastId") lastId: Long?,
+        @ApiParam(value = "마지막 심부름 아이디", required = false) @RequestParam(
+            value = "lastId",
+            required = false
+        ) lastId: Long?,
         @ApiParam(value = "가져오려는 심부름의 개수") @RequestParam(value = "size") size: Long
     ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>> {
         return ErrandResponse(errandService.readMyErrands(payload.userId, lastId, size))
@@ -35,7 +38,10 @@ class MyController(
     @ApiOperation(value = "내가 지원한 심부름 가져오기 API")
     fun getMyHelps(
         @ApiIgnore @TokenPayload payload: JwtPayload,
-        @ApiParam(value = "마지막 심부름 아이디") @RequestParam(value = "lastId") lastId: Long?,
+        @ApiParam(value = "마지막 심부름 아이디", required = false) @RequestParam(
+            value = "lastId",
+            required = false
+        ) lastId: Long?,
         @ApiParam(value = "가져오려는 심부름의 개수") @RequestParam(value = "size") size: Long
     ) = ErrandResponse(errandService.readMyHelps(payload.userId, lastId, size))
 }

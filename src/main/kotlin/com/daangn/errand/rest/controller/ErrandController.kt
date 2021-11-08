@@ -10,10 +10,9 @@ import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
+import io.swagger.annotations.*
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -24,7 +23,7 @@ class ErrandController(
     val errandService: ErrandService,
     val helpService: HelpService
 ) {
-    @PostMapping("")
+    @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ApiOperation(value = "심부름을 등록하는 API")
     fun postErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
