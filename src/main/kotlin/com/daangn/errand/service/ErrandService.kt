@@ -253,7 +253,7 @@ class ErrandService(
         mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
     }
 
-    fun readHelperDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
+    fun readHelpDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
         val userId = payload.userId
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
@@ -270,10 +270,29 @@ class ErrandService(
 
         val isChosenHelper = help.errand.chosenHelper == help.helper
         return GetHelpDetailResDto(
+            isCustomer,
             help.errand.chosenHelper == help.helper,
             daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
             help.appeal,
             if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
+        )
+    }
+
+    fun readMyHelpByErrandId(payload: JwtPayload, errandId: Long): GetHelpDetailResDto {
+        val user = userRepository.findById(payload.userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
+        val help = helpRepository.findByErrandAndHelper(errand, user) ?: throw ErrandException(
+            ErrandError.BAD_REQUEST,
+            "해당 심부름의 지원내역이 없습니다."
+        )
+        val userProfileVo = userConverter.toUserProfileVo(user)
+
+        return GetHelpDetailResDto(
+            false,
+            help.errand.chosenHelper == user,
+            daangnUtil.setUserDaangnProfile(userProfileVo, help.regionId),
+            help.appeal,
+            help.phoneNumber
         )
     }
 
