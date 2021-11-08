@@ -36,21 +36,26 @@ data class DaangnChatEventPublisher(
         val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val targetUserList = getUserDaangnIdListInCategory(errand)
         val buttonLinkedUrl = "$baseUrl/errands/$errandId"
-        eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl))
+        val regionName = try {
+            daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+        } catch (e: Exception) {
+            null
+        }
+        eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl, regionName))
     }
 
     fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
         val category = errand.category
         val neighborUsers: MutableSet<String> = HashSet()
-        val neighborIdList =
+        val neighborRegionIdList =
             daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map { region ->
                 region.id
             }
-        val iterator = neighborIdList.iterator()
+        val iterator = neighborRegionIdList.iterator()
         while (iterator.hasNext()) {
             neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
         }
-        val users = userRepository.findByDaangnIdListAndHasCategory(neighborUsers, category)
+        val users = userRepository.findByDaangnIdListAndHasCategory(errand.customer, neighborUsers, category)
 
         return users.asSequence().map { user ->
             user.daangnId

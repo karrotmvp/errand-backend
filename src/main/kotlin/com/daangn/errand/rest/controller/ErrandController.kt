@@ -1,9 +1,11 @@
 package com.daangn.errand.rest.controller
 
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.rest.dto.errand.PatchHelperOfErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.HelpCountResDto
+import com.daangn.errand.rest.dto.help.HelperWithHelpId
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
@@ -43,7 +45,7 @@ class ErrandController(
     fun getErrandAppliedUserList(
         @TokenPayload payload: JwtPayload,
         @PathVariable(value = "id") id: Long
-    ) = ErrandResponse(errandService.readAppliedHelpers(payload, id))
+    ): ErrandResponse<List<HelperWithHelpId>> = ErrandResponse(errandService.readAppliedHelpers(payload, id))
 
     @PatchMapping("/{id}/helper")
     fun patchHelperOfErrand(
@@ -68,12 +70,6 @@ class ErrandController(
     fun getHelperCount(
         @PathVariable(value = "id") id: Long
     ) = ErrandResponse(HelpCountResDto(helpService.countHelp(id)))
-
-    @GetMapping("/{id}/helpers/{helpId}")
-    fun getHelperDetail(
-        @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "helpId") id: Long
-    ) = ErrandResponse(errandService.readHelperDetail(payload, id))
 
     @DeleteMapping("/{id}")
     fun deleteErrand(

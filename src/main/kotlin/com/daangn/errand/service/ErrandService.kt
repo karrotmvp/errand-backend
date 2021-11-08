@@ -12,6 +12,7 @@ import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
+import com.daangn.errand.rest.dto.help.HelperWithHelpId
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
@@ -113,7 +114,7 @@ class ErrandService(
         )
     }
 
-    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<UserProfileVo> {
+    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperWithHelpId> {
         val (userId, accessToken) = payload
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
@@ -127,7 +128,10 @@ class ErrandService(
                     help.regionId
                 ) // TODO 다시하기
             userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
-            userProfileVo
+            HelperWithHelpId(
+                help.id!!,
+                userProfileVo
+            )
         }.toList()
     }
 
