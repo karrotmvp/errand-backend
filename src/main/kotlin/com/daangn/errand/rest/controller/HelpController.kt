@@ -3,6 +3,7 @@ package com.daangn.errand.rest.controller
 import com.daangn.errand.domain.help.HelpVo
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
+import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
@@ -12,8 +13,15 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/help")
 class HelpController(
-    val helpService: HelpService
+    private val helpService: HelpService,
+    private val errandService: ErrandService,
 ) {
+    @GetMapping("/{helpId}")
+    fun getHelperDetail(
+        @TokenPayload payload: JwtPayload,
+        @PathVariable(value = "helpId") id: Long
+    ) = ErrandResponse(errandService.readHelperDetail(payload, id))
+
     @PostMapping
     fun postHelp(
         @TokenPayload payload: JwtPayload,

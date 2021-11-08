@@ -69,12 +69,6 @@ class ErrandController(
         @PathVariable(value = "id") id: Long
     ) = ErrandResponse(HelpCountResDto(helpService.countHelp(id)))
 
-    @GetMapping("/{id}/helpers/{helpId}")
-    fun getHelperDetail(
-        @TokenPayload payload: JwtPayload,
-        @PathVariable(value = "helpId") id: Long
-    ) = ErrandResponse(errandService.readHelperDetail(payload, id))
-
     @DeleteMapping("/{id}")
     fun deleteErrand(
         @TokenPayload payload: JwtPayload,
