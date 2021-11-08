@@ -270,7 +270,7 @@ class ErrandService(
         val isChosenHelper = help.errand.chosenHelper == help.helper
         return GetHelpDetailResDto(
             help.errand.chosenHelper == help.helper,
-            daangnUtil.setUserDaangnProfile(helperVo, help.helper.daangnId),
+            daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
             help.appeal,
             if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
         )
