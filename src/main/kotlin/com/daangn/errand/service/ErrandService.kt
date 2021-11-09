@@ -1,6 +1,7 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.*
+import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
@@ -12,7 +13,7 @@ import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
-import com.daangn.errand.rest.dto.help.HelperWithHelpId
+import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
@@ -97,41 +98,67 @@ class ErrandService(
         user: User,
         errandDto: ErrandDto
     ): GetErrandResDto<ErrandDto> {
-        val isMine = errand.customer == user
-        val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
-        val wasIChosen = errand.chosenHelper == user
+        errandDto.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
 
-        errandDto.setStatus(errand, didIApply && !wasIChosen)
-        if (!isMine && errand.complete || !isMine && !wasIChosen) {
+        val isUserCustomer = errand.customer == user
+        val userHelp: Help? = helpRepository.findByErrandAndHelper(errand, user)
+        val didUserApply: Boolean = userHelp != null
+        val isUserChosenHelper = errand.chosenHelper == user
+
+        if (!isUserCustomer && (isUserChosenHelper || errand.complete)) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
         }
+        var helpId: Long? = null
+
+        val isUserCustomerAndIsErrandMatchedButNotCompleted =
+            isUserCustomer && errand.chosenHelper != null && !errand.complete
+
+        if (isUserCustomerAndIsErrandMatchedButNotCompleted) {
+            helpId = helpRepository.findByErrandAndHelper(
+                errand,
+                errand.chosenHelper ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
+            )?.id
+        }
+
+        val didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper =
+            didUserApply && errand.chosenHelper == null || isUserChosenHelper && !errand.complete
+
+        if (didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper) helpId = userHelp?.id
+
+
         return GetErrandResDto(
             errand = errandDto,
-            isMine = isMine,
-            didIApply = didIApply,
-            wasIChosen = wasIChosen
+            isMine = isUserCustomer,
+            didIApply = didUserApply,
+            wasIChosen = isUserChosenHelper,
+            helpId
         )
     }
 
-    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperWithHelpId> {
-        val (userId, accessToken) = payload
+    fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperPreview> {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
         if (errand.complete) throw ErrandException(ErrandError.NOT_PERMITTED, "완료된 심부름의 지원자 목록은 볼 수 없어요.")
-        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+
+        val user =
+            userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+
+        return convertHelpListToHelpPreviewList(errand)
+    }
+
+    private fun convertHelpListToHelpPreviewList(errand: Errand): List<HelperPreview> {
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setMyDaangnProfile(
+                daangnUtil.setUserDaangnProfile(
                     userConverter.toUserProfileVo(help.helper),
-                    accessToken,
                     help.regionId
-                ) // TODO 다시하기
-            userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(help.regionId).region.name
-            HelperWithHelpId(
+                )
+            HelperPreview(
                 help.id!!,
-                userProfileVo
+                userProfileVo,
+                help.appeal
             )
         }.toList()
     }
@@ -185,9 +212,8 @@ class ErrandService(
         val errandPreview = errandConverter.toErrandPreview(errand)
         errandPreview.helpCount = helpRepository.countByErrand(errand)
         errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-        val didUserApplyButWasChosen =
-            (errand.chosenHelper != user) && (helpRepository.findByErrandAndHelper(errand, user) != null)
-        errandPreview.setStatus(errand, didUserApplyButWasChosen)
+
+        errandPreview.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
         errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
         return errandPreview
     }
@@ -247,21 +273,28 @@ class ErrandService(
         mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
     }
 
-    fun readHelperDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
+    fun readHelpDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
         val userId = payload.userId
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
-        if (user != help.errand.customer && user != help.helper) throw ErrandException(ErrandError.NOT_PERMITTED)
+
+        val isHelper = user == help.helper
+        val isCustomer = user == help.errand.customer
+
+        if (!isCustomer && !isHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         val helperVo = UserProfileVo(
             help.helper.id,
             help.helper.daangnId,
             mannerTemp = help.helper.mannerTemp
         )
+
+        val isChosenHelper = help.errand.chosenHelper == help.helper
         return GetHelpDetailResDto(
+            isCustomer,
             help.errand.chosenHelper == help.helper,
-            daangnUtil.setMyDaangnProfile(helperVo, payload.accessToken, help.regionId),
+            daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
             help.appeal,
-            help.phoneNumber
+            if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
         )
     }
 
