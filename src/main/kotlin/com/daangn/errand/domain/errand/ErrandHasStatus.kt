@@ -1,6 +1,5 @@
 package com.daangn.errand.domain.errand
 
-import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.user.User
 
 interface ErrandHasStatus {
@@ -13,7 +12,7 @@ interface ErrandHasStatus {
             Status.COMPLETE
         } else if (didUserApplyButWasNotChosen && isAnyHelperMatched) {
             Status.FAIL
-        } else if (isAnyHelperMatched){
+        } else if (isAnyHelperMatched) {
             Status.PROCEED
         } else {
             Status.WAIT

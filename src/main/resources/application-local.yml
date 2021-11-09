@@ -2,10 +2,10 @@ daangn:
   oapi.url: https://oapi.alpha.kr.karrotmarket.com
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
 spring:
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
+#  jpa:
+#    properties:
+#      hibernate:
+#        format_sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    username: root

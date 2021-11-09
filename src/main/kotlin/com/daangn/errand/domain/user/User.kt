@@ -4,8 +4,6 @@ import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
 import com.daangn.errand.domain.BaseEntity
-import com.daangn.errand.domain.HelperHasCategories
-import com.daangn.errand.domain.category.Category
 import com.daangn.errand.domain.errand.Errand
 import org.hibernate.annotations.ColumnDefault
 import javax.persistence.*
@@ -37,13 +35,12 @@ class User(
     companion object {
         val equalsAndHashcodeProperties = arrayOf(
             User::id,
-            User::daangnId,
-            User::createdAt,
-            User::updatedAt
         )
         val toStringProperties = arrayOf(
             User::id,
-            User::daangnId
+            User::daangnId,
+            User::createdAt,
+            User::updatedAt
         )
     }
 
