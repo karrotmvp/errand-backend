@@ -110,7 +110,7 @@ class ErrandService(
         var helpId: Long? = null
 
         val isUserCustomerAndIsErrandMatchedButNotCompleted =
-            isUserCustomer && didUserApply && !errand.complete
+            isUserCustomer && errand.chosenHelper != null && !errand.complete
 
         if (isUserCustomerAndIsErrandMatchedButNotCompleted) {
             helpId = helpRepository.findByErrandAndHelper(

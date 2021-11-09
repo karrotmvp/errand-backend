@@ -33,7 +33,7 @@ class HelpService(
 
         val helpCnt = helpRepository.countByErrand(errand)
         if (helpCnt >= 5) throw ErrandException(ErrandError.BAD_REQUEST, "하나의 심부름에는 5명까지만 지원할 수 있어요.")
-        if (helpRepository.findByErrandAndHelper(errand, user) != null) throw ErrandException(
+        if (helpRepository.existsByErrandAndHelper(errand, user)) throw ErrandException(
             ErrandError.BAD_REQUEST,
             "하나의 심부름에는 한번만 지원할 수 있어요."
         )
