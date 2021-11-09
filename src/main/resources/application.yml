@@ -37,7 +37,7 @@ daangn:
     neighbor-range: RANGE_2
 test: false
 token.secret: Dj@bWv5w-$m#kjNWe?y#
-host.url: https://daangn-errand.com
+
 application:
   mixpanel:
     token: a26050d2615ddc400fdfc0d88cd3d3f3

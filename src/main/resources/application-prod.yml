@@ -24,3 +24,4 @@ sentry:
 springfox:
   documentation:
     enabled: false
+host.url: https://daangn-errand.com
