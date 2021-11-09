@@ -131,7 +131,7 @@ class ErrandService(
             errand = errandDto,
             isMine = isUserCustomer,
             didIApply = didUserApply,
-            wasIChosen = !isUserChosenHelper,
+            wasIChosen = isUserChosenHelper,
             helpId
         )
     }
