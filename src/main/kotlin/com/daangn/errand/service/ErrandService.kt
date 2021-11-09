@@ -98,9 +98,9 @@ class ErrandService(
         errandDto: ErrandDto
     ): GetErrandResDto<ErrandDto> {
 
-        val didUserApply: Boolean = helpRepository.existsByErrandAndHelper(errand, user)
-        val isUserCustomer = errand.customer == user
-        val isUserChosenHelper = errand.chosenHelper == user
+        val didUserApply: Boolean = helpRepository.existsByErrandAndHelper(errand, user) // helper 테이블이랑 join 가능
+        val isUserCustomer = if (didUserApply) false else errand.customer == user
+        val isUserChosenHelper = if (didUserApply && !isUserCustomer) errand.chosenHelper == user else false
         errandDto.setStatus(errand, user, didUserApply)
 
         if (!isUserCustomer && (isUserChosenHelper || errand.complete)) {
@@ -199,7 +199,7 @@ class ErrandService(
     ): List<GetErrandResDto<ErrandPreview>> {
         return errands.asSequence().map { errand ->
             val isMine = errand.customer == user
-            val didIApply: Boolean = !isMine && helpRepository.findByErrandAndHelper(errand, user) != null
+            val didIApply: Boolean = !isMine && helpRepository.existsByErrandAndHelper(errand, user)
             val wasIChosen = errand.chosenHelper == user
             GetErrandResDto(makeErrandToErrandPreview(errand, user), isMine, didIApply, wasIChosen)
         }.toList()
