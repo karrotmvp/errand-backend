@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class GetHelpDetailResDto(
+    val errandId: Long,
     val isCustomer: Boolean,
     val isMatched: Boolean, // TODO: isChosenHelper 로 바꾸기
     val helper: UserProfileVo,
