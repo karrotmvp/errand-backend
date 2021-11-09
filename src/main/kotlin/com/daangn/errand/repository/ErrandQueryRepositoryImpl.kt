@@ -18,7 +18,7 @@ class ErrandQueryRepositoryImpl(
     ): MutableList<Errand> {
         return query.selectFrom(errand)
             .where(errand.regionId.`in`(regionIds).and(errand.unexposed.isFalse))
-            .where(errand.createdAt.before(lastErrand.createdAt))
+            .where(errand.id.lt(lastErrand.id))
             .orderBy(errand.createdAt.desc())
             .limit(size)
             .fetch()
@@ -49,7 +49,7 @@ class ErrandQueryRepositoryImpl(
     ): MutableList<Errand> {
         return query.selectFrom(errand)
             .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
-            .where(errand.createdAt.before(lastErrand.createdAt))
+            .where(errand.id.lt(lastErrand.id))
             .orderBy(errand.createdAt.desc())
             .orderBy(errand.id.desc())
             .limit(size)
