@@ -19,3 +19,5 @@ sentry:
   dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   traces-sample-rate: 1.0
   environment: development
+host:
+  url: https://front.daangn-errand.com
