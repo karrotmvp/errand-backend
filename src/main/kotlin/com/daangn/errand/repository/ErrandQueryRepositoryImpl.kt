@@ -18,8 +18,8 @@ class ErrandQueryRepositoryImpl(
     ): MutableList<Errand> {
         return query.selectFrom(errand)
             .where(errand.regionId.`in`(regionIds).and(errand.unexposed.isFalse))
-            .where(errand.id.lt(lastErrand.id))
-            .orderBy(errand.createdAt.desc())
+            .where(errand.id.lt(lastErrand.id)) // 먼저 생성된 심부름의 id는 무조건 더 작다는 가정
+            .orderBy(errand.id.desc())
             .limit(size)
             .fetch()
     }
@@ -27,7 +27,6 @@ class ErrandQueryRepositoryImpl(
     override fun findErrandOrderByCreatedAtDesc(size: Long, regionIds: List<String>): MutableList<Errand> {
         return query.selectFrom(errand)
             .where(errand.regionId.`in`(regionIds).and(errand.unexposed.isFalse))
-            .orderBy(errand.createdAt.desc())
             .orderBy(errand.id.desc())
             .limit(size)
             .fetch()
@@ -36,7 +35,6 @@ class ErrandQueryRepositoryImpl(
     override fun findByCustomerOrderByCreateAtDesc(customer: User, size: Long): MutableList<Errand> {
         return query.selectFrom(errand)
             .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
-            .orderBy(errand.createdAt.desc())
             .orderBy(errand.id.desc())
             .limit(size)
             .fetch()
@@ -50,7 +48,6 @@ class ErrandQueryRepositoryImpl(
         return query.selectFrom(errand)
             .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
             .where(errand.id.lt(lastErrand.id))
-            .orderBy(errand.createdAt.desc())
             .orderBy(errand.id.desc())
             .limit(size)
             .fetch()
