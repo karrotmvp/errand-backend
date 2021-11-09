@@ -1,7 +1,6 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.*
-import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
@@ -98,12 +97,11 @@ class ErrandService(
         user: User,
         errandDto: ErrandDto
     ): GetErrandResDto<ErrandDto> {
-        errandDto.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
 
+        val didUserApply: Boolean = helpRepository.existsByErrandAndHelper(errand, user)
         val isUserCustomer = errand.customer == user
-        val userHelp: Help? = helpRepository.findByErrandAndHelper(errand, user)
-        val didUserApply: Boolean = userHelp != null
         val isUserChosenHelper = errand.chosenHelper == user
+        errandDto.setStatus(errand, user, didUserApply)
 
         if (!isUserCustomer && (isUserChosenHelper || errand.complete)) {
             errandDto.customerPhoneNumber = null
@@ -112,7 +110,7 @@ class ErrandService(
         var helpId: Long? = null
 
         val isUserCustomerAndIsErrandMatchedButNotCompleted =
-            isUserCustomer && errand.chosenHelper != null && !errand.complete
+            isUserCustomer && didUserApply && !errand.complete
 
         if (isUserCustomerAndIsErrandMatchedButNotCompleted) {
             helpId = helpRepository.findByErrandAndHelper(
@@ -124,7 +122,8 @@ class ErrandService(
         val didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper =
             didUserApply && errand.chosenHelper == null || isUserChosenHelper && !errand.complete
 
-        if (didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper) helpId = userHelp?.id
+        if (didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper) helpId =
+            helpRepository.findByErrandAndHelper(errand, user)?.id
 
 
         return GetErrandResDto(
@@ -214,7 +213,7 @@ class ErrandService(
         errandPreview.helpCount = helpRepository.countByErrand(errand)
         errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
 
-        errandPreview.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
+        errandPreview.setStatus(errand, user, helpRepository.existsByErrandAndHelper(errand, user))
         errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
         return errandPreview
     }

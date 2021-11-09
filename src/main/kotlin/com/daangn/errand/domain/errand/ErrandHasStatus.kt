@@ -5,8 +5,8 @@ import com.daangn.errand.domain.user.User
 
 interface ErrandHasStatus {
     var status: String?
-    fun setStatus(errand: Errand, user: User, help: Help?) {
-        val didUserApplyButWasNotChosen = help != null && errand.chosenHelper != user
+    fun setStatus(errand: Errand, user: User, didUserApply: Boolean) {
+        val didUserApplyButWasNotChosen = didUserApply && errand.chosenHelper != user
         val isAnyHelperMatched: Boolean = errand.chosenHelper != null
 
         val statusEnum = if (errand.complete) {
