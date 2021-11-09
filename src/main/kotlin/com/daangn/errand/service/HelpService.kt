@@ -8,12 +8,9 @@ import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.event.HelpRegisteredChatEvent
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -66,6 +63,10 @@ class HelpService(
         val help = helpRepository.findById(helpId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (help.helper != user) throw ErrandException(ErrandError.NOT_PERMITTED)
+        if (help.errand.chosenHelper == user) throw ErrandException(
+            ErrandError.BAD_REQUEST,
+            "헬퍼로 지정된 심부름은 지원을 취소할 수 없습니다."
+        )
         helpRepository.delete(help)
     }
 }
