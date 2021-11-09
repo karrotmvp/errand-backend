@@ -211,8 +211,7 @@ class ErrandService(
     ): ErrandPreview {
         val errandPreview = errandConverter.toErrandPreview(errand)
         errandPreview.helpCount = helpRepository.countByErrand(errand)
-        errandPreview.thumbnailUrl = if (errand.images.isNotEmpty()) errand.images[0].url else null
-
+        errandPreview.thumbnailUrl = if (imageRepository.existsByErrand(errand)) errand.images[0].url else null
         errandPreview.setStatus(errand, user, helpRepository.existsByErrandAndHelper(errand, user))
         errandPreview.regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
         return errandPreview
