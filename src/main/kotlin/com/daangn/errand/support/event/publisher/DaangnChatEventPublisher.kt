@@ -89,7 +89,7 @@ data class DaangnChatEventPublisher(
         eventPublisher.publishEvent(
             HelpRegisteredChatEvent(
                 listOf(errand.customer.daangnId),
-                "$baseUrl/appliers/${errand.id}"
+                "$baseUrl/errands/${errand.id}/appliers"
             )
         )
     }
