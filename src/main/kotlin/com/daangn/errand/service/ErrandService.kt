@@ -1,6 +1,7 @@
 package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.*
+import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
@@ -99,20 +100,39 @@ class ErrandService(
     ): GetErrandResDto<ErrandDto> {
         errandDto.setStatus(errand, user, helpRepository.findByErrandAndHelper(errand, user))
 
-        val isNotCustomer = errand.customer != user
-        val didUserApply: Boolean = helpRepository.findByErrandAndHelper(errand, user) != null
-        val isNotChosenHelper = errand.chosenHelper != user
+        val isUserCustomer = errand.customer == user
+        val userHelp: Help? = helpRepository.findByErrandAndHelper(errand, user)
+        val didUserApply: Boolean = userHelp != null
+        val isUserChosenHelper = errand.chosenHelper == user
 
-        if (isNotCustomer && (isNotChosenHelper || errand.complete)) {
+        if (!isUserCustomer && (isUserChosenHelper || errand.complete)) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
         }
+        var helpId: Long? = null
+
+        val isUserCustomerAndIsErrandMatchedButNotCompleted =
+            isUserCustomer && errand.chosenHelper != null && !errand.complete
+
+        if (isUserCustomerAndIsErrandMatchedButNotCompleted) {
+            helpId = helpRepository.findByErrandAndHelper(
+                errand,
+                errand.chosenHelper ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
+            )?.id
+        }
+
+        val didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper =
+            didUserApply && errand.chosenHelper == null || isUserChosenHelper && !errand.complete
+
+        if (didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper) helpId = userHelp?.id
+
 
         return GetErrandResDto(
             errand = errandDto,
-            isMine = !isNotCustomer,
+            isMine = isUserCustomer,
             didIApply = didUserApply,
-            wasIChosen = !isNotChosenHelper
+            wasIChosen = !isUserChosenHelper,
+            helpId
         )
     }
 
@@ -275,24 +295,6 @@ class ErrandService(
             daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
             help.appeal,
             if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
-        )
-    }
-
-    fun readMyHelpByErrandId(payload: JwtPayload, errandId: Long): GetHelpDetailResDto {
-        val user = userRepository.findById(payload.userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
-        val help = helpRepository.findByErrandAndHelper(errand, user) ?: throw ErrandException(
-            ErrandError.BAD_REQUEST,
-            "해당 심부름의 지원내역이 없습니다."
-        )
-        val userProfileVo = userConverter.toUserProfileVo(user)
-
-        return GetHelpDetailResDto(
-            false,
-            help.errand.chosenHelper == user,
-            daangnUtil.setUserDaangnProfile(userProfileVo, help.regionId),
-            help.appeal,
-            help.phoneNumber
         )
     }
 

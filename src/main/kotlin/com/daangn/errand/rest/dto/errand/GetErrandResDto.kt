@@ -11,6 +11,7 @@ data class GetErrandResDto<T: ErrandHasStatus>(
     var isMine: Boolean,
     var didIApply: Boolean,
     var wasIChosen: Boolean,
+    var helpId: Long? = null
 )
 
 

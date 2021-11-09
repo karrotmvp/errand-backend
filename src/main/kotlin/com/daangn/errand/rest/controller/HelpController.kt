@@ -29,16 +29,6 @@ class HelpController(
         @ApiParam(value = "Help ID") @PathVariable(value = "helpId") id: Long
     ) = ErrandResponse(errandService.readHelpDetail(payload, id))
 
-    @GetMapping("")
-    @ApiOperation(value = "심부름 ID로 내가 지원한 내역 보기 API")
-    fun getMyHelpDetail(
-        @ApiIgnore @TokenPayload payload: JwtPayload,
-        @ApiParam(value = "심부름 ID") @RequestParam(value = "errandId") errandId: Long
-    ): ErrandResponse<GetHelpDetailResDto> {
-        val helpDetail = errandService.readMyHelpByErrandId(payload, errandId)
-        return ErrandResponse(helpDetail)
-    }
-
 
     @PostMapping
     fun postHelp(
