@@ -1,7 +1,6 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.help.HelpVo
-import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService

@@ -156,6 +156,7 @@ class ErrandService(
                     help.regionId
                 )
             HelperPreview(
+                errand.id!!,
                 help.id!!,
                 userProfileVo,
                 help.appeal
@@ -290,6 +291,7 @@ class ErrandService(
 
         val isChosenHelper = help.errand.chosenHelper == help.helper
         return GetHelpDetailResDto(
+            help.errand.id!!,
             isCustomer,
             help.errand.chosenHelper == help.helper,
             daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
