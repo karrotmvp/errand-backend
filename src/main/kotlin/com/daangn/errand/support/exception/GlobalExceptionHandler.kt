@@ -13,22 +13,24 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartException
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+class GlobalExceptionHandler(
+    val sentrySender: SentrySender
+) {
     private val logger = KotlinLogging.logger {}
 
     @ExceptionHandler(ErrandException::class)
     fun errandException(e: ErrandException): ResponseEntity<ErrandResponse<Unit>> {
-        Sentry.captureException(e)
+        sentrySender.sendToSentry(e)
         val error: ErrandError = e.error
         logger.error { "ErrandException : ${e.message}" }
         return ResponseEntity
             .status(error.status)
-            .body(ErrandResponse(error.status, e.message ?: error.description))
+            .body(ErrandResponse(error.status, e.message ?: "알 수 없는 에러"))
     }
 
     @ExceptionHandler(MultipartException::class)
     fun multipartException(e: MultipartException): ResponseEntity<ErrandResponse<Unit>> {
-        Sentry.captureException(e)
+        sentrySender.sendToSentry(e)
         logger.error { "MultipartException : ${e.stackTrace}" }
         val msg: String = if (e is MaxUploadSizeExceededException) "이미지 사이즈가 너무 커요." else "이미지가 입력되지 않았습니다."
         return ResponseEntity
@@ -47,9 +49,9 @@ class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException::class)
     fun unknownException(e: Exception): ResponseEntity<ErrandResponse<Unit>> {
         logger.error { "UnknownException : $e" }
-        Sentry.captureException(e)
+        sentrySender.sendToSentry(e)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrandResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.localizedMessage))
+            .body(ErrandResponse(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 에러"))
     }
 }
