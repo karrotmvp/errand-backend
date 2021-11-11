@@ -19,4 +19,16 @@ interface ErrandHasStatus {
         }
         this.status = statusEnum.name
     }
+    fun setStatus(errand: MainErrandQueryResult, userId: Long) {
+        val statusEnum = if (errand.complete) {
+            Status.COMPLETE
+        } else if (errand.reviewerHelpId != null && errand.chosenHelperId != null && errand.chosenHelperId != userId) {
+            Status.FAIL
+        } else if (errand.chosenHelperId != null) {
+            Status.PROCEED
+        } else {
+            Status.WAIT
+        }
+        this.status = statusEnum.name
+    }
 }
