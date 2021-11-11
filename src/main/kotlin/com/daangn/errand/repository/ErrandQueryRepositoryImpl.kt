@@ -8,7 +8,6 @@ import com.daangn.errand.domain.user.User
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
-import datadog.trace.api.Trace
 
 class ErrandQueryRepositoryImpl(
     val query: JPAQueryFactory
@@ -79,7 +78,6 @@ class ErrandQueryRepositoryImpl(
             .fetch()
     }
 
-    @Trace
     override fun findMainErrands(
         viewerId: Long,
         size: Long,

@@ -4,6 +4,6 @@ import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.image.Image
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface ImageRepository: JpaRepository<Image, Long> {
+interface ImageRepository: JpaRepository<Image, Long>, ImageQueryRepository {
     fun existsByErrand(errand: Errand): Boolean
 }
