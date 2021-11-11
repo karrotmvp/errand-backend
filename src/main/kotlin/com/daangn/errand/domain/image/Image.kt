@@ -15,7 +15,7 @@ class Image(
     @Column
     var url: String = url
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "errand_id")
     var errand: Errand = errand
 }
