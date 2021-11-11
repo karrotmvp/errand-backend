@@ -1,10 +1,20 @@
 package com.daangn.errand.rest.dto.daangn
 
+import datadog.trace.api.Trace
+
 data class GetRegionInfoRes(
     val data: Data
 ) {
     data class Data(
         val region: Region
+    )
+}
+
+data class GetRegionInfoListRes(
+    val data: Data
+) {
+    data class Data(
+        val regions: MutableList<Region>
     )
 }
 
