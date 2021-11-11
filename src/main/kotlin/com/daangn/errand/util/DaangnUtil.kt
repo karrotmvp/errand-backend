@@ -5,6 +5,7 @@ import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
+import datadog.trace.api.Trace
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -155,6 +156,7 @@ class DaangnUtil(
         }
     }
 
+    @Trace
     fun getNeighborRegionByRegionId(regionId: String): GetNeighborRegionInfoRes {
         val url = "$oApiBaseUrl/api/v2/regions/$regionId/neighbor_regions"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
@@ -229,5 +231,21 @@ class DaangnUtil(
         }
         val responseBody: String? = httpResponse.body?.string()
         return objectMapper.readValue(responseBody, GetUserInfoByUserIdListRes::class.java)
+    }
+
+    @Trace(operationName = "regionInfo Map")
+    fun getRegionInfoByRegionIdMap(regionIds: MutableSet<String>): MutableMap<String, String> {
+        val urlString = "$oApiBaseUrl/api/v2/regions/by_ids"
+        val regionIdSequence = regionIds.joinToString(",")
+        val httpUrl = urlString.toHttpUrlOrNull()!!.newBuilder()
+            .addQueryParameter("ids", regionIdSequence)
+            .build()
+        val request = Request.Builder().url(httpUrl).get().addHeader("X-Api-Key", appKey).build()
+        val httpResponse = httpClient.newCall(request).execute()
+        val responseBody: String? = httpResponse.body?.string()
+        val res = objectMapper.readValue(responseBody, GetRegionInfoListRes::class.java)
+        val ret: MutableMap<String, String> = HashMap()
+        res.data.regions.forEach { r -> ret[r.id] = r.name }
+        return ret
     }
 }

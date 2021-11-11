@@ -13,10 +13,14 @@ import javax.persistence.*
 @Entity
 @SQLDelete(sql = "UPDATE help SET deleted = true WHERE id=?")
 @Where(clause = "deleted=false")
+@Table(indexes = [
+    Index(name = "help_idx", columnList = "id"),
+    Index(name = "help_errand_helper_idx", columnList = "errand_id, helper_id")
+])
 class Help(
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     val errand: Errand,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     val helper: User,
     @Column(columnDefinition = "TEXT")
     val appeal: String,

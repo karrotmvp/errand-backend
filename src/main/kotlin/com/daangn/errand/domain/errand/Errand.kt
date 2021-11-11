@@ -16,11 +16,17 @@ import javax.persistence.*
 @Entity
 @SQLDelete(sql = "UPDATE errand SET deleted = true WHERE id=?")
 @Where(clause = "deleted=false")
+@Table(
+    indexes = [
+        Index(name = "errand_id_idx", columnList = "id, deleted"),
+        Index(name = "errand_customer_idx", columnList = "customer_id, deleted")
+    ]
+)
 class Errand(
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     val customer: User,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     var category: Category,
     @Column(nullable = false)
@@ -42,7 +48,7 @@ class Errand(
     @ColumnDefault("false")
     var complete: Boolean = false
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chosen_helper_id")
     var chosenHelper: User? = null
 

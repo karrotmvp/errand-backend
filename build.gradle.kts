@@ -85,6 +85,8 @@ dependencies {
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
 
+    implementation("com.datadoghq:dd-trace-api:0.90.0")
+    implementation("com.datadoghq:dd-trace-ot:0.90.0")
 }
 
 tasks.withType<KotlinCompile> {

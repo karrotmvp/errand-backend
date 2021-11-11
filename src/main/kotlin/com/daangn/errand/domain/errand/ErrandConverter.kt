@@ -30,4 +30,11 @@ interface ErrandConverter {
         Mapping(target = "region", ignore = true)
     )
     fun toErrandAdmin(errand: Errand): ErrandAdmin
+
+    @Mappings(
+        Mapping(target = "thumbnailUrl", ignore = true),
+        Mapping(target = "status", ignore = true),
+        Mapping(target = "regionName", ignore = true)
+    )
+    fun toErrandPreview(mainErrandQueryResult: MainErrandQueryResult): ErrandPreview
 }

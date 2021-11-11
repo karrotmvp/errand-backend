@@ -35,3 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+agents/dd-java-agent-0.90.0.jar
