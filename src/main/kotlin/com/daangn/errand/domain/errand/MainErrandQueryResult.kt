@@ -1,0 +1,24 @@
+package com.daangn.errand.domain.errand
+
+import com.daangn.errand.domain.category.Category
+import java.time.LocalDateTime
+
+data class MainErrandQueryResult(
+    val id: Long,
+    val reward: String,
+    val category: Category,
+    val customerId: Long,
+    val detail: String,
+    val regionId: String,
+    val complete: Boolean,
+    val helpCount: Long = 0L,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
+    var chosenHelperId: Long? = null,
+    var reviewerHelpId: Long? = null
+) {
+    var thumbnailUrl: String? = null
+    override fun toString(): String {
+        return "MainErrandQueryResult(customerId=$customerId, thumbnailUrl='$thumbnailUrl', detail='$detail', regionId='$regionId', chosenHelperId=$chosenHelperId, reviewerHelpId=$reviewerHelpId)"
+    }
+}

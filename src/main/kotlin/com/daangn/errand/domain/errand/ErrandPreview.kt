@@ -10,7 +10,7 @@ data class ErrandPreview(
     val id: Long,
     val detail: String,
     val reward: String,
-    var thumbnailUrl: String?,
+    var thumbnailUrl: String? = null,
     val chosenHelper: UserVo?,
     override var status: String?,
     val category: CategoryVo,
