@@ -42,6 +42,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    runtimeOnly("com.fasterxml.jackson.module:jackson-modules-java8:2.13.0")
+
     implementation("com.github.consoleau:kassava:2.1.0")
 
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
@@ -83,7 +85,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-devtools")
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
+//    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
 
     implementation("com.datadoghq:dd-trace-api:0.90.0")
     implementation("com.datadoghq:dd-trace-ot:0.90.0")
