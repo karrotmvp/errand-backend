@@ -28,7 +28,6 @@ class DevWebMvcConfig(
             .allowedOrigins("*")
             .allowedMethods("*")
             .maxAge(3600)
-            .allowCredentials(true) // ok
     }
 }
 
