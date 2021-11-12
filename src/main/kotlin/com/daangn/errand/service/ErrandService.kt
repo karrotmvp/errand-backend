@@ -103,7 +103,7 @@ class ErrandService(
         val isUserChosenHelper = if (didUserApply && !isUserCustomer) errand.chosenHelper == user else false
         errandDto.setStatus(errand, user, didUserApply)
 
-        if (!isUserCustomer || !isUserChosenHelper || (isUserChosenHelper && errand.complete)) {
+        if (!isUserCustomer && !isUserChosenHelper || (isUserChosenHelper && errand.complete)) {
             errandDto.customerPhoneNumber = null
             errandDto.detailAddress = null
         }
