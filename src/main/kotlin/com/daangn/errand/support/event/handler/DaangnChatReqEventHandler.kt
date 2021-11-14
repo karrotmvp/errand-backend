@@ -5,7 +5,6 @@ import com.daangn.errand.util.DaangnUtil
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class DaangnChatReqEventHandler(
@@ -14,8 +13,8 @@ class DaangnChatReqEventHandler(
     @Async
     @EventListener
     fun sendBizChat(event: DaangnChatReqRegisteredEvent) {
-         event.buildBizChat().forEach { reqDto ->
-             daangnUtil.sendBizChatting(reqDto)
-         }
+        event.buildBizChat().forEach { reqDto ->
+            daangnUtil.sendBizChatting(reqDto)
+        }
     }
 }
