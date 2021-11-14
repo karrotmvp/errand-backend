@@ -20,4 +20,4 @@ sentry:
   traces-sample-rate: 1.0
   environment: development
 host:
-  url: https://front.daangn-errand.com
+  url: https://front.daangn-errand.com/#
