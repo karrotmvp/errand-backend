@@ -1,6 +1,6 @@
 package com.daangn.errand.support.event.publisher
 
-import com.daangn.errand.domain.errand.Errand
+import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.support.error.ErrandError
@@ -31,27 +31,35 @@ data class DaangnChatEventPublisher(
     private val eventScheduler: EventScheduler,
 ) {
     @Async
-    @Transactional
-    fun publishErrandRegisteredEvent(errandId: Long) {
-        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val targetUserList = getUserDaangnIdListInCategory(errand)
-        val buttonLinkedUrl = "$baseUrl/errands/$errandId"
-        val regionName = daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+//    @Transactional
+    fun publishErrandRegisteredEvent(errandDto: ErrandDto) {
+        val errand =
+            errandRepository.findById(errandDto.id!!).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val targetUserList = getUserDaangnIdListInCategory(errandDto, errand.regionId)
+        val buttonLinkedUrl = "$baseUrl/errands/${errandDto.id}"
+        val regionName = try {
+            daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+        } catch (e: Exception) {
+            null
+        }
         eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl, regionName))
     }
 
-    fun getUserDaangnIdListInCategory(errand: Errand): List<String> {
-        val category = errand.category
+    fun getUserDaangnIdListInCategory(errandDto: ErrandDto, regionId: String): List<String> {
         val neighborUsers: MutableSet<String> = HashSet()
         val neighborRegionIdList =
-            daangnUtil.getNeighborRegionByRegionId(errand.regionId).data.region.neighborRegions.map { region ->
+            daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions.map { region ->
                 region.id
             }
         val iterator = neighborRegionIdList.iterator()
         while (iterator.hasNext()) {
             neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
         }
-        val users = userRepository.findByDaangnIdListAndHasCategory(errand.customer, neighborUsers, category)
+        val users = userRepository.findByDaangnIdListAndHasCategory(
+            errandDto.customer.id!!,
+            neighborUsers,
+            errandDto.category.id!!
+        )
 
         return users.asSequence().map { user ->
             user.daangnId

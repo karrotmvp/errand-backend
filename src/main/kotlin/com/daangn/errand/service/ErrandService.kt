@@ -86,7 +86,8 @@ class ErrandService(
 
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
 
-        daangnChatEventPublisher.publishErrandRegisteredEvent(errandId)
+        val errandDto = errandConverter.toErrandDto(errand)
+        daangnChatEventPublisher.publishErrandRegisteredEvent(errandDto)
         mixpanelEventPublisher.publishErrandRegisteredEvent(errandId)
 
         return PostErrandResDto(errandId)
