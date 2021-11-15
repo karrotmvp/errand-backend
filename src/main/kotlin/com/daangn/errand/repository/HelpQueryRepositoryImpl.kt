@@ -23,4 +23,10 @@ class HelpQueryRepositoryImpl (
             .limit(size)
             .fetch()
     }
+
+    override fun countByErrandId(errandId: Long): Long {
+        return query.selectFrom(help)
+            .where(help.errand.id.eq(errandId))
+            .fetchCount()
+    }
 }

@@ -11,12 +11,12 @@ data class MainErrandQueryResult(
     val detail: String,
     val regionId: String,
     val complete: Boolean,
-    val helpCount: Long = 0L,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     var chosenHelperId: Long? = null,
     var reviewerHelpId: Long? = null
 ) {
+    var helpCount: Long = 0
     var thumbnailUrl: String? = null
     override fun toString(): String {
         return "MainErrandQueryResult(customerId=$customerId, thumbnailUrl='$thumbnailUrl', detail='$detail', regionId='$regionId', chosenHelperId=$chosenHelperId, reviewerHelpId=$reviewerHelpId)"

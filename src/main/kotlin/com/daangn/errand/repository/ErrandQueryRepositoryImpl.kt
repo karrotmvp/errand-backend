@@ -96,14 +96,16 @@ class ErrandQueryRepositoryImpl(
                 errand.detail,
                 errand.regionId,
                 errand.complete,
-                errand.helps.size().longValue().`as`("helpCount"),
                 errand.createdAt,
                 errand.updatedAt,
                 errand.chosenHelper.id.`as`("chosenHelperId"),
                 help.id.`as`("reviewerHelpId"),
             )
         ).from(errand)
-            .leftJoin(help).on(help.errand.id.eq(errand.id).and(help.helper.id.eq(viewerId)).and(help.deleted.isFalse))
+            .leftJoin(help)
+                .on(help.errand.id.eq(errand.id)
+                    .and(help.helper.id.eq(viewerId))
+                    .and(help.deleted.isFalse))
             .where(predicate)
             .where(errand.regionId.`in`(regionIds))
             .orderBy(errand.id.desc())
