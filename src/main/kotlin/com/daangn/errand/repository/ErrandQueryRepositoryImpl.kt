@@ -103,7 +103,7 @@ class ErrandQueryRepositoryImpl(
                 help.id.`as`("reviewerHelpId"),
             )
         ).from(errand)
-            .leftJoin(help).on(help.errand.id.eq(errand.id).and(help.helper.id.eq(viewerId)))
+            .leftJoin(help).on(help.errand.id.eq(errand.id).and(help.helper.id.eq(viewerId)).and(help.deleted.isFalse))
             .where(predicate)
             .where(errand.regionId.`in`(regionIds))
             .orderBy(errand.id.desc())
