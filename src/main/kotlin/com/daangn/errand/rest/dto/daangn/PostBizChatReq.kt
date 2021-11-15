@@ -1,14 +1,18 @@
 package com.daangn.errand.rest.dto.daangn
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
 data class PostBizChatReq(
     val input: Input
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Input(
     val userId: String,
     val title: String,
     val text: String,
     val actions: List<Action>,
+    val imageUrl: String? = null
 )
 
 data class Action(
