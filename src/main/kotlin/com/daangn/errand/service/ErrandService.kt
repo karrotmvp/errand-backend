@@ -193,6 +193,7 @@ class ErrandService(
         errands.forEach { e -> regionIds.add(e.regionId) }
         val regionIdAndNameHashMap = daangnUtil.getRegionInfoByRegionIdMap(regionIds)
         return errands.asSequence().map { errand ->
+            errand.helpCount = helpRepository.countByErrandId(errand.id)
             val isMine = errand.customerId == userId
             val didIApply: Boolean = !isMine && errand.reviewerHelpId != null
             val wasIChosen = errand.chosenHelperId == userId
