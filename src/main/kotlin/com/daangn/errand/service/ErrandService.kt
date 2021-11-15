@@ -79,9 +79,7 @@ class ErrandService(
             val futures = imageWithKeyList.map { imgWithKey ->
                 s3AsyncUploader.putObject(imgWithKey.key, imgWithKey.image)
             }
-            CompletableFuture.allOf(*futures.toTypedArray()).whenComplete { _, err ->
-                err?.printStackTrace()
-            }
+            CompletableFuture.allOf(*futures.toTypedArray()).handle { _, err -> throw err } // TODO: 확인
         }
 
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)

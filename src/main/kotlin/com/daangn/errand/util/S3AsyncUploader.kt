@@ -1,7 +1,5 @@
 package com.daangn.errand.util
 
-import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.exception.ErrandException
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -21,19 +19,13 @@ class S3AsyncUploader(
     @Value("\${cloud.aws.s3.bucket}") private val bucketName: String,
 ) {
     private val logger = KotlinLogging.logger { }
+
     fun putObject(key: String, multipartFile: MultipartFile): CompletableFuture<PutObjectResponse> {
         val file = convertMultipartToFile(multipartFile)
         val objectRequest = PutObjectRequest
             .builder().bucket(bucketName).key(key).build()
-        val future =
-            s3AsyncClient.putObject(objectRequest, AsyncRequestBody.fromFile(Path.of(file.path)))
-                .whenComplete { res, err ->
-                    removeNewFile(file)
-                    if (res == null) throw ErrandException(ErrandError.FAIL_TO_CREATE)
-                    else err?.printStackTrace()
-                } // 로컬에 올라와 있는 애를 업로드
-
-        return future
+        return s3AsyncClient.putObject(objectRequest, AsyncRequestBody.fromFile(Path.of(file.path)))
+            .whenComplete { _, _ -> removeNewFile(file) }
     }
 
     fun generateKey(fileName: String): String {
