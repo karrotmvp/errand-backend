@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.S3AsyncClient
 
 @Configuration
 class S3Config(
@@ -24,7 +29,18 @@ class S3Config(
     @Bean
     fun awsS3Client(): AmazonS3Client {
         val awsCreds = BasicAWSCredentials(accessKey, secretKey)
-        return AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(AWSStaticCredentialsProvider(awsCreds))
+        return AmazonS3ClientBuilder.standard().withRegion(region)
+            .withCredentials(AWSStaticCredentialsProvider(awsCreds))
             .build() as AmazonS3Client
+    }
+
+    @Bean
+    fun awsS3AsyncClient(): S3AsyncClient {
+        val awsCredential = AwsBasicCredentials.create(accessKey, secretKey)
+        val region = Region.of(region)
+        return S3AsyncClient.builder()
+            .credentialsProvider(StaticCredentialsProvider.create(awsCredential))
+            .region(region)
+            .build()
     }
 }

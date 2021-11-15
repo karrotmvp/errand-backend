@@ -52,7 +52,7 @@ class Errand(
     @JoinColumn(name = "chosen_helper_id")
     var chosenHelper: User? = null
 
-    @OneToMany(mappedBy = "errand")
+    @OneToMany(mappedBy = "errand", cascade = [CascadeType.REMOVE])
     var images: MutableList<Image> = ArrayList()
 
     // help를 전부 가지고 있는게 편하다

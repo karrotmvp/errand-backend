@@ -76,7 +76,7 @@ class ErrandController(
     @DeleteMapping("/{id}")
     @ApiOperation(value = "심부름 삭제하기 API")
     fun deleteErrand(
-        @TokenPayload payload: JwtPayload,
+        @ApiIgnore @TokenPayload payload: JwtPayload,
         @ApiParam(value = "심부름 ID") @PathVariable(value = "id") errandId: Long
     ): ErrandResponse<Any> {
         errandService.destroyErrand(payload.userId, errandId)

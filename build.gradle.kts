@@ -66,6 +66,11 @@ dependencies {
 
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
+    // async s3 client
+    implementation("software.amazon.awssdk:regions:2.17.81")
+    implementation("software.amazon.awssdk:core:2.17.81")
+    implementation("software.amazon.awssdk:s3:2.17.81")
+
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
 
@@ -84,8 +89,6 @@ dependencies {
     // admin static pages
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-devtools")
-
-//    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
 
     implementation("com.datadoghq:dd-trace-api:0.90.0")
     implementation("com.datadoghq:dd-trace-ot:0.90.0")
