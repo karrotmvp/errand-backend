@@ -2,6 +2,7 @@ package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.*
 import com.daangn.errand.domain.image.Image
+import com.daangn.errand.domain.image.ImageFileWithKey
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -19,10 +20,13 @@ import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
+import com.daangn.errand.util.S3AsyncUploader
 import com.daangn.errand.util.S3Uploader
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import software.amazon.awssdk.services.s3.model.PutObjectResponse
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 
 @Service
 @Transactional
@@ -37,6 +41,7 @@ class ErrandService(
     private val regionConverter: RegionConverter,
     private val userConverter: UserConverter,
     private val s3Uploader: S3Uploader,
+    private val s3AsyncUploader: S3AsyncUploader,
 
     private val daangnUtil: DaangnUtil,
     private val daangnChatEventPublisher: DaangnChatEventPublisher,
@@ -63,11 +68,22 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
-        postErrandReqDto.images?.forEach { image ->
-            val fileName = "${errand.id}-${user.id}-${LocalDateTime.now()}"
-            val imageUrl = s3Uploader.upload(image, fileName, "errand/img")
-            imageRepository.save(Image(imageUrl, errand))
+
+        if (!postErrandReqDto.images.isNullOrEmpty()) {
+            val imageWithKeyList = postErrandReqDto.images.map { image ->
+                val fileName = "${errand.id}-${user.id}-${LocalDateTime.now()}"
+                val key = s3AsyncUploader.generateKey(fileName)
+                imageRepository.save(Image(s3AsyncUploader.generateObjectUrl(key), errand))
+                ImageFileWithKey(image, key)
+            }
+            val futures = imageWithKeyList.map { imgWithKey ->
+                s3AsyncUploader.putObject(imgWithKey.key, imgWithKey.image)
+            }
+            CompletableFuture.allOf(*futures.toTypedArray()).whenComplete { _, err ->
+                err?.printStackTrace()
+            }
         }
+
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
 
         daangnChatEventPublisher.publishErrandRegisteredEvent(errandId)
