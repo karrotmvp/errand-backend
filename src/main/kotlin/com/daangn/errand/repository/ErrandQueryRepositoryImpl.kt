@@ -63,7 +63,6 @@ class ErrandQueryRepositoryImpl(
                 errand.detail,
                 errand.regionId,
                 errand.complete,
-                errand.helps.size().longValue().`as`("helpCount"),
                 errand.createdAt,
                 errand.updatedAt,
                 errand.chosenHelper.id.`as`("chosenHelperId"),
