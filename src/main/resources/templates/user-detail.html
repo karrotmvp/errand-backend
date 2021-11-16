@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Errand Admin</title>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>이름</th>
+        <th>프로필 사진</th>
+        <th>매너온도</th>
+        <th>심부름 수</th>
+        <th>도움 수</th>
+        <th>이름</th>
+    </tr>
+    </thead>
+</table>
+이름
+<div th:text="${userInfo.nickname}"></div>
+프로필 사진
+<img th:src="${userInfo.profileImageUrl}" width="50px"/>
+매너온도
+<div th:text="${userInfo.mannerTemperature}"></div>
+</body>
+</html>

@@ -4,9 +4,13 @@ import com.daangn.errand.domain.errand.ErrandAdmin
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.domain.help.HelpConverter
+import com.daangn.errand.domain.user.UserAdmin
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
+import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.rest.dto.daangn.DaangnUserInfo
+import com.daangn.errand.rest.dto.daangn.GetUserInfoByUserIdRes
 import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class AdminService(
     val errandRepository: ErrandRepository,
+    val userRepository: UserRepository,
     val errandConverter: ErrandConverter,
     val daangnUtil: DaangnUtil,
     val regionConverter: RegionConverter,
@@ -66,5 +71,21 @@ class AdminService(
             helpAdmin.helper = daangnUtil.setUserDaangnProfile(userProfile)
             helpAdmin
         }.toList()
+    }
+
+    fun getUserDaangnInfo(userId: Long): UserAdmin {
+        val user = userRepository.findById(userId).get()
+        val daangnProfile = daangnUtil.getUserInfo(user.daangnId).data.user
+        val errandCount = errandRepository.countByCustomer(user)
+        val helpCount = helpRepository.countByHelper(user)
+        return UserAdmin(
+            user.id!!,
+            user.daangnId,
+            daangnProfile.nickname,
+            daangnProfile.profileImageUrl,
+            daangnProfile.mannerTemperature,
+            errandCount,
+            helpCount.toInt()
+        )
     }
 }

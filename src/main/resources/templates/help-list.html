@@ -9,7 +9,7 @@
         }
 
         th, td { padding: 10px; }
-        .tableTitle{ font-size: larger; }
+        /*.tableTitle{ font-size: larger; }*/
         a{
             color: black;
             text-decoration: none;
@@ -21,24 +21,25 @@
 </head>
 <body>
 <button id="backButton" type="button">< 심부름 상세정보로 돌아가기</button>
-<h2>지원자 목록</h2>
+<h3>지원자 목록</h3><br>
 <div id="helpList">
     <table class="application-list">
-        <tr class="tableTitle">
-            <th>Help ID</th>
-            <th>지원자(Helper) ID</th>
-            <th>지원자 닉네임</th>
-            <th>지원자 아이디</th>
+        <tr class="tableTitle" >
+            <th style="margin-right: 20px">Help ID</th>
+            <th>지원자 ID</th>
+            <th>지원자 정보</th>
             <th>각오</th>
             <th>지원자 전화번호</th>
         </tr>
         <tr th:each="help: ${helpList}">
-            <td th:text="${help.id}"></td>
-            <td th:text="${help.helper.id}"></td>
-            <td th:text="${help.helper.nickname}"></td>
-            <td th:text="${help.helper.id}"></td>
-            <td th:text="${help.appeal}"></td>
-            <td th:text="${help.phoneNumber}"></td>
+            <td th:text="${help.id}" style="padding: 10px"></td>
+            <td th:text="${help.helper.id}"style="padding: 10px"></td>
+            <td style="padding: 10px">
+                <div th:text="${help.helper.nickname}" style="display: flex; justify-content: center"></div>
+                <img th:src="${help.helper.profileImageUrl}" width="50px"/>
+            </td>
+            <td th:text="${help.appeal}" style="padding: 10px"></td>
+            <td th:text="${help.phoneNumber}" style="padding: 10px"></td>
         </tr>
     </table>
 </div>

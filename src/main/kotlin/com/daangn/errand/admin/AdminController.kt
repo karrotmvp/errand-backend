@@ -3,6 +3,8 @@ package com.daangn.errand.admin
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.repository.ErrandRepository
+import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.exception.ErrandException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody
 @Controller
 @RequestMapping("/admin")
 class  AdminController(
-    private val errandRepository: ErrandRepository,
-    private val errandConverter: ErrandConverter,
     private val adminService: AdminService,
 ) {
     @GetMapping("")
@@ -29,6 +29,9 @@ class  AdminController(
     @GetMapping("/errand/{id}")
     fun getErrandDetail(model: Model, @PathVariable(value = "id") id: Long): String {
         val errandAdmin = adminService.getErrandAdminDetail(id)
+        val userId = errandAdmin.customer.id ?: throw ErrandException(ErrandError.BAD_REQUEST, "customer id 없음")
+        val userInfo = adminService.getUserDaangnInfo(userId)
+        model.addAttribute("userInfo", userInfo)
         model.addAttribute("errand", errandAdmin)
         return "errand-detail"
     }
@@ -59,5 +62,15 @@ class  AdminController(
         val helps: List<HelpAdmin> = adminService.getHelpList(id)
         model.addAttribute("helpList", helps)
         return "help-list"
+    }
+
+    @GetMapping("/user/{id}")
+    fun getUserInfo(
+        @PathVariable(value = "id") userId: Long,
+        model: Model,
+    ): String {
+        val userInfo = adminService.getUserDaangnInfo(userId)
+        model.addAttribute("userInfo", userInfo)
+        return "user-detail"
     }
 }

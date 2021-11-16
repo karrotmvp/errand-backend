@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <title>Errand Admin</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/list.css"/>
     <style>
         @font-face {
             font-family: 'Cafe24Ssurround';
@@ -20,7 +18,6 @@
 
         th, td {
             padding: 10px;
-            line-height: 150%;
         }
 
         .idNumberTd {
@@ -50,12 +47,14 @@
         }
 
         .sideBar {
-            float: left; width: 15%;
+            float: left;
+            width: 15%;
             box-sizing: border-box;
             padding-left: 10px;
             padding-top: 20px;
 
         }
+
         #admin {
             font-family: 'Cafe24Ssurround';
             font-size: x-large;
@@ -67,6 +66,9 @@
             padding-left: 10px;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div class="sideBar">
@@ -95,18 +97,29 @@
         <tr th:each="errand : ${errandList}">
             <td class="idNumberTd" th:text="${errand.id}"></td>
             <td th:text="${errand.region.name}"></td>
-            <td class="idNumberTd" th:text="${errand.customer.id}"></td>
+
+            <td class="idNumberTd">
+                <a th:text="${errand.customer.id}"
+                   th:href="@{/admin/user/{userId}(userId = ${errand.customer.id})}" target='_blank'></a></td>
+
             <td th:attr="class=${errand.complete ? 'statusGreen' : (errand.chosenHelper != null ? 'statusBlue' : 'statusGray')}"
                 th:text="${errand.complete ? '완료' : (errand.chosenHelper != null ? '수행 중!' : '매칭 전')}"></td>
+
             <td><a th:text="${errand.helpCount}+'명'"
                    th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}" target='_blank'></a></td>
+
             <td><a th:text="${#strings.abbreviate(errand.detail, 50)}"
                    th:href="@{/admin/errand/{errandId}(errandId = ${errand.id})}"></a></td>
+
             <td th:text="${#temporals.format(errand.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${errand.viewCnt}"></td>
         </tr>
         </tbody>
     </table>
 </div>
+<ul class="pager">
+    <li><a href="#">Previous</a></li>
+    <li><a href="#">Next</a></li>
+</ul>
 </body>
 </html>
