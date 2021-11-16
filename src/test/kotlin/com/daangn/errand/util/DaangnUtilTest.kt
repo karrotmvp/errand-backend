@@ -60,7 +60,12 @@ internal class DaangnUtilTest constructor(
     @Test
     fun `당근 프로필 불러오기`() {
         val userId = "8a190fa9bb5d4d89b3944dc8c5b3a102"
-        assertDoesNotThrow { daangnUtil.getUserInfo(userId) }
+        val userInfo: GetUserInfoByUserIdRes = assertDoesNotThrow { daangnUtil.getUserInfo(userId) }
+        
+        println(userInfo.data.user.id)
+        println(userInfo.data.user.nickname)
+        println(userInfo.data.user.profileImageUrl)
+        println(userInfo.data.user.mannerTemperature)
     }
 
     @Test

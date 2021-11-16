@@ -84,31 +84,6 @@ class DaangnUtil(
         }
     }
 
-    fun getMannerTemp(accessToken: String): GetUserMannerPointRes.Data {
-        val url = "$openApiBaseUrl/api/v1/users/me/manner_point"
-        val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
-        val httpResponse = try {
-            httpClient.newCall(
-                Request.Builder()
-                    .get()
-                    .url(httpUrl)
-                    .addHeader("Authorization", "Bearer $accessToken")
-                    .build()
-            ).execute()
-        } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
-        }
-        if (!httpResponse.isSuccessful) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setCustomDesc("당근 회원 매너온도 조회 실패"))
-        }
-        val res: GetUserMannerPointRes = try {
-            objectMapper.readValue(httpResponse.body?.string(), GetUserMannerPointRes::class.java)
-        } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
-        }
-        return res.data
-    }
-
     fun getRegionInfoByRegionId(regionId: String): GetRegionInfoRes.Data {
         val url = "$oApiBaseUrl/api/v2/regions/$regionId"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
@@ -192,6 +167,7 @@ class DaangnUtil(
         val userInfoRes = getUserInfoRes.data.user
         user.nickname = userInfoRes.nickname
         user.profileImageUrl = userInfoRes.profileImageUrl
+        user.mannerTemp = userInfoRes.mannerTemperature
         if (regionId != null) user.regionName = getRegionInfoByRegionId(regionId).region.name
         return user
     }

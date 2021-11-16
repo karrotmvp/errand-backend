@@ -19,5 +19,6 @@ data class GetUserInfoByUserIdListRes (
 data class DaangnUserInfo(
     val id: String,
     val nickname: String?,
-    val profileImageUrl: String?
+    val profileImageUrl: String?,
+    val mannerTemperature: Float?,
 )

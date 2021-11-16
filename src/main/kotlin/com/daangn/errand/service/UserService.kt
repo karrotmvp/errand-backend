@@ -33,11 +33,11 @@ class UserService(
     fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
         var isSignUp = false
-        val user: User = userRepository.findByDaangnId(daangnId) ?: run {
+        val user = userRepository.findByDaangnId(daangnId) ?: run {
             isSignUp = true
             userRepository.save(User(daangnId))
         }
-        val mannerTemp: Float = daangnUtil.getMannerTemp(accessToken).mannerPoint + 36.5f
+        val mannerTemp: Float = daangnUtil.getUserInfo(daangnId).data.user.mannerTemperature ?: 36.5f
         user.mannerTemp = mannerTemp
 
         mixpanelEventPublisher.publishErrandSignInEvent(
