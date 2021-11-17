@@ -118,8 +118,26 @@
     </table>
 </div>
 <ul class="pager">
-    <li><a href="#">Previous</a></li>
-    <li><a href="#">Next</a></li>
+    <li><a id="previousButton">Previous</a></li>
+    <li><a id="nextButton">Next</a></li>
 </ul>
+<script th:inline="javascript">
+    const previousButton = document.getElementById("previousButton")
+    const nextButton = document.getElementById("nextButton")
+    const origin = document.location.origin
+    const params = new URLSearchParams(window.location.search)
+    let nextPageNum, previousPageNum;
+    if(params.has("pageNum")) {
+        const currentPageNum = params.get("pageNum")
+        nextPageNum = currentPageNum + 1
+        previousPageNum = (currentPageNum == 0) ? 0 : currentPageNum - 1
+        const prevUrl = `${origin}/admin/main?pageNum=${previousPageNum}`
+        previousPageNum.setAttribute("href", prevUrl)
+    } else {
+        previousButton.setAttribute("class", "page-item disables")
+        nextPageNum = 2
+    }
+    nextButton.setAttribute("href", `${origin}/admin/main?pageNum=${nextPageNum}`)
+</script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.daangn.errand.admin
 
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandAdmin
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.help.HelpAdmin
@@ -15,6 +16,9 @@ import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -40,8 +44,13 @@ class AdminService(
         errand.unexposed = false
     }
 
-    fun getErrandAdminList(): List<ErrandAdmin> {
-        return errandRepository.findAll().asSequence().map { errand ->
+    fun getErrandAdminList(pageNum: Number?): List<ErrandAdmin> {
+        val page = if (pageNum != null) pageNum.toInt()-1 else 0
+        val pageable = PageRequest.of(page, 20, Sort.by("id").descending())
+
+        val errands: Page<Errand> = errandRepository.findAll(pageable)
+
+        return errands.asSequence().map { errand ->
             val errandAdmin = errandConverter.toErrandAdmin(errand)
             val region = daangnUtil.getRegionInfoByRegionId(errand.regionId).region
             errandAdmin.region = regionConverter.toRegionVo(region)
