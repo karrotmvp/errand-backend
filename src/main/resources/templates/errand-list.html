@@ -118,26 +118,28 @@
     </table>
 </div>
 <ul class="pager">
-    <li><a id="previousButton">Previous</a></li>
-    <li><a id="nextButton">Next</a></li>
+    <li id="previous"><a id="previousButtonLink">Previous</a></li>
+    <li><a id="nextButtonLink">Next</a></li>
 </ul>
 <script th:inline="javascript">
-    const previousButton = document.getElementById("previousButton")
-    const nextButton = document.getElementById("nextButton")
+    const previousButtonLink = document.getElementById("previousButtonLink")
+    const nextButtonLink = document.getElementById("nextButtonLink")
     const origin = document.location.origin
     const params = new URLSearchParams(window.location.search)
+
     let nextPageNum, previousPageNum;
-    if(params.has("pageNum")) {
-        const currentPageNum = params.get("pageNum")
-        nextPageNum = currentPageNum + 1
-        previousPageNum = (currentPageNum == 0) ? 0 : currentPageNum - 1
-        const prevUrl = `${origin}/admin/main?pageNum=${previousPageNum}`
-        previousPageNum.setAttribute("href", prevUrl)
-    } else {
-        previousButton.setAttribute("class", "page-item disables")
+    const pageNumExist = params.has("pageNum")
+    const currentPageNum = pageNumExist ? Number.parseInt(params.get("pageNum")) : 1
+
+    if(currentPageNum === 1) { // 파라미터가 있고, 페이지가 1이 아닐 때 previous 활성화.
+        document.getElementById("previous").setAttribute("class", "page-item disables")
         nextPageNum = 2
+    } else {
+        previousPageNum = currentPageNum - 1
+        previousButtonLink.setAttribute("href", `${origin}/admin/main?pageNum=${previousPageNum}`)
+        nextPageNum = currentPageNum + 1
     }
-    nextButton.setAttribute("href", `${origin}/admin/main?pageNum=${nextPageNum}`)
+    nextButtonLink.setAttribute("href", `${origin}/admin/main?pageNum=${nextPageNum}`)
 </script>
 </body>
 </html>
