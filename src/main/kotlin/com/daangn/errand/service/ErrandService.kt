@@ -53,9 +53,9 @@ class ErrandService(
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
-        if (!postErrandReqDto.images.isNullOrEmpty() && postErrandReqDto.images.size > 5) throw ErrandException(
+        if (!postErrandReqDto.images.isNullOrEmpty() && postErrandReqDto.images.size > 10) throw ErrandException(
             ErrandError.BAD_REQUEST,
-            "사진은 최대 5장까지만 첨부 가능합니다."
+            "사진은 최대 10장까지만 첨부 가능합니다."
         )
         val errand = errandRepository.save(
             Errand(
