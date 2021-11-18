@@ -12,6 +12,7 @@ import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
@@ -30,6 +31,7 @@ data class DaangnChatEventPublisher(
     private val errandRepository: ErrandRepository,
     private val eventScheduler: EventScheduler,
 ) {
+    private val logger = KotlinLogging.logger {  }
     @Async
 //    @Transactional
     fun publishErrandRegisteredEvent(errandDto: ErrandDto) {
@@ -43,6 +45,7 @@ data class DaangnChatEventPublisher(
             null
         }
         eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl, regionName))
+        logger.info("publish errand registered event published now.")
     }
 
     fun getUserDaangnIdListInCategory(errandDto: ErrandDto, regionId: String): List<String> {
@@ -75,6 +78,7 @@ data class DaangnChatEventPublisher(
                 "$baseUrl/errands/$errandId"
             )
         )
+        logger.info("matching registered event published")
     }
 
     @Async
@@ -96,5 +100,6 @@ data class DaangnChatEventPublisher(
                 "$baseUrl/errands/${errandId}"
             )
         )
+        logger.info("help registered event published")
     }
 }
