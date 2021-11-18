@@ -1,5 +1,6 @@
 package com.daangn.errand.admin
 
+import com.daangn.errand.admin.dto.AdminLoginReqDto
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandAdmin
 import com.daangn.errand.domain.errand.ErrandConverter
@@ -10,30 +11,42 @@ import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
-import com.daangn.errand.rest.dto.daangn.DaangnUserInfo
-import com.daangn.errand.rest.dto.daangn.GetUserInfoByUserIdRes
 import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.servlet.http.HttpSession
 
 @Service
 @Transactional
 class AdminService(
-    val errandRepository: ErrandRepository,
-    val userRepository: UserRepository,
-    val errandConverter: ErrandConverter,
-    val daangnUtil: DaangnUtil,
-    val regionConverter: RegionConverter,
-    val helpRepository: HelpRepository,
-    val helpConverter: HelpConverter,
-    val userConverter: UserConverter,
+    private val errandRepository: ErrandRepository,
+    private val userRepository: UserRepository,
+    private val errandConverter: ErrandConverter,
+    private val daangnUtil: DaangnUtil,
+    private val regionConverter: RegionConverter,
+    private val helpRepository: HelpRepository,
+    private val helpConverter: HelpConverter,
+    private val userConverter: UserConverter,
+    @Value("\${admin.username}") private val username: String,
+    @Value("\${admin.password}") private val password: String,
 ) {
+
+    fun login(adminLoginReqDto: AdminLoginReqDto): Boolean {
+        val (username, password) = adminLoginReqDto
+        return username == this.username && password == this.password;
+    }
+
+    fun setSessionId(session: HttpSession) {
+        session.setAttribute("isAdmin", true)
+    }
+
     fun makeUnexposed(errandId: Long) {
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.unexposed = true
@@ -45,7 +58,7 @@ class AdminService(
     }
 
     fun getErrandAdminList(pageNum: Number?): List<ErrandAdmin> {
-        val page = if (pageNum != null) pageNum.toInt()-1 else 0
+        val page = if (pageNum != null) pageNum.toInt() - 1 else 0
         val pageable = PageRequest.of(page, 20, Sort.by("id").descending())
 
         val errands: Page<Errand> = errandRepository.findAll(pageable)
