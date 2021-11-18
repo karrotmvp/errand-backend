@@ -12,6 +12,7 @@ class LoginInterceptor: HandlerInterceptor {
         val session: HttpSession = request.session
         val ret = session.getAttribute("isAdmin")
         if (ret != null) return ret as Boolean
-        return false
+        response.sendRedirect("/admin")
+        return false // return 값이 false 이면 호출하지 않는다.
     }
 }
