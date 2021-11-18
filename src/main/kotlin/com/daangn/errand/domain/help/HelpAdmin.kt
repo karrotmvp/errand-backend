@@ -15,6 +15,6 @@ data class HelpAdmin(
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
-    var region: RegionVo? = null
-    var helper: UserProfileVo? = null
+    lateinit var region: RegionVo
+    lateinit var helper: UserProfileVo
 }

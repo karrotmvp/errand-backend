@@ -6,67 +6,79 @@
     <title>Errand Admin</title>
     <style>
         * {
-            line-height: 150%;
+            line-height: 100%;
         }
 
-        th, td { padding: 10px; }
-        .tableTitle{ font-size: larger; }
-        a{
+        th, td {
+            padding: 10px;
+        }
+
+        a {
             color: black;
             text-decoration: none;
         }
-        a:hover{
-            color: darkorange; text-decoration: underline;
+
+        a:hover {
+            color: darkorange;
+            text-decoration: underline;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-<button id="backButton" type="button">< back</button>
-<h1>심부름 상세보기</h1>
-<table class="errand_detail">
-    <tr>
-        <td class="tableTitle">심부름 ID</td>
-        <td th:utext="${errand.id}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">고객 ID</td>
-        <td th:utext="${errand.customer.id}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">심부름 상세주소</td>
-        <td th:utext="${errand.detailAddress}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">지원자 수</td>
-        <td><a th:utext="${errand.helpCount}"
-                th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}"></a></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">조회수</td>
-        <td th:utext="${errand.viewCnt}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle" id="errandDetail">심부름 상세정보</td>
-        <td th:utext="${errand.detail}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">생성 시간</td>
-        <td th:utext="${errand.createdAt}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">완료 여부</td>
-        <td th:utext="${errand.complete}"></td>
-    </tr>
-    <tr>
-        <td class="tableTitle">미노출 여부</td>
-        <td id="ifUnexposedOrNot" th:utext="${errand.unexposed}"></td>
-    </tr>
-</table>
-<div th:each="image: ${errand.images}">
-    <img th:src="${image.url}" width="200px"/>
+<div style="padding: 10px 0 0 10px;">
+    <p style="font-size: medium; font-weight: bold">심부름 상세보기</p>
+    <table class="errand_detail">
+        <tr>
+            <td>심부름 ID</td>
+            <td th:utext="${errand.id}"></td>
+        </tr>
+        <tr>
+            <td>고객 ID</td>
+            <td th:utext="${errand.customer.id}">
+                <div th:text="${userInfo.nickname}"></div>
+                <div><img th:src="${userInfo.profileImageUrl}"></div>
+                <div th:text="${userInfo.mannerTemperature}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>심부름 상세주소</td>
+            <td th:utext="${errand.detailAddress}"></td>
+        </tr>
+        <tr>
+            <td>지원자 수</td>
+            <td><a th:utext="${errand.helpCount}"
+                   th:href="@{/admin/errand/{errandId}/help-list(errandId = ${errand.id})}" target="_blank"></a></td>
+        </tr>
+        <tr>
+            <td>조회수</td>
+            <td th:utext="${errand.viewCnt}"></td>
+        </tr>
+        <tr>
+            <td id="errandDetail">심부름 상세정보</td>
+            <td th:utext="${errand.detail}"></td>
+        </tr>
+        <tr>
+            <td>생성 시간</td>
+            <td th:utext="${errand.createdAt}"></td>
+        </tr>
+        <tr>
+            <td>완료 여부</td>
+            <td th:utext="${errand.complete}"></td>
+        </tr>
+        <tr>
+            <td>미노출 여부</td>
+            <td id="ifUnexposedOrNot" th:utext="${errand.unexposed}"></td>
+        </tr>
+    </table>
+    <div th:each="image: ${errand.images}">
+        <img th:src="${image.url}" width="200px"/>
+    </div>
+    <button id="makeUnexposed" type="button">미노출시키기</button>
+    <button id="makeExposed" type="button">노출 시키기</button>
 </div>
-<button id="makeUnexposed" type="button">미노출시키기</button>
-<button id="makeExposed" type="button">노출 시키기</button>
 <script>
     const origin = document.location.origin
     const urlPath = document.location.pathname.split("/")
@@ -81,11 +93,6 @@
     exposedButton.addEventListener('click', async () => {
         const res = await fetch(`${origin}/admin/errand/${errandId}/exposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
-    })
-
-    const backButton = document.getElementById("backButton")
-    backButton.addEventListener('click', () => {
-        location.href = `${origin}/admin`
     })
 </script>
 </body>

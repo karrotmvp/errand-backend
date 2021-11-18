@@ -41,6 +41,9 @@ token.secret: Dj@bWv5w-$m#kjNWe?y#
 application:
   mixpanel:
     token: a26050d2615ddc400fdfc0d88cd3d3f3
+admin:
+  username: errand-admin
+  password: dkwkdkwkghkdlwk!
 ---
 
 spring:
