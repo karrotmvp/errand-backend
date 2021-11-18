@@ -1,0 +1,27 @@
+daangn:
+  oapi.url: https://oapi.kr.karrotmarket.com
+  open-api.url: https://openapi.kr.karrotmarket.com
+spring.datasource.url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: errandmysql4_
+  redis:
+    port: 6379
+    host: errand-prod-001.wbblt4.0001.apn2.cache.amazonaws.com
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 2
+sentry:
+  dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
+  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
+  # We recommend adjusting this value in production.
+  traces-sample-rate: 1.0
+  environment: production
+springfox:
+  documentation:
+    enabled: false
+host.url: https://daangn-errand.com/?#

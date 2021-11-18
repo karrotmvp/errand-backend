@@ -1,0 +1,50 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: root
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+  redis:
+    port: 6379
+    host: errand-dev-001.wbblt4.0001.apn2.cache.amazonaws.com
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 2
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: AKIA3AQINQBE3UOGWJZG
+      secret-key: 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
+    s3:
+      bucket: errandbucket
+    stack:
+      auto: false
+logging.level.com.amazonaws.util.EC2MetadataUtils: error
+daangn:
+  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
+  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
+  oapi:
+    neighbor-range: RANGE_2
+  oapi.url: https://oapi.alpha.kr.karrotmarket.com
+  open-api.url: https://openapi.alpha.kr.karrotmarket.com
+test: true
+token.secret: Dj@bWv5w-$m#kjNWe?y#
+host.url: http://dev.daangn-errand.com
+sentry:
+  dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
+  traces-sample-rate: 1.0
+  environment: test
+application:
+  mixpanel:
+    token: a26050d2615ddc400fdfc0d88cd3d3f3
+
