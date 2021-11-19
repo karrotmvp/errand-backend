@@ -1,6 +1,8 @@
 daangn:
   oapi.url: https://oapi.alpha.kr.karrotmarket.com
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
+  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
+  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
 spring:
 #  jpa:
 #    properties:
