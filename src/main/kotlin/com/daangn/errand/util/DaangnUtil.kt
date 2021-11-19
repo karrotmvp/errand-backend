@@ -5,8 +5,8 @@ import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import datadog.trace.api.Trace
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -74,9 +74,10 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
         }
-        if (!httpResponse.isSuccessful) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 프로필 정보 조회 실패"))
-        }
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
         return try {
             objectMapper.readValue(httpResponse.body?.string(), GetUserProfileRes::class.java).data
         } catch (e: Exception) {
@@ -99,6 +100,10 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
         }
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
         val responseBody: String? = httpResponse.body?.string()
         if (!httpResponse.isSuccessful) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 지역 정보 조회 실패"))
@@ -126,6 +131,10 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
         }
+        if (!response.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${response.message}"
+        )
         if (!response.isSuccessful) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 비즈 채팅 보내기 실패"))
         }
@@ -146,6 +155,10 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
         }
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
         val responseBody: String? = httpResponse.body?.string()
         return try {
             objectMapper.readValue(responseBody, GetNeighborRegionInfoRes::class.java)
@@ -185,8 +198,17 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
         }
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
+
         val responseBody: String? = httpResponse.body?.string()
-        return objectMapper.readValue(responseBody, GetUserInfoByUserIdRes::class.java)
+        return try {
+            objectMapper.readValue(responseBody, GetUserInfoByUserIdRes::class.java)
+        } catch (e: MissingKotlinParameterException) {
+            throw ErrandException(ErrandError.DAANGN_ERROR, "해당 당근 ID의 위젯유저 조회 실패")
+        }
     }
 
     fun getUsersInfo(daangnIdList: List<String>): GetUserInfoByUserIdListRes {
@@ -205,6 +227,10 @@ class DaangnUtil(
         } catch (e: Exception) {
             throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
         }
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
         val responseBody: String? = httpResponse.body?.string()
         return objectMapper.readValue(responseBody, GetUserInfoByUserIdListRes::class.java)
     }
@@ -218,6 +244,10 @@ class DaangnUtil(
             .build()
         val request = Request.Builder().url(httpUrl).get().addHeader("X-Api-Key", appKey).build()
         val httpResponse = httpClient.newCall(request).execute()
+        if (!httpResponse.isSuccessful) throw ErrandException(
+            ErrandError.DAANGN_ERROR,
+            "[당근 응답] ${httpResponse.message}"
+        )
         val responseBody: String? = httpResponse.body?.string()
         val res = objectMapper.readValue(responseBody, GetRegionInfoListRes::class.java)
         val ret: MutableMap<String, String> = HashMap()
