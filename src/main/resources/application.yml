@@ -31,8 +31,6 @@ cloud:
       auto: false
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
 daangn:
-  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
-  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
   oapi:
     neighbor-range: RANGE_2
 test: false
