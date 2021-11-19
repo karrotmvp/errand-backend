@@ -15,6 +15,9 @@ spring:
         max-active: 10
         max-idle: 10
         min-idle: 2
+application:
+  mixpanel:
+    token: 4e0974ae665f868c6ab5346ea68cb853
 sentry:
   dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
