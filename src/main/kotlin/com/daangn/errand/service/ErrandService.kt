@@ -185,9 +185,9 @@ class ErrandService(
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
-
-        val helper = userRepository.findById(helperId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
-        errand.chosenHelper = helper
+        val helper = userRepository.findById(helperId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
+        val help = helpRepository.findByErrandAndHelper(errand, helper) ?: throw ErrandException(ErrandError.BAD_REQUEST)
+        errand.chosenHelper = help.helper
 
         daangnChatEventPublisher.publishMatchingRegisteredEvent(helper.daangnId, errandId)
         daangnChatEventPublisher.publishMatchingAfterChatEvent(helper.daangnId, errandId)
