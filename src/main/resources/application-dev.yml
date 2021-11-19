@@ -1,6 +1,8 @@
 daangn:
   oapi.url: https://oapi.alpha.kr.karrotmarket.com
   open-api.url: https://openapi.alpha.kr.karrotmarket.com
+  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
+  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
 spring.datasource.url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand-dev
 spring:
   datasource:
@@ -15,6 +17,9 @@ spring:
         max-active: 10
         max-idle: 10
         min-idle: 2
+application:
+  mixpanel:
+    token: a26050d2615ddc400fdfc0d88cd3d3f3
 sentry:
   dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   traces-sample-rate: 1.0

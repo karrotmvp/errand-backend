@@ -1,8 +1,13 @@
 daangn:
   oapi.url: https://oapi.kr.karrotmarket.com
   open-api.url: https://openapi.kr.karrotmarket.com
+  app-auth: OTIwN2I5ODY5ZDcxNDViZDg2N2EyYmQ0NDg1NjAxM2I6NzgxMmFlYTQ2YmNhNDk3Mjg5ZjE4M2JkMTIzM2Y0NGQ=
+  app-key: ZdiiJjF7g+GlTnxN4Rct5TWA9ddapL8vMg0LS+IoI+s=
 spring.datasource.url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand
 spring:
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
@@ -15,12 +20,17 @@ spring:
         max-active: 10
         max-idle: 10
         min-idle: 2
+application:
+  mixpanel:
+#    token: 4e0974ae665f868c6ab5346ea68cb853 # Production
+    token: a26050d2615ddc400fdfc0d88cd3d3f3 # QA
 sentry:
   dsn: https://8565941fe5ce48e1b4dcb8e8e9bb250a@o1046587.ingest.sentry.io/6039414
   # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
   # We recommend adjusting this value in production.
   traces-sample-rate: 1.0
-  environment: production
+  environment: qa
+#  environment: production
 springfox:
   documentation:
     enabled: false

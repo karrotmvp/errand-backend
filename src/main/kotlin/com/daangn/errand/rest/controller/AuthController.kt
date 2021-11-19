@@ -37,6 +37,6 @@ class AuthController(
         val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
         val token = jwtUtil.generateToken(JwtPayload(user.id!!, accessToken))
         userService.saveLastRegionId(user.daangnId, regionId) // save last region id
-        return ErrandResponse(LoginResDto(token))
+        return ErrandResponse(LoginResDto(token, user.id))
     }
 }

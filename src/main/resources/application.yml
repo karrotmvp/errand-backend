@@ -31,16 +31,14 @@ cloud:
       auto: false
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
 daangn:
-  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
-  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
   oapi:
     neighbor-range: RANGE_2
 test: false
 token.secret: Dj@bWv5w-$m#kjNWe?y#
 
-application:
-  mixpanel:
-    token: a26050d2615ddc400fdfc0d88cd3d3f3
+admin:
+  username: errand-admin
+  password: dkwkdkwkghkdlwk!
 ---
 
 spring:
