@@ -1,5 +1,6 @@
-package com.daangn.errand.admin
+package com.daangn.errand.admin.web
 
+import com.daangn.errand.admin.AdminService
 import com.daangn.errand.admin.dto.AdminLoginReqDto
 import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.support.error.ErrandError

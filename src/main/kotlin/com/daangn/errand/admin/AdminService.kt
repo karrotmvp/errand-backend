@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional
 import javax.servlet.http.HttpSession
 
 @Service
-@Transactional
 class AdminService(
     private val errandRepository: ErrandRepository,
     private val userRepository: UserRepository,
@@ -37,7 +36,6 @@ class AdminService(
     @Value("\${admin.username}") private val username: String,
     @Value("\${admin.password}") private val password: String,
 ) {
-
     fun login(adminLoginReqDto: AdminLoginReqDto): Boolean {
         val (username, password) = adminLoginReqDto
         return username == this.username && password == this.password;
@@ -47,16 +45,19 @@ class AdminService(
         session.setAttribute("isAdmin", true)
     }
 
+    @Transactional
     fun makeUnexposed(errandId: Long) {
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.unexposed = true
     }
 
+    @Transactional
     fun makeExposed(errandId: Long) {
         val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
         errand.unexposed = false
     }
 
+    @Transactional(readOnly = true)
     fun getErrandAdminList(pageNum: Number?): List<ErrandAdmin> {
         val page = if (pageNum != null) pageNum.toInt() - 1 else 0
         val pageable = PageRequest.of(page, 20, Sort.by("id").descending())
@@ -72,6 +73,7 @@ class AdminService(
         }.toList()
     }
 
+    @Transactional(readOnly = true)
     fun getErrandAdminDetail(errandId: Long): ErrandAdmin {
         val errand = errandRepository.findById(errandId)
             .orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND, "아이디로 엔티티 조회 실패") }
@@ -82,6 +84,7 @@ class AdminService(
         return errandAdmin
     }
 
+    @Transactional(readOnly = true)
     fun getHelpList(errandId: Long): List<HelpAdmin> {
         val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
         val helps = helpRepository.findByErrand(errand)
@@ -95,6 +98,7 @@ class AdminService(
         }.toList()
     }
 
+    @Transactional(readOnly = true)
     fun getUserDaangnInfo(userId: Long): UserAdmin {
         val user = userRepository.findById(userId).get()
         val daangnProfile = daangnUtil.getUserInfo(user.daangnId).data.user
