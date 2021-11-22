@@ -6,6 +6,8 @@ import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
 import com.fasterxml.jackson.databind.ObjectMapper
 import datadog.trace.api.Trace
+import io.sentry.spring.tracing.SentrySpan
+import mu.KotlinLogging
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -29,6 +31,7 @@ class DaangnUtil(
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
     protected val RESPONSE_TYPE = "code"
+    private val logger = KotlinLogging.logger {  }
 
     fun getAccessTokenByOpenApi(authCode: String): GetAccessTokenRes {
         val url = "$openApiBaseUrl/oauth/token"
@@ -111,6 +114,7 @@ class DaangnUtil(
 
     }
 
+    @SentrySpan
     fun sendBizChatting(postBizChatReq: PostBizChatReq) {
         val url = "$oApiBaseUrl/api/v2/chat/send_biz_chat_message"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
@@ -129,6 +133,7 @@ class DaangnUtil(
         if (!response.isSuccessful) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 비즈 채팅 보내기 실패"))
         }
+        logger.info("Succeed send biz chat to user(id: ${postBizChatReq.input.userId}).")
     }
 
     @Trace
