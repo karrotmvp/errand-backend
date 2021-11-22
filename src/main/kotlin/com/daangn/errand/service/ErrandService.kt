@@ -184,7 +184,7 @@ class ErrandService(
         errand.chosenHelper = help.helper
 
         daangnChatEventPublisher.publishMatchingRegisteredEvent(helper.daangnId, errandId)
-        daangnChatEventPublisher.publishMatchingAfterChatEvent(helper.daangnId, errandId)
+        daangnChatEventPublisher.publishMakeCompleteNotiEntityEvent(errandId)
     }
 
     fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<GetErrandResDto<ErrandPreview>> {

@@ -4,10 +4,7 @@ import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.support.error.ErrandError
-import com.daangn.errand.support.event.ErrandRegisteredChatEvent
-import com.daangn.errand.support.event.HelpRegisteredChatEvent
-import com.daangn.errand.support.event.MatchingAfterChatEvent
-import com.daangn.errand.support.event.MatchingRegisteredChatEvent
+import com.daangn.errand.support.event.*
 import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
@@ -18,7 +15,6 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Component
 data class DaangnChatEventPublisher(
@@ -29,7 +25,6 @@ data class DaangnChatEventPublisher(
     private val redisUtil: RedisUtil,
     private val userRepository: UserRepository,
     private val errandRepository: ErrandRepository,
-    private val eventScheduler: EventScheduler,
 ) {
     private val logger = KotlinLogging.logger {  }
     @Async
@@ -83,11 +78,21 @@ data class DaangnChatEventPublisher(
     }
 
     @Async
-    @Transactional
-    fun publishMatchingAfterChatEvent(helperDaangnId: String, errandId: Long) {
-        eventScheduler.addElement(
-            MatchingAfterChatEvent(listOf(helperDaangnId), "$baseUrl/errands/${errandId}"),
-            LocalDateTime.now().plusHours(24)
+    fun publishMatchingAfterChatEvent(helperDaangnId: String, errandId: Long) { // 완료 알림톡 이벤트를 발행
+        eventPublisher.publishEvent(
+            MatchingAfterChatEvent(
+                listOf(helperDaangnId),
+                "${baseUrl}/errands/${errandId}"
+            )
+        )
+    }
+
+    @Async
+    fun publishMakeCompleteNotiEntityEvent(errandId: Long) { // CompleteNotiEvent 엔티티 insert 이벤트를 발행
+        eventPublisher.publishEvent(
+            MakeCompleteNotiEntityEvent(
+                errandId
+            )
         )
     }
 
