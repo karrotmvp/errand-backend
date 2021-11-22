@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-class CompleteEvent(
+class CompleteNotiEvent(
     @OneToOne(fetch = FetchType.LAZY)
     val errand: Errand,
     @Column(nullable = false)
