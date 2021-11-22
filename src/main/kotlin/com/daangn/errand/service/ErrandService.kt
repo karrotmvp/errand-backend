@@ -204,7 +204,7 @@ class ErrandService(
         return errands.asSequence().map { errand ->
             errand.helpCount = helpRepository.countByErrandId(errand.id)
             val isMine = errand.customerId == userId
-            val didIApply: Boolean = !isMine && errand.reviewerHelpId != null
+            val didIApply: Boolean = !isMine && errand.viewerHelpId != null
             val wasIChosen = errand.chosenHelperId == userId
             val regionName = regionIdAndNameHashMap[errand.regionId] as String
             GetErrandResDto(makeErrandToErrandPreview(errand, userId, regionName), isMine, didIApply, wasIChosen)

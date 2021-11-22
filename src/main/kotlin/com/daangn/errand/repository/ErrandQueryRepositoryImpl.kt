@@ -66,10 +66,10 @@ class ErrandQueryRepositoryImpl(
                 errand.createdAt,
                 errand.updatedAt,
                 errand.chosenHelper.id.`as`("chosenHelperId"),
-                help.id.`as`("reviewerHelpId")
+                help.id.`as`("viewerHelpId")
             )
         ).from(errand)
-            .leftJoin(help).on(help.errand.id.eq(errand.id))
+            .leftJoin(help).on(help.errand.id.eq(errand.id).and(help.helper.id.eq(viewerId)))
             .orderBy(errand.id.desc())
             .groupBy(errand.id)
             .where(predicate)

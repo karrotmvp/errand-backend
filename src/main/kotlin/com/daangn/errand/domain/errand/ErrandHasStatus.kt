@@ -22,7 +22,7 @@ interface ErrandHasStatus {
     fun setStatus(errand: MainErrandQueryResult, userId: Long) {
         val statusEnum = if (errand.complete) {
             Status.COMPLETE
-        } else if (errand.reviewerHelpId != null && errand.chosenHelperId != null && errand.chosenHelperId != userId) {
+        } else if (errand.viewerHelpId != null && errand.chosenHelperId != null && errand.chosenHelperId != userId) {
             Status.FAIL
         } else if (errand.chosenHelperId != null) {
             Status.PROCEED
