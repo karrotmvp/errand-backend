@@ -45,7 +45,6 @@ class DevWebMvcConfig(
 
 @Configuration
 @Profile("prod")
-@EnableWebMvc
 class WebMvcConfig(
     val tokenPayloadArgumentResolver: TokenPayloadArgumentResolver
 ) : WebMvcConfigurer {
