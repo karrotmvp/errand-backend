@@ -35,6 +35,7 @@ data class DaangnChatEventPublisher(
     @Async
 //    @Transactional
     fun publishErrandRegisteredEvent(errandDto: ErrandDto) {
+        Thread.sleep(1000L)
         val errand =
             errandRepository.findById(errandDto.id!!).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val targetUserList = getUserDaangnIdListInCategory(errandDto, errand.regionId)
