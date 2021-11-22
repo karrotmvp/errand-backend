@@ -24,7 +24,6 @@ import com.daangn.errand.util.S3AsyncUploader
 import com.daangn.errand.util.S3Uploader
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import software.amazon.awssdk.services.s3.model.PutObjectResponse
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
@@ -127,19 +126,14 @@ class ErrandService(
         val isUserCustomerAndIsErrandMatchedButNotCompleted =
             isUserCustomer && errand.chosenHelper != null && !errand.complete
 
-        if (isUserCustomerAndIsErrandMatchedButNotCompleted) {
+        if (isUserCustomerAndIsErrandMatchedButNotCompleted) { // 지원자 정보 보기
             helpId = helpRepository.findByErrandAndHelper(
                 errand,
                 errand.chosenHelper ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
             )?.id
         }
 
-        val didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper =
-            didUserApply && errand.chosenHelper == null || isUserChosenHelper && !errand.complete
-
-        if (didUserApplyAndIsErrandNotMatchedYetOrMatchedByThisHelper) helpId =
-            helpRepository.findByErrandAndHelper(errand, user)?.id
-
+        if (didUserApply) helpId = helpRepository.findByErrandAndHelper(errand, user)?.id // 지원자의 내 지원 정보보기
 
         return GetErrandResDto(
             errand = errandDto,
