@@ -57,7 +57,7 @@ class WebMvcConfig(
         registry.addMapping("/**")
             .allowedOrigins("https://daangn-errand.com", "http://daangn-errand.com")
             .allowCredentials(true)
-            .allowedMethods("HEAD", "GET", "POST", "PATCH", "OPTIONS")
+            .allowedMethods("*")
             .maxAge(3000)
     }
 }
