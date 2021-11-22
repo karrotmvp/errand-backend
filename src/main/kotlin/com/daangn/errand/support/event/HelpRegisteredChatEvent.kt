@@ -6,8 +6,9 @@ class HelpRegisteredChatEvent(
     override val targetUserIds: List<String>,
     override val linkUrl: String,
 ): DaangnChatReqRegisteredEvent {
-    override val title = "새로운 이웃이 심부름에 지원했어요!"
-    override val text = "내용을 확인해보세요."
+    override val title = "요청한 심부름에 새로운 지원자가 등록되었어요."
+    override val text = "지원자를 확인하고 심부름을 요청해보세요."
     override val buttonText = "상세정보 확인하기"
     override val actionType = ActionType.NORMAL_BUTTON
+    override val imageUrl = "https://errandbucket.s3.ap-northeast-2.amazonaws.com/errand/static/%E1%84%89%E1%85%A2%E1%84%85%E1%85%A9%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%8C%E1%85%B5%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%8C%E1%85%A1_%E1%84%8B%E1%85%A1%E1%86%AF%E1%84%85%E1%85%B5%E1%86%B7%E1%84%90%E1%85%A9%E1%86%A8%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5.png"
 }
