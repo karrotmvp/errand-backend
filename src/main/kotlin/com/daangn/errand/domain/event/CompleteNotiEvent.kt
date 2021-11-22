@@ -19,5 +19,5 @@ class CompleteNotiEvent(
 
     @Column
     @ColumnDefault("null")
-    val handledAt: LocalDateTime? = null
+    var handledAt: LocalDateTime? = null
 }

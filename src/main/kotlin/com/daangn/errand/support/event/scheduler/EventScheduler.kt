@@ -23,6 +23,7 @@ class EventScheduler(
                 notiEvent.errand.chosenHelper!!.daangnId,
                 notiEvent.errand.id!!
             )
+            notiEvent.handledAt = LocalDateTime.now()
         }
     }
 }
