@@ -15,6 +15,7 @@ import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.event.HelperConfirmedErrandEvent
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
@@ -22,6 +23,7 @@ import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
 import com.daangn.errand.util.S3AsyncUploader
 import com.daangn.errand.util.S3Uploader
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -39,12 +41,12 @@ class ErrandService(
     private val errandConverter: ErrandConverter,
     private val regionConverter: RegionConverter,
     private val userConverter: UserConverter,
-    private val s3Uploader: S3Uploader,
     private val s3AsyncUploader: S3AsyncUploader,
 
     private val daangnUtil: DaangnUtil,
     private val daangnChatEventPublisher: DaangnChatEventPublisher,
     private val mixpanelEventPublisher: MixpanelEventPublisher,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
@@ -300,6 +302,7 @@ class ErrandService(
         if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         errand.complete = true
         mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
+        eventPublisher.publishEvent(HelperConfirmedErrandEvent(errand.id!!))
     }
 
     fun readHelpDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {

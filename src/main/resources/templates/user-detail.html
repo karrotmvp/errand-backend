@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Errand Admin</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-<table>
-    <thead>
+<table class="table">
     <tr>
-        <th>이름</th>
-        <th>프로필 사진</th>
-        <th>매너온도</th>
-        <th>심부름 수</th>
-        <th>도움 수</th>
-        <th>이름</th>
+        <td>이름</td>
+        <td th:text="${userInfo.nickname}"></td>
     </tr>
-    </thead>
+    <tr>
+        <td>프로필 사진</td>
+        <td th:text="${userInfo.profileImageUrl}"></td>
+    </tr>
+    <tr>
+        <td>매너 온도</td>
+        <td th:text="${userInfo.mannerTemperature}"></td>
+    </tr>
 </table>
-이름
-<div th:text="${userInfo.nickname}"></div>
-프로필 사진
-<img th:src="${userInfo.profileImageUrl}" width="50px"/>
-매너온도
-<div th:text="${userInfo.mannerTemperature}"></div>
 </body>
 </html>
