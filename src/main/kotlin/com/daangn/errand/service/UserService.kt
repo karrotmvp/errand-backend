@@ -76,6 +76,12 @@ class UserService(
         return daangnUtil.setUserDaangnProfile(userProfileVo)
     }
 
+    fun getMyProfileWithDaangnInfo(userId: Long, regionId: String): UserProfileVo {
+        val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        val userProfileVo = daangnUtil.setUserDaangnProfile(userConverter.toUserProfileVo(user))
+        userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(regionId).region.name
+        return userProfileVo
+    }
     fun updateUserAlarm(userId: Long, on: Boolean): String {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (user.isAlarmOn == on) throw ErrandException(ErrandError.BAD_REQUEST, "중복 요청입니다.")
