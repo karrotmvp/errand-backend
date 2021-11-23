@@ -35,7 +35,7 @@ class UserController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ApiParam(value = "지역 ID") @PathParam(value = "regionId") regionId: String
     ): ErrandResponse<UserProfileVo> {
-        return ErrandResponse(userService.getMyProfileDaangnInfo(payload.userId, payload.accessToken, regionId))
+        return ErrandResponse(userService.getUserProfileWithDaangnInfo(payload.userId))
     }
 
     @PatchMapping("/category")

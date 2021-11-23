@@ -70,12 +70,6 @@ class UserService(
         helperHasCategoriesRepository.delete(helperCategory)
     }
 
-    fun getMyProfileDaangnInfo(userId: Long, accessToken: String, regionId: String): UserProfileVo {
-        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val userProfileVo = userConverter.toUserProfileVo(user)
-        return daangnUtil.setMyDaangnProfile(userProfileVo, accessToken, regionId)
-    }
-
     fun getUserProfileWithDaangnInfo(userId: Long): UserProfileVo {
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userProfileVo = userConverter.toUserProfileVo(user)
