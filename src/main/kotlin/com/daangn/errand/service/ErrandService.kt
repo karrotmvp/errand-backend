@@ -48,7 +48,7 @@ class ErrandService(
     private val mixpanelEventPublisher: MixpanelEventPublisher,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
-    fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): ErrandDto {
+    fun createErrand(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
@@ -86,8 +86,10 @@ class ErrandService(
         val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
 
         val errandDto = errandConverter.toErrandDto(errand)
+        daangnChatEventPublisher.publishErrandRegisteredEvent(errandDto)
+        mixpanelEventPublisher.publishErrandRegisteredEvent(errandId)
 
-        return errandDto
+        return PostErrandResDto(errandId)
     }
 
     fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto<ErrandDto> {
