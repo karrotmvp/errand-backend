@@ -8,6 +8,8 @@ import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
+import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
+import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.*
@@ -21,7 +23,9 @@ import springfox.documentation.annotations.ApiIgnore
 @RequestMapping("/errand")
 class ErrandController(
     val errandService: ErrandService,
-    val helpService: HelpService
+    val helpService: HelpService,
+    private val daangnChatEventPublisher: DaangnChatEventPublisher,
+    private val mixpanelEventPublisher: MixpanelEventPublisher,
 ) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ApiOperation(value = "심부름을 등록하는 API")
@@ -29,7 +33,10 @@ class ErrandController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ModelAttribute postErrandReqDto: PostErrandReqDto
     ): ErrandResponse<PostErrandResDto> {
-        return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
+        val errandDto = errandService.createErrand(payload.userId, postErrandReqDto)
+        daangnChatEventPublisher.publishErrandRegisteredEvent(errandDto)
+        mixpanelEventPublisher.publishErrandRegisteredEvent(errandDto.id!!)
+        return ErrandResponse(PostErrandResDto(errandDto.id))
     }
 
     @GetMapping("/{id}")
