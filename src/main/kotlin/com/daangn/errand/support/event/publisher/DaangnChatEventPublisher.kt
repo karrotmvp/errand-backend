@@ -1,11 +1,11 @@
 package com.daangn.errand.support.event.publisher
 
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.*
-import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Component
 data class DaangnChatEventPublisher(
@@ -26,13 +27,19 @@ data class DaangnChatEventPublisher(
     private val userRepository: UserRepository,
     private val errandRepository: ErrandRepository,
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
+
     @Async
 //    @Transactional
     fun publishErrandRegisteredEvent(errandDto: ErrandDto) {
-        Thread.sleep(1000L)
-        val errand =
-            errandRepository.findById(errandDto.id!!).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+        var errand: Errand? = null
+        for (i in 1..3) {
+            errand =
+                errandRepository.findById(errandDto.id!!).orElse(null)
+            if (errand != null) break
+            Thread.sleep(300)
+        }
+        if (errand == null) throw ErrandException(ErrandError.ENTITY_NOT_FOUND, "알림챗을 보내기 위한 심부름 엔티티 조회 실패")
         val targetUserList = getUserDaangnIdListInCategory(errandDto, errand.regionId)
         val buttonLinkedUrl = "$baseUrl/errands/${errandDto.id}"
         val regionName = try {

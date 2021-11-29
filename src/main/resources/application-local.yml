@@ -1,8 +1,12 @@
 daangn:
-  oapi.url: https://oapi.alpha.kr.karrotmarket.com
-  open-api.url: https://openapi.alpha.kr.karrotmarket.com
-  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
-  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
+  oapi.url: https://oapi.kr.karrotmarket.com
+  open-api.url: https://openapi.kr.karrotmarket.com
+  app-auth: OTIwN2I5ODY5ZDcxNDViZDg2N2EyYmQ0NDg1NjAxM2I6NzgxMmFlYTQ2YmNhNDk3Mjg5ZjE4M2JkMTIzM2Y0NGQ=
+  app-key: ZdiiJjF7g+GlTnxN4Rct5TWA9ddapL8vMg0LS+IoI+s=
+#  oapi.url: https://oapi.alpha.kr.karrotmarket.com
+#  open-api.url: https://openapi.alpha.kr.karrotmarket.com
+#  app-auth: YWY3Y2U4MzE2NjE0NDc5M2JlNmFmYzcyMzkxOGQ3ZjM6ZTEwNDFjNjliYmIwNGY1OWE1YmY0MWU1ODQ1OWEyYjI=
+#  app-key: nTFXLscne1iZhg1biq2nzoCHUP20AqRkFBUyuaQz1Yc=
 spring:
 #  jpa:
 #    properties:
@@ -15,7 +19,8 @@ spring:
 #    url: jdbc:mysql://localhost:3306/errand
     username: admin
     password: errandmysql4_
-    url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand-dev
+#    url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand-dev
+    url: jdbc:mysql://errand.c8zwh9jcttzy.ap-northeast-2.rds.amazonaws.com/errand
   redis:
     port: 6379
     host: 127.0.0.1
