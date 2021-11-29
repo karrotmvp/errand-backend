@@ -8,6 +8,7 @@ import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.domain.help.HelpConverter
 import com.daangn.errand.domain.user.UserAdmin
 import com.daangn.errand.domain.user.UserConverter
+import com.daangn.errand.domain.user.UserPreview
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
@@ -109,5 +110,17 @@ class AdminService(
             errandCount,
             helpCount.toInt()
         )
+    }
+
+    fun getUserCnt(): Long {
+        return userRepository.count()
+    }
+
+    fun getUsers(pageNum: Number?): MutableList<UserPreview> {
+        val page = if (pageNum != null) pageNum.toInt() - 1 else 0
+        val pageable = PageRequest.of(page, 50, Sort.by("id").descending())
+        val users = userRepository.findAll(pageable)
+        return users.asSequence()
+            .map { user -> userConverter.toUserPreview(user) }.toMutableList()
     }
 }
