@@ -5,6 +5,7 @@ import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
 import com.daangn.errand.domain.BaseEntity
 import com.daangn.errand.domain.category.Category
+import com.daangn.errand.domain.event.CompleteNotiEvent
 import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
@@ -70,6 +71,9 @@ class Errand(
     @Column(nullable = false)
     @ColumnDefault("0")
     var viewCnt: Long = 0
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], mappedBy = "errand")
+    var notificationEvent: CompleteNotiEvent? = null
 
     companion object {
         private val equalsAndHashCodeProperties = arrayOf(Errand::id)
