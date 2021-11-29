@@ -15,4 +15,7 @@ interface UserConverter {
 
     @Mappings
     fun toUserVo(user: User): UserVo
+
+    @Mappings
+    fun toUserPreview(user: User): UserPreview
 }

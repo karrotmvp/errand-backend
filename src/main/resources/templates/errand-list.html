@@ -136,10 +136,10 @@
         nextPageNum = 2
     } else {
         previousPageNum = currentPageNum - 1
-        previousButtonLink.setAttribute("href", `${origin}/admin/main?pageNum=${previousPageNum}`)
+        previousButtonLink.setAttribute("href", `${origin}/admin/errands?pageNum=${previousPageNum}`)
         nextPageNum = currentPageNum + 1
     }
-    nextButtonLink.setAttribute("href", `${origin}/admin/main?pageNum=${nextPageNum}`)
+    nextButtonLink.setAttribute("href", `${origin}/admin/errands?pageNum=${nextPageNum}`)
 </script>
 </body>
 </html>

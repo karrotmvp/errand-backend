@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>심부름 어드민</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div style="display: flex; align-items: center; margin: 10px 0 10px 10px">
+    <h3 style="margin: 0">당근 심부름 유저 리스트 🙏🏻</h3>
+    <div style="margin-left: 50px;">총 <span th:text="${userCnt}"></span>명</div>
+</div>
+
+<table class="table">
+    <tr>
+        <th>유저 ID</th>
+        <th>당근 APP ID</th>
+        <th>가입일</th>
+    </tr>
+    <tr th:each="user: ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.daangnId}"></td>
+        <td th:text="${user.createdAt}"></td>
+    </tr>
+</table>
+<ul class="pager">
+    <li id="previous"><a id="previousButtonLink">Previous</a></li>
+    <li><a id="nextButtonLink">Next</a></li>
+</ul>
+<script th:inline="javascript">
+    const previousButtonLink = document.getElementById("previousButtonLink")
+    const nextButtonLink = document.getElementById("nextButtonLink")
+    const origin = document.location.origin
+    const params = new URLSearchParams(window.location.search)
+
+    let nextPageNum, previousPageNum;
+    const pageNumExist = params.has("pageNum")
+    const currentPageNum = pageNumExist ? Number.parseInt(params.get("pageNum")) : 1
+
+    if (currentPageNum === 1) { // 파라미터가 있고, 페이지가 1이 아닐 때 previous 활성화.
+        document.getElementById("previous").setAttribute("class", "page-item disables")
+        nextPageNum = 2
+    } else {
+        previousPageNum = currentPageNum - 1
+        previousButtonLink.setAttribute("href", `${origin}/admin/users?pageNum=${previousPageNum}`)
+        nextPageNum = currentPageNum + 1
+    }
+    nextButtonLink.setAttribute("href", `${origin}/admin/users?pageNum=${nextPageNum}`)
+</script>
+</body>
+</html>
