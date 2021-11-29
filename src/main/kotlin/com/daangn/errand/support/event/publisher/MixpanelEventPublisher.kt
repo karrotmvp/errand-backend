@@ -89,9 +89,6 @@ class MixpanelEventPublisher(
     @Async
     @Transactional(readOnly = true)
     fun publishErrandSignInEvent(userId: Long, isSignUp: Boolean) {
-        // 최초 회원가입시 유저가 데이터베이스에 저장되지 않은 상태이므로,
-        // 서비스 완료 후 컨트롤러에서 이벤트를 발생시키자.
-        Thread.sleep(1000)
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userInfo = daangnUtil.getUserInfo(user.daangnId).data.user
         val entities = HashMap<String, Any>()
@@ -99,7 +96,6 @@ class MixpanelEventPublisher(
         entities["유저 ID"] = userId
         entities["유저 닉네임"] = userInfo.nickname ?: "미등록 닉네임"
         entities["유저 가입일"] = user.createdAt
-
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.USER_SIGN_IN, entities))
     }
 }
