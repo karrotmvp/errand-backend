@@ -36,6 +36,11 @@ class AdminController(
     }
 
     @GetMapping("/main")
+    fun getMain(): String {
+        return "main"
+    }
+
+    @GetMapping("/errands")
     fun getErrandList(model: Model, @RequestParam(value = "pageNum") pageNum: Number?): String {
         val errands = adminService.getErrandAdminList(pageNum)
         model.addAttribute("errandList", errands)
@@ -88,5 +93,16 @@ class AdminController(
         val userInfo = adminService.getUserDaangnInfo(userId)
         model.addAttribute("userInfo", userInfo)
         return "user-detail"
+    }
+
+    @GetMapping("/users")
+    fun getUsersInfo(
+        model: Model,
+        @RequestParam(value = "pageNum") pageNum: Number?
+    ): String {
+        val usersInfo = adminService.getUsers(pageNum)
+        model.addAttribute("users", usersInfo)
+        model.addAttribute("userCnt", adminService.getUserCnt())
+        return "users"
     }
 }
