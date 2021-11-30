@@ -53,7 +53,7 @@ class MixpanelEventPublisher(
         entities["헬퍼 ID"] = userInfo.id
         entities["헬퍼 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
 
-        val helpCnt = helpRepository.countByHelper(help.helper)
+//        val helpCnt = helpRepository.countByHelper(help.helper)
 //        entities["helper_help_size"] = helpCnt.toString()
 //        entities["helper_errandList_size"] = help.helper.errandList.size.toString()
 
@@ -89,8 +89,6 @@ class MixpanelEventPublisher(
     @Async
     @Transactional(readOnly = true)
     fun publishErrandSignInEvent(userId: Long, isSignUp: Boolean) {
-        // 최초 회원가입시 유저가 데이터베이스에 저장되지 않은 상태이므로,
-        // 서비스 완료 후 컨트롤러에서 이벤트를 발생시키자.
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userInfo = daangnUtil.getUserInfo(user.daangnId).data.user
         val entities = HashMap<String, Any>()

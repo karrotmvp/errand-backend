@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
 class UserService(
     private val userRepository: UserRepository,
     private val userConverter: UserConverter,
@@ -39,6 +38,7 @@ class UserService(
         }
         val mannerTemp: Float = daangnUtil.getUserInfo(daangnId).data.user.mannerTemperature ?: 36.5f
         user.mannerTemp = mannerTemp
+        userRepository.save(user)
 
         mixpanelEventPublisher.publishErrandSignInEvent(
             user.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE),
@@ -47,11 +47,12 @@ class UserService(
         return userConverter.toUserVo(user)
     }
 
-
+    @Transactional
     fun saveLastRegionId(daangnId: String, regionId: String) {
         redisUtil.createOrUpdateUserRegion(daangnId, regionId)
     }
 
+    @Transactional
     fun setCategory(userId: Long, categoryId: Long) {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category =
@@ -61,6 +62,7 @@ class UserService(
         helperHasCategoriesRepository.save(HelperHasCategories(user, category))
     }
 
+    @Transactional
     fun deactivateCategory(userId: Long, categoryId: Long) {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category =
@@ -70,18 +72,22 @@ class UserService(
         helperHasCategoriesRepository.delete(helperCategory)
     }
 
+    @Transactional
     fun getUserProfileWithDaangnInfo(userId: Long): UserProfileVo {
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userProfileVo = userConverter.toUserProfileVo(user)
         return daangnUtil.setUserDaangnProfile(userProfileVo)
     }
 
+    @Transactional
     fun getMyProfileWithDaangnInfo(userId: Long, regionId: String): UserProfileVo {
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val userProfileVo = daangnUtil.setUserDaangnProfile(userConverter.toUserProfileVo(user))
         userProfileVo.regionName = daangnUtil.getRegionInfoByRegionId(regionId).region.name
         return userProfileVo
     }
+
+    @Transactional
     fun updateUserAlarm(userId: Long, on: Boolean): String {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (user.isAlarmOn == on) throw ErrandException(ErrandError.BAD_REQUEST, "중복 요청입니다.")
@@ -89,6 +95,7 @@ class UserService(
         return if (user.isAlarmOn) "알림 ON 완료" else "알림 OFF 완료"
     }
 
+    @Transactional
     fun readUserAlarm(userId: Long): GetUserAlarmResDto {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val allCategories = categoryRepository.findAll()
