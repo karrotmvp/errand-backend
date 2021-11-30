@@ -53,7 +53,7 @@ class MixpanelEventPublisher(
         entities["헬퍼 ID"] = userInfo.id
         entities["헬퍼 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
 
-        val helpCnt = helpRepository.countByHelper(help.helper)
+//        val helpCnt = helpRepository.countByHelper(help.helper)
 //        entities["helper_help_size"] = helpCnt.toString()
 //        entities["helper_errandList_size"] = help.helper.errandList.size.toString()
 
@@ -96,6 +96,7 @@ class MixpanelEventPublisher(
         entities["유저 ID"] = userId
         entities["유저 닉네임"] = userInfo.nickname ?: "미등록 닉네임"
         entities["유저 가입일"] = user.createdAt
+
         eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.USER_SIGN_IN, entities))
     }
 }

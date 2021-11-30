@@ -57,7 +57,7 @@ class Errand(
     var images: MutableList<Image> = ArrayList()
 
     // help를 전부 가지고 있는게 편하다
-    @OneToMany(mappedBy = "errand")
+    @OneToMany(cascade = [CascadeType.REMOVE], mappedBy = "errand")
     var helps: MutableList<Help> = ArrayList()
 
     @Column(nullable = false)

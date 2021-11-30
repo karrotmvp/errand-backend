@@ -11,7 +11,6 @@ import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.rest.dto.CategoryStatus
 import com.daangn.errand.rest.dto.GetUserAlarmResDto
 import com.daangn.errand.rest.dto.daangn.GetUserProfileRes
-import com.daangn.errand.rest.dto.errand.LoginServiceResDto
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-
 class UserService(
     private val userRepository: UserRepository,
     private val userConverter: UserConverter,
@@ -29,9 +27,9 @@ class UserService(
     private val helperHasCategoriesRepository: HelperHasCategoriesRepository,
     private val daangnUtil: DaangnUtil,
     private val redisUtil: RedisUtil,
+    private val mixpanelEventPublisher: MixpanelEventPublisher,
 ) {
-    @Transactional
-    fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): LoginServiceResDto {
+    fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
         val daangnId = userProfile.userId
         var isSignUp = false
         val user = userRepository.findByDaangnId(daangnId) ?: run {
@@ -40,7 +38,13 @@ class UserService(
         }
         val mannerTemp: Float = daangnUtil.getUserInfo(daangnId).data.user.mannerTemperature ?: 36.5f
         user.mannerTemp = mannerTemp
-        return LoginServiceResDto(userConverter.toUserVo(user), isSignUp)
+        userRepository.save(user)
+
+        mixpanelEventPublisher.publishErrandSignInEvent(
+            user.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE),
+            isSignUp
+        )
+        return userConverter.toUserVo(user)
     }
 
     @Transactional

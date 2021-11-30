@@ -2,10 +2,8 @@ package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.user.UserVo
 import com.daangn.errand.rest.dto.auth.LoginResDto
-import com.daangn.errand.rest.dto.errand.LoginServiceResDto
 import com.daangn.errand.service.AuthService
 import com.daangn.errand.service.UserService
-import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import com.daangn.errand.util.JwtUtil
@@ -31,18 +29,13 @@ class AuthController(
     fun login(
         @ApiParam(value = "당근 API access code") @RequestParam(value = "authCode") authCode: String,
         @ApiParam(value = "지역 ID") @RequestParam(value = "regionId") regionId: String,
-        res: HttpServletResponse,
-        mixpanelEventPublisher: MixpanelEventPublisher,
+        res: HttpServletResponse
     ): ErrandResponse<LoginResDto> {
         val accessToken = authService.getAccessToken(authCode)
         val userProfile = authService.getUserProfile(accessToken)
 
-        val (user, isSignUp) = userService.loginOrSignup(userProfile, accessToken)
-        mixpanelEventPublisher.publishErrandSignInEvent(
-            user.id!!,
-            isSignUp
-        )
-        val token = jwtUtil.generateToken(JwtPayload(user.id, accessToken))
+        val user: UserVo = userService.loginOrSignup(userProfile, accessToken)
+        val token = jwtUtil.generateToken(JwtPayload(user.id!!, accessToken))
         userService.saveLastRegionId(user.daangnId, regionId) // save last region id
         return ErrandResponse(LoginResDto(token, user.id))
     }
