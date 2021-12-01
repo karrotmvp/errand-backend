@@ -40,6 +40,7 @@ class GlobalExceptionHandler(
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrandResponse<Unit>> {
+        sentrySender.sendToSentry(e)
         logger.error { "MethodArgumentNotValidException : " + e.message }
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

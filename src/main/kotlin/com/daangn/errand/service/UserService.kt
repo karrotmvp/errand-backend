@@ -30,6 +30,19 @@ class UserService(
     private val mixpanelEventPublisher: MixpanelEventPublisher,
 ) {
     fun loginOrSignup(userProfile: GetUserProfileRes.Data, accessToken: String): UserVo {
+        val pair = createOrUpdateUserByDaangnId(userProfile)
+        val isSignUp = pair.first
+        val user = pair.second
+
+        mixpanelEventPublisher.publishErrandSignInEvent(
+            user.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE),
+            isSignUp
+        )
+        return userConverter.toUserVo(user)
+    }
+
+    @Transactional
+    fun createOrUpdateUserByDaangnId(userProfile: GetUserProfileRes.Data): Pair<Boolean, User> {
         val daangnId = userProfile.userId
         var isSignUp = false
         val user = userRepository.findByDaangnId(daangnId) ?: run {
@@ -38,13 +51,7 @@ class UserService(
         }
         val mannerTemp: Float = daangnUtil.getUserInfo(daangnId).data.user.mannerTemperature ?: 36.5f
         user.mannerTemp = mannerTemp
-        userRepository.save(user)
-
-        mixpanelEventPublisher.publishErrandSignInEvent(
-            user.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE),
-            isSignUp
-        )
-        return userConverter.toUserVo(user)
+        return Pair(isSignUp, user)
     }
 
     @Transactional
