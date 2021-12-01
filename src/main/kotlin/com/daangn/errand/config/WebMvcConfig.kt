@@ -10,13 +10,11 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @Profile(value = ["dev", "local"])
-//@EnableWebMvc
 class DevWebMvcConfig(
     val tokenPayloadArgumentResolver: TokenPayloadArgumentResolver
 ) : WebMvcConfigurer {
@@ -30,7 +28,30 @@ class DevWebMvcConfig(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
+            .allowedHeaders(
+                "Accept",
+                "Origin",
+                "Content-Type",
+                "Authorization",
+                "Referer",
+                "Content-Length",
+                "Host",
+                "Accept-Language",
+                "User-Agent",
+                "Accept-Encoding",
+                "Connection",
+                "sec-ch-ua",
+                "sec-ch-ua-mobile",
+                "sec-ch-ua-platform",
+                "sec-fetch-site",
+                "sec-fetch-mode",
+                "sec-fetch-dest",
+                ":method:",
+                ":authority:",
+                ":path:",
+                ":scheme:",
+            )
+            .allowedOrigins("https://front.daangn-errand.com", "http://192.168.60.95:3000")
             .allowedMethods("*")
             .maxAge(3600)
     }
