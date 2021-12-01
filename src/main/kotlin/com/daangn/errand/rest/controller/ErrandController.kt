@@ -29,7 +29,7 @@ class ErrandController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ModelAttribute postErrandReqDto: PostErrandReqDto
     ): ErrandResponse<PostErrandResDto> {
-        return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
+        return ErrandResponse(errandService.createErrandAndPublishEvents(payload.userId, postErrandReqDto))
     }
 
     @GetMapping("/{id}")

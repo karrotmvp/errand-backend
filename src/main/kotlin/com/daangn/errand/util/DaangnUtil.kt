@@ -31,7 +31,6 @@ class DaangnUtil(
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
     protected val RESPONSE_TYPE = "code"
-    private val logger = KotlinLogging.logger {  }
 
     fun getAccessTokenByOpenApi(authCode: String): GetAccessTokenRes {
         val url = "$openApiBaseUrl/oauth/token"
@@ -133,7 +132,6 @@ class DaangnUtil(
         if (!response.isSuccessful) {
             throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 비즈 채팅 보내기 실패"))
         }
-        logger.info("Succeed send biz chat to user(id: ${postBizChatReq.input.userId}).")
     }
 
     @Trace

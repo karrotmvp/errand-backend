@@ -1,11 +1,11 @@
 package com.daangn.errand.support.event.publisher
 
+import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.*
-import com.daangn.errand.support.event.scheduler.EventScheduler
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
@@ -26,14 +26,12 @@ data class DaangnChatEventPublisher(
     private val userRepository: UserRepository,
     private val errandRepository: ErrandRepository,
 ) {
-    private val logger = KotlinLogging.logger {  }
     @Async
-//    @Transactional
+    @Transactional
     fun publishErrandRegisteredEvent(errandDto: ErrandDto) {
-        Thread.sleep(1000L)
         val errand =
             errandRepository.findById(errandDto.id!!).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val targetUserList = getUserDaangnIdListInCategory(errandDto, errand.regionId)
+        val targetUserList = getUserDaangnIdListInCategory(errand, errand.regionId)
         val buttonLinkedUrl = "$baseUrl/errands/${errandDto.id}"
         val regionName = try {
             daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
@@ -41,10 +39,9 @@ data class DaangnChatEventPublisher(
             null
         }
         eventPublisher.publishEvent(ErrandRegisteredChatEvent(targetUserList, buttonLinkedUrl, regionName))
-        logger.info("publish errand registered event published now.")
     }
 
-    fun getUserDaangnIdListInCategory(errandDto: ErrandDto, regionId: String): List<String> {
+    fun getUserDaangnIdListInCategory(errand: Errand, regionId: String): List<String> {
         val neighborUsers: MutableSet<String> = HashSet()
         val neighborRegionIdList =
             daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions.map { region ->
@@ -55,9 +52,9 @@ data class DaangnChatEventPublisher(
             neighborUsers.addAll(redisUtil.getDaangnIdListByRegionId(iterator.next()))
         }
         val users = userRepository.findByDaangnIdListAndHasCategory(
-            errandDto.customer.id!!,
+            errand.customer.id!!,
             neighborUsers,
-            errandDto.category.id!!
+            errand.category.id!!
         )
 
         return users.asSequence().map { user ->
@@ -74,7 +71,6 @@ data class DaangnChatEventPublisher(
                 "$baseUrl/errands/$errandId"
             )
         )
-        logger.info("matching registered event published")
     }
 
     @Async
@@ -106,6 +102,5 @@ data class DaangnChatEventPublisher(
                 "$baseUrl/errands/${errandId}"
             )
         )
-        logger.info("help registered event published")
     }
 }
