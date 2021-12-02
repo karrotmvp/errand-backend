@@ -13,7 +13,7 @@ class ImageQueryRepositoryImpl(
     override fun findOneByErrandIdOrderByIdDesc(errandId: Long): Image? {
         return queryFactory.selectFrom(image)
             .where(image.errand.id.eq(errandId))
-            .orderBy(image.id.desc())
+            .orderBy(image.id.asc())
             .fetchFirst()
     }
 
