@@ -32,8 +32,8 @@ class Errand(
     var category: Category,
     @Column(nullable = false)
     var regionId: String,
-    @Column(nullable = false)
-    var detailAddress: String,
+    @Column
+    var detailAddress: String?,
     @Column(nullable = false)
     var reward: String,
     @Column(nullable = false, columnDefinition = "TEXT")
