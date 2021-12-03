@@ -17,5 +17,5 @@ data class PostErrandReqDto(
     @ApiModelProperty(value = "지역 ID")
     val regionId: String,
     @ApiModelProperty(value = "이미지", required = false)
-    val images: List<MultipartFile>?
+    val images: List<String>?
 )
