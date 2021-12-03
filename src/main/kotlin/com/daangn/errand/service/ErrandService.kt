@@ -114,6 +114,7 @@ class ErrandService(
         val errandDto = errandConverter.toErrandDto(errand)
         errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
         errandDto.helpCount = helpRepository.countByErrand(errand)
+        daangnUtil.setUserDaangnProfile(errandDto.customer)
         return errandDto
     }
 
