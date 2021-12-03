@@ -11,7 +11,7 @@ data class PostErrandReqDto(
     @ApiModelProperty(value = "사례")
     val reward: String,
     @ApiModelProperty(value = "상세주소")
-    val detailAddress: String,
+    val detailAddress: String? = null,
     @ApiModelProperty(value = "요청 유저의 전화번호")
     val phoneNumber: String,
     @ApiModelProperty(value = "지역 ID")
