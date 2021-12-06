@@ -32,7 +32,7 @@ cloud:
 logging.level.com.amazonaws.util.EC2MetadataUtils: error
 daangn:
   oapi:
-    neighbor-range: RANGE_2
+    neighbor-range: RANGE_3
 test: false
 token.secret: Dj@bWv5w-$m#kjNWe?y#
 
