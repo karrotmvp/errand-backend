@@ -23,7 +23,7 @@ class ErrandController(
     val errandService: ErrandService,
     val helpService: HelpService
 ) {
-    @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("")
     @ApiOperation(value = "심부름을 등록하는 API")
     fun postErrand(
         @ApiIgnore @TokenPayload payload: JwtPayload,
