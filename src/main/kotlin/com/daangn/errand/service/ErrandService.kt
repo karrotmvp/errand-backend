@@ -71,7 +71,7 @@ class ErrandService(
             Errand(
                 category = category,
                 detail = postErrandReqDto.detail,
-                reward = postErrandReqDto.reward,
+                reward = postErrandReqDto.reward.toString(),
                 detailAddress = postErrandReqDto.detailAddress,
                 customerPhoneNumber = postErrandReqDto.phoneNumber,
                 customer = user,
