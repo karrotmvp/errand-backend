@@ -2,7 +2,6 @@ package com.daangn.errand.service
 
 import com.daangn.errand.domain.errand.*
 import com.daangn.errand.domain.image.Image
-import com.daangn.errand.domain.image.ImageFileWithKey
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.domain.user.UserProfileVo
@@ -21,12 +20,9 @@ import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
-import com.daangn.errand.util.S3AsyncUploader
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.util.concurrent.CompletableFuture
 
 @Service
 class ErrandService(
@@ -39,7 +35,6 @@ class ErrandService(
     private val errandConverter: ErrandConverter,
     private val regionConverter: RegionConverter,
     private val userConverter: UserConverter,
-    private val s3AsyncUploader: S3AsyncUploader,
 
     private val daangnUtil: DaangnUtil,
     private val daangnChatEventPublisher: DaangnChatEventPublisher,
@@ -64,7 +59,7 @@ class ErrandService(
         postErrandReqDto: PostErrandReqDto
     ): Errand {
         val user =
-            userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+            userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
@@ -76,7 +71,7 @@ class ErrandService(
             Errand(
                 category = category,
                 detail = postErrandReqDto.detail,
-                reward = postErrandReqDto.reward,
+                reward = postErrandReqDto.reward.toString(),
                 detailAddress = postErrandReqDto.detailAddress,
                 customerPhoneNumber = postErrandReqDto.phoneNumber,
                 customer = user,
@@ -85,16 +80,9 @@ class ErrandService(
         )
 
         if (!postErrandReqDto.images.isNullOrEmpty()) {
-            val imageWithKeyList = postErrandReqDto.images.map { image ->
-                val fileName = "${errand.id}-${user.id}-${LocalDateTime.now()}"
-                val key = s3AsyncUploader.generateKey(fileName)
-                imageRepository.save(Image(s3AsyncUploader.generateObjectUrl(key), errand))
-                ImageFileWithKey(image, key)
+            postErrandReqDto.images.map { imgUrl ->
+                imageRepository.save(Image(imgUrl, errand))
             }
-            val futures = imageWithKeyList.map { imgWithKey ->
-                s3AsyncUploader.putObject(imgWithKey.key, imgWithKey.image)
-            }
-            CompletableFuture.allOf(*futures.toTypedArray()).handle { _, err -> throw err } // TODO: 확인
         }
         return errand
     }
@@ -196,7 +184,8 @@ class ErrandService(
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         val helper = userRepository.findById(helperId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
-        val help = helpRepository.findByErrandAndHelper(errand, helper) ?: throw ErrandException(ErrandError.BAD_REQUEST)
+        val help =
+            helpRepository.findByErrandAndHelper(errand, helper) ?: throw ErrandException(ErrandError.BAD_REQUEST)
         errand.chosenHelper = help.helper
 
         daangnChatEventPublisher.publishMatchingRegisteredEvent(helper.daangnId, errandId)
