@@ -25,8 +25,15 @@ import com.daangn.errand.util.S3AsyncUploader
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import software.amazon.awssdk.services.s3.model.PutObjectResponse
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
+
+object HelloSpeaker {
+    fun sayHello() {
+        println("hello world")
+    }
+}
 
 @Service
 class ErrandService(
@@ -58,13 +65,17 @@ class ErrandService(
         return PostErrandResDto(errandId)
     }
 
+    internal fun sayHello() {
+        println("hello")
+    }
+
     @Transactional
     fun createErrand(
         userId: Long,
-        postErrandReqDto: PostErrandReqDto
+        postErrandReqDto: PostErrandReqDto,
     ): Errand {
         val user =
-            userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+            userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
@@ -91,11 +102,17 @@ class ErrandService(
                 imageRepository.save(Image(s3AsyncUploader.generateObjectUrl(key), errand))
                 ImageFileWithKey(image, key)
             }
+
             val futures = imageWithKeyList.map { imgWithKey ->
                 s3AsyncUploader.putObject(imgWithKey.key, imgWithKey.image)
             }
-            CompletableFuture.allOf(*futures.toTypedArray()).handle { _, err -> throw err } // TODO: 확인
+
+            CompletableFuture.allOf(*futures.toTypedArray()).join()
         }
+
+        sayHello()
+        HelloSpeaker.sayHello()
+
         return errand
     }
 
