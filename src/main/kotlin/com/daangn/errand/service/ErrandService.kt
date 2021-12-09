@@ -41,6 +41,13 @@ class ErrandService(
     private val mixpanelEventPublisher: MixpanelEventPublisher,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
+
+    fun getMatchedErrandRate(): Float {
+        val totalErrandCnt = errandRepository.count()
+        val matchedErrandCnt = errandRepository.countByChosenHelperIsNotNull()
+        return matchedErrandCnt.toFloat()/totalErrandCnt * 100
+    }
+
     fun createErrandAndPublishEvents(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
         val errand = createErrand(userId, postErrandReqDto)
 

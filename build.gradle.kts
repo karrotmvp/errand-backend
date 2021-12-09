@@ -92,6 +92,9 @@ dependencies {
 
     implementation("com.datadoghq:dd-trace-api:0.90.0")
     implementation("com.datadoghq:dd-trace-ot:0.90.0")
+
+    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("com.github.javafaker:javafaker:1.0.2")
 }
 
 tasks.withType<KotlinCompile> {

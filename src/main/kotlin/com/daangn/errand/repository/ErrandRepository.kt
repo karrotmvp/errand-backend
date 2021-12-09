@@ -7,4 +7,5 @@ import java.awt.print.Pageable
 
 interface ErrandRepository: JpaRepository<Errand, Long>, ErrandQueryRepository {
     fun countByCustomer(customer: User): Int
+    fun countByChosenHelperIsNotNull(): Long
 }
