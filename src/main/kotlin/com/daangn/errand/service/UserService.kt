@@ -41,6 +41,14 @@ class UserService(
         return userConverter.toUserVo(user)
     }
 
+    fun getTotalUserCnt(): Long {
+        return userRepository.count()
+    }
+
+    fun getAlarmOnUSerCnt(): Long {
+        return helperHasCategoriesRepository.countAlarmOnUser()
+    }
+
     @Transactional
     fun createOrUpdateUserByDaangnId(userProfile: GetUserProfileRes.Data): Pair<Boolean, User> {
         val daangnId = userProfile.userId

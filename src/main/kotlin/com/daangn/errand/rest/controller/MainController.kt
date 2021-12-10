@@ -2,8 +2,10 @@ package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.errand.ErrandPreview
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
+import com.daangn.errand.rest.dto.main.GetCurrentDataResDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
+import com.daangn.errand.service.UserService
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.Api
@@ -18,8 +20,17 @@ import springfox.documentation.annotations.ApiIgnore
 @RequestMapping("/errands")
 @Api(tags = ["메인 심부름 리스트 관련 API"])
 class MainController(
-    val errandService: ErrandService
+    private val errandService: ErrandService,
+    private val userService: UserService
 ) {
+    @GetMapping("/current-data") // 토큰 필요없음
+    fun getCurrentServiceData(): ErrandResponse<GetCurrentDataResDto> {
+        val userCnt = userService.getTotalUserCnt()
+        val matchedErrandRate = errandService.getMatchedErrandRate()
+        val alarmOnUsersCnt = userService.getAlarmOnUSerCnt()
+        return ErrandResponse(GetCurrentDataResDto(userCnt, matchedErrandRate, alarmOnUsersCnt))
+    }
+
     @GetMapping("")
     fun getMain(
         @ApiIgnore @TokenPayload payload: JwtPayload,
