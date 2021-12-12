@@ -84,6 +84,7 @@ class ErrandQueryRepositoryImpl(
         lastErrandId: Long?
     ): MutableList<MainErrandQueryResult> {
         val predicate = BooleanBuilder()
+        predicate.and(errand.unexposed.isFalse)
         if (lastErrandId != null) predicate.and(errand.id.lt(lastErrandId))
         return query.select(
             Projections.constructor(
