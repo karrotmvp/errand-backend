@@ -1,6 +1,7 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.help.HelpVo
+import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.rest.dto.help.PostHelpReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
@@ -19,24 +20,20 @@ import springfox.documentation.annotations.ApiIgnore
 @Api(tags = ["지원하기(Help) 관련 API"])
 class HelpController(
     private val helpService: HelpService,
-    private val errandService: ErrandService,
 ) {
     @GetMapping("/{helpId}")
     @ApiOperation(value = "지원 ID로 지원 내역 보기 API")
     fun getHelpDetail(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @ApiParam(value = "Help ID") @PathVariable(value = "helpId") id: Long
-    ) = ErrandResponse(errandService.readHelpDetail(payload, id))
+    ): ErrandResponse<GetHelpDetailResDto> = ErrandResponse(helpService.readHelpDetail(payload, id))
 
 
     @PostMapping
     fun postHelp(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @RequestBody postHelpReqDto: PostHelpReqDto
-    ): ErrandResponse<HelpVo> {
-        val helpVo = helpService.createHelp(payload.userId, postHelpReqDto)
-        return ErrandResponse(helpVo)
-    }
+    ): ErrandResponse<HelpVo> = ErrandResponse(helpService.createHelp(payload.userId, postHelpReqDto))
 
     @DeleteMapping("/{id}")
     fun deleteHelp(

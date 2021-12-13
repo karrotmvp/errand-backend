@@ -43,5 +43,6 @@ class MyController(
             required = false
         ) lastId: Long?,
         @ApiParam(value = "가져오려는 심부름의 개수") @RequestParam(value = "size") size: Long
-    ) = ErrandResponse(errandService.readMyHelps(payload.userId, lastId, size))
+    ): ErrandResponse<List<GetErrandResDto<ErrandPreview>>>
+    = ErrandResponse(errandService.readHelpedErrands(payload.userId, lastId, size))
 }
