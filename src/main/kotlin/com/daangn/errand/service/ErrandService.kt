@@ -177,7 +177,8 @@ class ErrandService(
                 errand.id!!,
                 help.id!!,
                 userProfileVo,
-                help.appeal
+                help.appeal,
+                help.createdAt
             )
         }.toList()
     }
@@ -299,7 +300,7 @@ class ErrandService(
     }
 
     @Transactional
-    fun readMyHelps(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
+    fun readHelpedErrands(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val helps = if (lastId == null) {
             helpRepository.findByHelperTopSize(user, size)
@@ -322,33 +323,6 @@ class ErrandService(
         errand.complete = true
         mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
         eventPublisher.publishEvent(HelperConfirmedErrandEvent(errand.id!!))
-    }
-
-    @Transactional
-    fun readHelpDetail(payload: JwtPayload, helpId: Long): GetHelpDetailResDto {
-        val userId = payload.userId
-        val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val help = helpRepository.findById(helpId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
-
-        val isHelper = user == help.helper
-        val isCustomer = user == help.errand.customer
-
-        if (!isCustomer && !isHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
-        val helperVo = UserProfileVo(
-            help.helper.id,
-            help.helper.daangnId,
-            mannerTemp = help.helper.mannerTemp
-        )
-
-        val isChosenHelper = help.errand.chosenHelper == help.helper
-        return GetHelpDetailResDto(
-            help.errand.id!!,
-            isCustomer,
-            help.errand.chosenHelper == help.helper,
-            daangnUtil.setUserDaangnProfile(helperVo, help.regionId),
-            help.appeal,
-            if (isHelper || (isCustomer && isChosenHelper)) help.phoneNumber else null
-        )
     }
 
     @Transactional

@@ -37,3 +37,4 @@ sentry:
   environment: local
 host:
   url: https://front.daangn-errand.com/?#
+test: true
