@@ -39,7 +39,7 @@ class HelpService(
         val errandCustomer = help.errand.customer
         val errandChosenHelper = help.errand.chosenHelper
 
-        if (user !== errandCustomer && user !== thisHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
+        if (user != errandCustomer && user != thisHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
 
         val helperProfileVo = daangnUtil.setUserDaangnProfile(userConverter.toUserProfileVo(thisHelper), help.regionId)
 
