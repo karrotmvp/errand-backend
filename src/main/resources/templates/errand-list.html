@@ -89,6 +89,7 @@
             <th>심부름 상태</th>
             <th>지원자 수</th>
             <th>심부름 디테일</th>
+            <th>가격</th>
             <th>생성 시간</th>
             <th>조회수</th>
         </tr>
@@ -111,6 +112,7 @@
             <td><a th:text="${#strings.abbreviate(errand.detail, 50)}"
                    th:href="@{/admin/errand/{errandId}(errandId = ${errand.id})}"></a></td>
 
+            <td th:text="${errand.reward}+'원'"></td>
             <td th:text="${#temporals.format(errand.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${errand.viewCnt}"></td>
         </tr>
