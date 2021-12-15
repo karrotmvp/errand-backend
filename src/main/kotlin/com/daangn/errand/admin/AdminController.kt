@@ -52,6 +52,12 @@ class AdminController(
         val errandAdmin = adminService.getErrandAdminDetail(id)
         val userId = errandAdmin.customer.id ?: throw ErrandException(ErrandError.BAD_REQUEST, "customer id 없음")
         val userInfo = adminService.getUserDaangnInfo(userId)
+        val chosenHelp: HelpAdmin? = if (errandAdmin.chosenHelper != null) {
+            adminService.getChosenHelpDetail(id)
+        } else {
+            null
+        }
+        model.addAttribute("chosenHelp", chosenHelp)
         model.addAttribute("userInfo", userInfo)
         model.addAttribute("errand", errandAdmin)
         return "errand-detail"

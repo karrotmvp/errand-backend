@@ -4,6 +4,7 @@ import com.daangn.errand.admin.dto.AdminLoginReqDto
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.domain.errand.ErrandAdmin
 import com.daangn.errand.domain.errand.ErrandConverter
+import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.help.HelpAdmin
 import com.daangn.errand.domain.help.HelpConverter
 import com.daangn.errand.domain.user.UserAdmin
@@ -83,16 +84,29 @@ class AdminService(
         return errandAdmin
     }
 
+    fun getChosenHelpDetail(errandId: Long): HelpAdmin {
+        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
+        if (errand.chosenHelper == null) throw ErrandException(ErrandError.BAD_REQUEST)
+        val chosenHelp = helpRepository.findByErrandAndHelper(errand, errand.chosenHelper!!) ?: throw ErrandException(
+            ErrandError.BAD_REQUEST
+        )
+        return convertToHelpAdmin(chosenHelp)
+    }
+
+    val convertToHelpAdmin: (Help) -> HelpAdmin = { help ->
+        val helpAdmin = helpConverter.toHelpAdmin(help)
+        val region = daangnUtil.getRegionInfoByRegionId(help.regionId).region
+        helpAdmin.region = regionConverter.toRegionVo(region)
+        val userProfile = userConverter.toUserProfileVo(help.helper)
+        helpAdmin.helper = daangnUtil.setUserDaangnProfile(userProfile)
+        helpAdmin
+    }
+
     fun getHelpList(errandId: Long): List<HelpAdmin> {
         val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.BAD_REQUEST) }
         val helps = helpRepository.findByErrand(errand)
         return helps.asSequence().map { help ->
-            val helpAdmin = helpConverter.toHelpAdmin(help)
-            val region = daangnUtil.getRegionInfoByRegionId(help.regionId).region
-            helpAdmin.region = regionConverter.toRegionVo(region)
-            val userProfile = userConverter.toUserProfileVo(help.helper)
-            helpAdmin.helper = daangnUtil.setUserDaangnProfile(userProfile)
-            helpAdmin
+            convertToHelpAdmin(help)
         }.toList()
     }
 

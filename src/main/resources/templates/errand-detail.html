@@ -48,8 +48,15 @@
             <td th:utext="${errand.reward}"></td>
         </tr>
         <tr>
-            <td>심부름 상세주소</td>
-            <td th:utext="${errand.detailAddress}"></td>
+            <td>매칭된 헬퍼</td>
+            <td>
+                <div th:if="${chosenHelp != null}">
+                    <div th:text="'지원 id: '+${chosenHelp.id}"></div>
+                    <div><img th:src="${chosenHelp.helper.profileImageUrl}" width="100px" style="margin-top:10px; margin-bottom: 10px;"></div>
+                    <div th:text="'닉네임: '+${chosenHelp.helper.nickname}"></div>
+                    <div th:text="'각오: '+${chosenHelp.appeal}"></div>
+                </div>
+            </td>
         </tr>
         <tr>
             <td>지원자 수</td>
