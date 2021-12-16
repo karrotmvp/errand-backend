@@ -6,6 +6,7 @@ import com.daangn.errand.domain.errand.QErrand.errand
 import com.daangn.errand.domain.help.QHelp.help
 import com.daangn.errand.domain.user.User
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
@@ -13,23 +14,19 @@ class ErrandQueryRepositoryImpl(
     val query: JPAQueryFactory
 ) : ErrandQueryRepository {
 
-
-    override fun findByCustomerOrderByCreateAtDesc(customer: User, size: Long): MutableList<Errand> {
-        return query.selectFrom(errand)
-            .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
-            .orderBy(errand.id.desc())
-            .limit(size)
-            .fetch()
-    }
-
-    override fun findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(
-        lastErrand: Errand,
+    override fun findByCustomerOrderByCreateAtDesc(
+        lastErrand: Errand?,
         customer: User,
         size: Long
     ): MutableList<Errand> {
+        val predicate = BooleanBuilder()
+        predicate.and(errand.customer.eq(customer))
+        predicate.and(errand.unexposed.isFalse)
+        if (lastErrand != null)
+            predicate.and(errand.id.lt(lastErrand.id))
+
         return query.selectFrom(errand)
-            .where(errand.customer.eq(customer).and(errand.unexposed.isFalse))
-            .where(errand.id.lt(lastErrand.id))
+            .where(predicate)
             .orderBy(errand.id.desc())
             .groupBy(errand.id)
             .limit(size)

@@ -4,14 +4,12 @@ import com.daangn.errand.domain.errand.*
 import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
-import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.repository.*
 import com.daangn.errand.rest.dto.daangn.Region
 import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
-import com.daangn.errand.rest.dto.help.GetHelpDetailResDto
 import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.HelperConfirmedErrandEvent
@@ -23,6 +21,7 @@ import com.daangn.errand.util.JwtPayload
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.streams.toList
 
 @Service
 class ErrandService(
@@ -45,7 +44,7 @@ class ErrandService(
     fun getMatchedErrandRate(): Float {
         val totalErrandCnt = errandRepository.count()
         val matchedErrandCnt = errandRepository.countByChosenHelperIsNotNull()
-        return matchedErrandCnt.toFloat()/totalErrandCnt * 100
+        return matchedErrandCnt.toFloat() / totalErrandCnt * 100
     }
 
     fun createErrandAndPublishEvents(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
@@ -96,12 +95,18 @@ class ErrandService(
 
     @Transactional
     fun readErrand(payload: JwtPayload, errandId: Long): GetErrandResDto<ErrandDto> {
-        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        val errand = findValidErrand(errandId)
         val user =
             userRepository.findById(payload.userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errandDto = makeErrandToErrandDto(errand)
         errand.viewCnt += 1
         return getErrandDetailByUserRole(errand, user, errandDto)
+    }
+
+    private fun findValidErrand(errandId: Long): Errand {
+        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        if (errand.unexposed) throw ErrandException(ErrandError.UNEXPOSED_ERRAND)
+        return errand
     }
 
     @Transactional
@@ -154,8 +159,7 @@ class ErrandService(
 
     @Transactional
     fun readAppliedHelpers(payload: JwtPayload, errandId: Long): List<HelperPreview> {
-        val errand = errandRepository.findById(errandId)
-            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
+        val errand = findValidErrand(errandId)
         if (errand.complete) throw ErrandException(ErrandError.NOT_PERMITTED, "완료된 심부름의 지원자 목록은 볼 수 없어요.")
 
         val user =
@@ -185,8 +189,7 @@ class ErrandService(
 
     @Transactional
     fun chooseHelper(userId: Long, helperId: Long, errandId: Long) {
-        val errand = errandRepository.findById(errandId)
-            .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 id의 심부름을 찾을 수 없습니다.") }
+        val errand = findValidErrand(errandId)
         if (errand.chosenHelper != null) throw ErrandException(ErrandError.BAD_REQUEST, "이미 지정된 헬퍼가 있습니다.")
         val user =
             userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
@@ -290,11 +293,11 @@ class ErrandService(
     fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errands = if (lastId == null) {
-            errandRepository.findByCustomerOrderByCreateAtDesc(user, size)
+            errandRepository.findByCustomerOrderByCreateAtDesc(null, user, size)
         } else {
             val lastErrand = errandRepository.findById(lastId)
                 .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
-            errandRepository.findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(lastErrand, user, size)
+            errandRepository.findByCustomerOrderByCreateAtDesc(lastErrand, user, size)
         }
         return makeErrandPreviewByUserRole(errands, user)
     }
@@ -311,14 +314,15 @@ class ErrandService(
                 ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
             helpRepository.findByHelper(user, lastHelp, size)
         }
-        val errands = helps.asSequence().map { help -> help.errand }.toMutableList()
+        val errands =
+            helps.asSequence().map { help -> help.errand }.filter { errand -> errand.unexposed.not() }.toMutableList()
         return makeErrandPreviewByUserRole(errands, user)
     }
 
     @Transactional
     fun confirmErrand(userId: Long, errandId: Long) {
         val helper = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        val errand = findValidErrand(errandId)
         if (helper != errand.chosenHelper) throw ErrandException(ErrandError.NOT_PERMITTED)
         errand.complete = true
         mixpanelEventPublisher.publishErrandCompletedEvent(errand.id!!)
@@ -327,7 +331,7 @@ class ErrandService(
 
     @Transactional
     fun destroyErrand(userId: Long, errandId: Long) {
-        val errand = errandRepository.findById(errandId).orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST) }
+        val errand = findValidErrand(errandId)
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         if (errand.customer != user) throw ErrandException(ErrandError.NOT_PERMITTED)
         errandRepository.delete(errand)

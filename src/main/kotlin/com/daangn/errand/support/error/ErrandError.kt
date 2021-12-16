@@ -13,6 +13,7 @@ enum class ErrandError(var description: String, val status: HttpStatus) {
     FAIL_TO_LOGIN("로그인 실패", HttpStatus.FORBIDDEN),
     AWS_ERROR("AWS 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     CUSTOM_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNEXPOSED_ERRAND("미노출된 게시물입니다.", HttpStatus.BAD_REQUEST),
     DAANGN_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR);
     // 발생하는 예외가 무엇인지 모를 때 사용
     fun setDescExceptionMsg(e: Exception): ErrandError {
