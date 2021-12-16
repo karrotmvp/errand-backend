@@ -5,9 +5,8 @@ import com.daangn.errand.domain.errand.MainErrandQueryResult
 import com.daangn.errand.domain.user.User
 
 interface ErrandQueryRepository {
-    fun findByCustomerOrderByCreateAtDesc(customer: User, size: Long): MutableList<Errand>
-    fun findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(
-        lastErrand: Errand,
+    fun findByCustomerOrderByCreateAtDesc(
+        lastErrand: Errand?,
         customer: User,
         size: Long
     ): MutableList<Errand>

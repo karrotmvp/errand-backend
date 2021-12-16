@@ -292,11 +292,11 @@ class ErrandService(
     fun readMyErrands(userId: Long, lastId: Long?, size: Long): List<GetErrandResDto<ErrandPreview>> {
         val user = userRepository.findById(userId).orElseThrow { throw ErrandException(ErrandError.ENTITY_NOT_FOUND) }
         val errands = if (lastId == null) {
-            errandRepository.findByCustomerOrderByCreateAtDesc(user, size)
+            errandRepository.findByCustomerOrderByCreateAtDesc(null, user, size)
         } else {
             val lastErrand = errandRepository.findById(lastId)
                 .orElseThrow { throw ErrandException(ErrandError.BAD_REQUEST, "해당 아이디의 심부름이 존재하지 않습니다.") }
-            errandRepository.findErrandsAfterLastErrandByCustomerOrderedByCreatedAtDesc(lastErrand, user, size)
+            errandRepository.findByCustomerOrderByCreateAtDesc(lastErrand, user, size)
         }
         return makeErrandPreviewByUserRole(errands, user)
     }
