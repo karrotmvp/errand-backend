@@ -21,6 +21,7 @@ import com.daangn.errand.util.JwtPayload
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.streams.toList
 
 @Service
 class ErrandService(
@@ -313,7 +314,8 @@ class ErrandService(
                 ?: throw ErrandException(ErrandError.ENTITY_NOT_FOUND)
             helpRepository.findByHelper(user, lastHelp, size)
         }
-        val errands = helps.asSequence().map { help -> help.errand }.toMutableList()
+        val errands =
+            helps.asSequence().map { help -> help.errand }.filter { errand -> errand.unexposed.not() }.toMutableList()
         return makeErrandPreviewByUserRole(errands, user)
     }
 
