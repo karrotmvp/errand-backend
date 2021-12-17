@@ -43,7 +43,7 @@ class ErrandQueryRepositoryImpl(
         predicate.and(errand.unexposed.isFalse).and(errand.complete.isFalse).and(!errand.customer.id.eq(viewerId))
             .and(errand.chosenHelper.isNull)
             .and(errand.helps.size().lt(5))
-            .and(errand.regionId.`in`(regionIds))
+//            .and(errand.regionId.`in`(regionIds))
         if (lastErrandId != null) predicate.and(errand.id.lt(lastErrandId))
         val errandIdsAlreadyAppliedByUser: List<Long> =
             query.select(errand.id).from(help).where(help.helper.id.eq(viewerId)).fetch()
@@ -104,7 +104,7 @@ class ErrandQueryRepositoryImpl(
                     .and(help.helper.id.eq(viewerId))
                     .and(help.deleted.isFalse))
             .where(predicate)
-            .where(errand.regionId.`in`(regionIds))
+//            .where(errand.regionId.`in`(regionIds))
             .orderBy(errand.id.desc())
             .groupBy(errand.id)
             .limit(size).fetch()
