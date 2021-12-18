@@ -86,11 +86,12 @@
             <td id="ifUnexposedOrNot" th:utext="${errand.unexposed}"></td>
         </tr>
     </table>
+    <button id="makeUnexposed" type="button">미노출시키기</button>
+    <button id="makeExposed" type="button">노출 시키기</button>
+
     <div th:each="image: ${errand.images}">
         <img th:src="${image.url}" width="200px"/>
     </div>
-    <button id="makeUnexposed" type="button">미노출시키기</button>
-    <button id="makeExposed" type="button">노출 시키기</button>
 </div>
 <script>
     const origin = document.location.origin
@@ -101,11 +102,13 @@
     unexposedButton.addEventListener('click', async () => {
         const res = await fetch(`${origin}/admin/errand/${errandId}/unexposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
+        alert('게시글을 미노출했습니다.')
     })
     const exposedButton = document.getElementById("makeExposed")
     exposedButton.addEventListener('click', async () => {
         const res = await fetch(`${origin}/admin/errand/${errandId}/exposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
+        alert('게시글을 다시 노출했습니다.')
     })
 </script>
 </body>
