@@ -37,10 +37,12 @@
         </tr>
         <tr>
             <td>고객 ID</td>
-            <td th:utext="${errand.customer.id}">
-                <div th:text="${userInfo.nickname}"></div>
-                <div><img th:src="${userInfo.profileImageUrl}"></div>
-                <div th:text="${userInfo.mannerTemperature}"></div>
+            <td>
+                <div><img th:src="${userInfo.profileImageUrl}" width="100px" style="margin-top:10px; margin-bottom: 10px;"></div>
+                <div th:text="'닉네임: '+${userInfo.nickname}"></div>
+                <div th:text="${'매너온도: '+userInfo.mannerTemperature}"></div>
+                <div th:text="'id: '+${userInfo.id}"></div>
+                <div th:text="'당근 app id: '+${userInfo.daangnId}"></div>
             </td>
         </tr>
         <tr>
@@ -84,11 +86,12 @@
             <td id="ifUnexposedOrNot" th:utext="${errand.unexposed}"></td>
         </tr>
     </table>
+    <button id="makeUnexposed" type="button">미노출시키기</button>
+    <button id="makeExposed" type="button">노출 시키기</button>
+
     <div th:each="image: ${errand.images}">
         <img th:src="${image.url}" width="200px"/>
     </div>
-    <button id="makeUnexposed" type="button">미노출시키기</button>
-    <button id="makeExposed" type="button">노출 시키기</button>
 </div>
 <script>
     const origin = document.location.origin
@@ -99,11 +102,13 @@
     unexposedButton.addEventListener('click', async () => {
         const res = await fetch(`${origin}/admin/errand/${errandId}/unexposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
+        alert('게시글을 미노출했습니다.')
     })
     const exposedButton = document.getElementById("makeExposed")
     exposedButton.addEventListener('click', async () => {
         const res = await fetch(`${origin}/admin/errand/${errandId}/exposed`)
         ifUnExposedOrNotField.innerHTML = await res.text()
+        alert('게시글을 다시 노출했습니다.')
     })
 </script>
 </body>
