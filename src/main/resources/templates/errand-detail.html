@@ -38,10 +38,11 @@
         <tr>
             <td>고객 ID</td>
             <td>
-                <div th:utext="${errand.customer.id}"></div>
-                <div th:text="${userInfo.nickname}"></div>
                 <div><img th:src="${userInfo.profileImageUrl}" width="100px" style="margin-top:10px; margin-bottom: 10px;"></div>
-                <div th:text="${userInfo.mannerTemperature}"></div>
+                <div th:text="'닉네임: '+${userInfo.nickname}"></div>
+                <div th:text="${'매너온도: '+userInfo.mannerTemperature}"></div>
+                <div th:text="'id: '+${userInfo.id}"></div>
+                <div th:text="'당근 app id: '+${userInfo.daangnId}"></div>
             </td>
         </tr>
         <tr>
