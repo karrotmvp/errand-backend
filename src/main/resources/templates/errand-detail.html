@@ -37,9 +37,10 @@
         </tr>
         <tr>
             <td>고객 ID</td>
-            <td th:utext="${errand.customer.id}">
+            <td>
+                <div th:utext="${errand.customer.id}"></div>
                 <div th:text="${userInfo.nickname}"></div>
-                <div><img th:src="${userInfo.profileImageUrl}"></div>
+                <div><img th:src="${userInfo.profileImageUrl}" width="100px" style="margin-top:10px; margin-bottom: 10px;"></div>
                 <div th:text="${userInfo.mannerTemperature}"></div>
             </td>
         </tr>
