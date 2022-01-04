@@ -112,7 +112,7 @@ class AdminService(
 
     fun getUserDaangnInfo(userId: Long): UserAdmin {
         val user = userRepository.findById(userId).get()
-        val daangnProfile = daangnUtil.getUserInfo(user.daangnId).data.user
+        val daangnProfile = daangnUtil.getUserProfile(user.daangnId).data.user
         val errandCount = errandRepository.countByCustomer(user)
         val helpCount = helpRepository.countByHelper(user)
         return UserAdmin(

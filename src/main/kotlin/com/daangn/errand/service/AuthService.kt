@@ -13,7 +13,8 @@ class AuthService(
     fun getAccessToken(authCode: String): String {
         return daangnUtil.getAccessTokenByOpenApi(authCode).accessToken
     }
+
     fun getUserProfile(accessToken: String): GetUserProfileRes.Data {
-        return daangnUtil.getMyInfo(accessToken)
+        return daangnUtil.getMyProfile(accessToken)
     }
 }

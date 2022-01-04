@@ -57,7 +57,7 @@ class UserService(
             isSignUp = true
             userRepository.save(User(daangnId))
         }
-        val mannerTemp: Float = daangnUtil.getUserInfo(daangnId).data.user.mannerTemperature ?: 36.5f
+        val mannerTemp: Float = daangnUtil.getUserProfile(daangnId).data.user.mannerTemperature ?: 36.5f
         user.mannerTemp = mannerTemp
         return Pair(isSignUp, user)
     }
