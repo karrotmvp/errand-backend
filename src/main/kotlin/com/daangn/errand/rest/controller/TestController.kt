@@ -5,8 +5,7 @@ import com.daangn.errand.rest.dto.UploadImagesDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
-import com.daangn.errand.util.RedisUtil
-import com.daangn.errand.util.S3Uploader
+import com.daangn.errand.util.SyncS3Uploader
 import io.swagger.annotations.ApiOperation
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpStatus
@@ -20,17 +19,19 @@ import javax.websocket.server.PathParam
 @ApiIgnore
 @RequestMapping("/test")
 class TestController(
-    val s3Uploader: S3Uploader,
+    val s3Uploader: SyncS3Uploader,
     val redisTemplate: RedisTemplate<String, String>
 ) {
 
     @PostMapping("/file")
     @ApiOperation(value = "파일 업로드 테스트 API")
     fun uploadFile(
-       @ModelAttribute uploadImageDto: UploadImageDto
-    ) = ResponseEntity<String>(s3Uploader.upload(
-        uploadImageDto.img, uploadImageDto.fileName, "errand/test"
-    ), null, HttpStatus.OK)
+        @ModelAttribute uploadImageDto: UploadImageDto
+    ) = ResponseEntity<String>(
+        s3Uploader.uploadFileAndGetFileUrl(
+            uploadImageDto.img, uploadImageDto.fileName, "errand/test"
+        ), null, HttpStatus.OK
+    )
 
     @PostMapping("/files")
     @ApiOperation(value = "파일 여러개 업로드 테스트 API")
@@ -40,7 +41,7 @@ class TestController(
         val multipartFiles = uploadImagesDto.img
         val urls: List<String> = multipartFiles.asSequence().map { multipartFile ->
             val fileName = LocalDateTime.now().toString()
-            s3Uploader.upload(multipartFile, fileName, "errand/test")
+            s3Uploader.uploadFileAndGetFileUrl(multipartFile, fileName, "errand/test")
         }.toList()
         return ErrandResponse(urls)
     }
