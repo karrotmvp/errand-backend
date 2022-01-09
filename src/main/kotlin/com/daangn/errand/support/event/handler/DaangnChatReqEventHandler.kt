@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class DaangnChatReqEventHandler(
-    val daangnUtil: DaangnUtil
+    private val daangnUtil: DaangnUtil
 ) {
     private val logger = KotlinLogging.logger { }
 

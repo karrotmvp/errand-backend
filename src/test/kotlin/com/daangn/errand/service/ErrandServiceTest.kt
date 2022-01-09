@@ -12,7 +12,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,7 +21,7 @@ import kotlin.properties.Delegates
 import kotlin.random.Random
 
 @ExtendWith(MockKExtension::class)
-class ErrandServiceTest{
+class ErrandServiceTest {
     @SpyK
     @InjectMockKs
     private lateinit var errandService: ErrandService
@@ -78,7 +78,7 @@ class ErrandServiceTest{
 
         val calculatedRate = errandService.getMatchedErrandRate()
 
-        val actualRate = randomMatchedNumber.toFloat()/randomTotalNumber * 100
+        val actualRate = randomMatchedNumber.toFloat() / randomTotalNumber * 100
 
         assertEquals(actualRate, calculatedRate)
     }

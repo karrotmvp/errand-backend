@@ -9,7 +9,6 @@ import com.daangn.errand.support.event.*
 import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async

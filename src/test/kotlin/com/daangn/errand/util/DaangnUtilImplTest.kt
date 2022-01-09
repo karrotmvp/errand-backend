@@ -1,6 +1,7 @@
 package com.daangn.errand.util
 
 import com.daangn.errand.rest.dto.daangn.*
+import com.daangn.errand.util.daangnUtil.DaangnUtilImpl
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -13,14 +14,14 @@ import org.springframework.boot.test.context.SpringBootTest
     named="SPRING_PROFILES_ACTIVE",
     matches="local"
 )
-internal class DaangnUtilTest constructor(
-    @Autowired val daangnUtil: DaangnUtil,
+internal class DaangnUtilImplTest constructor(
+    @Autowired val daangnUtilImpl: DaangnUtilImpl,
     @Autowired val regionConverter: RegionConverter
 ) {
     @Test
     fun `regionId로 region 정보 가져오기`() {
         val reqRegionId = "6530459d189b"
-        val region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(reqRegionId).region)
+        val region = regionConverter.toRegionVo(daangnUtilImpl.getRegionInfoByRegionId(reqRegionId).region)
         Assertions.assertThat(region.id).isEqualTo(reqRegionId)
         Assertions.assertThat(region.nodeId).isEqualTo("UmVnaW9uOjY1MzA0NTlkMTg5Yg==")
         Assertions.assertThat(region.name).isEqualTo("역삼1동")
@@ -46,7 +47,7 @@ internal class DaangnUtilTest constructor(
             )
         )
         assertDoesNotThrow {
-            daangnUtil.sendBizChatting(postBizChatReq)
+            daangnUtilImpl.sendBizChatting(postBizChatReq)
         }
 
     }
@@ -54,13 +55,13 @@ internal class DaangnUtilTest constructor(
     @Test
     fun `주변 지역 정보 가져오기`() {
         val regionId = "6530459d189b"
-        assertDoesNotThrow { daangnUtil.getNeighborRegionByRegionId(regionId) }
+        assertDoesNotThrow { daangnUtilImpl.getNeighborRegionByRegionId(regionId) }
     }
 
     @Test
     fun `당근 프로필 불러오기`() {
         val userId = "8a190fa9bb5d4d89b3944dc8c5b3a102"
-        val userInfo: GetUserInfoByUserIdRes = assertDoesNotThrow { daangnUtil.getUserInfo(userId) }
+        val userInfo: GetUserInfoByUserIdRes = assertDoesNotThrow { daangnUtilImpl.getUserProfile(userId) }
         
         println(userInfo.data.user.id)
         println(userInfo.data.user.nickname)
@@ -75,6 +76,6 @@ internal class DaangnUtilTest constructor(
             "8a190fa9bb5d4d89b3944dc8c5b3a102",
             "8a190fa9bb5d4d89b3944dc8c5b3a102"
         )
-        assertDoesNotThrow { daangnUtil.getUsersInfo(userIdList) }
+        assertDoesNotThrow { daangnUtilImpl.getUsersProfile(userIdList) }
     }
 }

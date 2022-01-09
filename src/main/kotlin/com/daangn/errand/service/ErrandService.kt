@@ -21,7 +21,6 @@ import com.daangn.errand.util.JwtPayload
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.streams.toList
 
 @Service
 class ErrandService(
