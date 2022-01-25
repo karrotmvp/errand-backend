@@ -1,6 +1,6 @@
-# 당근 심부름 (Errand)
+# 당근 심부름 (Errand) Server
 
-<img src = "https://user-images.githubusercontent.com/61582017/150923204-48ddf82e-88f6-49f9-bdc2-e5d26c60fc1b.png" height="200px"> <img src = "https://user-images.githubusercontent.com/61582017/150922912-c7aca875-3d66-46bc-a719-4a9d1b767121.png" height="200px">
+<img width="1080" src="https://user-images.githubusercontent.com/61582017/150950264-e404fda9-f9f9-48af-b0ae-41dede86822b.png">
 
 
 내 근처 이웃에게 필요한 심부름을 부탁하는 서비스 - Karrot MVP Internship Team 5
