@@ -1,5 +1,6 @@
 package com.daangn.errand.util
 
+import com.daangn.errand.config.context.DaangnProperties
 import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.util.daangnUtil.DaangnUtilImpl
 import org.assertj.core.api.Assertions
@@ -7,14 +8,20 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestConstructor
+import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest
 @EnabledIfEnvironmentVariable(
     named="SPRING_PROFILES_ACTIVE",
     matches="local"
 )
-internal class DaangnUtilImplTest constructor(
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@EnableConfigurationProperties(DaangnProperties::class)
+@TestPropertySource(locations = ["classpath:application.yml", "classpath:application-local.yml"])
+class DaangnUtilImplTest constructor(
     @Autowired val daangnUtilImpl: DaangnUtilImpl,
     @Autowired val regionConverter: RegionConverter
 ) {
