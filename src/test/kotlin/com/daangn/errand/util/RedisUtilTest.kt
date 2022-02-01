@@ -9,10 +9,10 @@ import org.springframework.data.redis.core.RedisTemplate
 
 @SpringBootTest
 @EnabledIfEnvironmentVariable(
-    named="SPRING_PROFILES_ACTIVE",
-    matches="local"
+    named = "SPRING_PROFILES_ACTIVE",
+    matches = "local"
 )
-internal class RedisUtilTest constructor(
+class RedisUtilTest constructor(
     @Autowired val redisTemplate: RedisTemplate<String, String>,
     @Autowired val redisUtil: RedisUtil
 ) {
@@ -35,18 +35,18 @@ internal class RedisUtilTest constructor(
     @Test
     fun getUsersByRegionId() {
         // given
-        val user1Id = "8a190fa9bb5d4d89b3944dc8c5b3a102test"
-        val user2Id = "8a190fa9bb5d4d89b3944dc8c5b3a103test"
-        val regionId = "6530459d189b"
+        val user1Id = "8a190fa9bb5d4d89b3944dc8c5b3a102"
+        val user2Id = "8a190fa9bb5d4d89b3944dc8c5b3a103"
+        val regionId = "test-region-id"
         redisTemplate.opsForValue().set("$regionId:$user1Id", "")
         redisTemplate.opsForValue().set("$regionId:$user2Id", "")
 
         // when
-        val userRegions = redisUtil.getDaangnIdListByRegionId("6530459d189b")
+        val daangnIdList = redisUtil.getDaangnIdListByRegionId(regionId)
 
         // then
-        Assertions.assertThat(userRegions.size).isEqualTo(2)
+        Assertions.assertThat(daangnIdList.size).isEqualTo(2)
 
-        redisTemplate.delete(redisTemplate.keys("*test"))
+        redisTemplate.delete(redisTemplate.keys("test*"))
     }
 }
