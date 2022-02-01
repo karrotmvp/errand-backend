@@ -1,5 +1,6 @@
 package com.daangn.errand.util.daangnUtil
 
+import com.daangn.errand.config.context.DaangnProperties
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.rest.dto.daangn.*
 import com.daangn.errand.support.error.ErrandError
@@ -13,7 +14,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 
@@ -21,18 +21,14 @@ import org.springframework.stereotype.Component
 class DaangnUtilImpl(
     private val httpClient: OkHttpClient,
     private val objectMapper: ObjectMapper,
-    @Value("\${daangn.open-api.url}") val openApiBaseUrl: String,
-    @Value("\${daangn.oapi.url}") val oApiBaseUrl: String,
-    @Value("\${daangn.app-auth}") val appAuthorization: String,
-    @Value("\${daangn.app-key}") val appKey: String,
-    @Value("\${daangn.oapi.neighbor-range}") val range: String,
-): DaangnUtil {
+    private val daangnProperties: DaangnProperties
+) : DaangnUtil {
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
     protected val RESPONSE_TYPE = "code"
 
     override fun getAccessTokenByOpenApi(authCode: String): GetAccessTokenRes {
-        val url = "$openApiBaseUrl/oauth/token"
+        val url = "${daangnProperties.openApi.url}/oauth/token"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
             .addQueryParameter("code", authCode)
             .addQueryParameter("scope", SCOPE)
@@ -41,7 +37,7 @@ class DaangnUtilImpl(
         val request = Request.Builder()
             .url(httpUrl)
             .get()
-            .addHeader("Authorization", "Basic $appAuthorization")
+            .addHeader("Authorization", "Basic ${daangnProperties.appAuth}")
             .build()
 
         val httpResponse = try {
@@ -61,7 +57,7 @@ class DaangnUtilImpl(
     }
 
     override fun getMyProfile(accessToken: String): GetUserProfileRes.Data {
-        val url = "$openApiBaseUrl/api/v1/users/me"
+        val url = "${daangnProperties.openApi.url}/api/v1/users/me"
         val httpUrlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         val httpResponse = try {
             httpClient.newCall(
@@ -86,7 +82,7 @@ class DaangnUtilImpl(
     }
 
     override fun getRegionInfoByRegionId(regionId: String): GetRegionInfoRes.Data {
-        val url = "$oApiBaseUrl/api/v2/regions/$regionId"
+        val url = "${daangnProperties.oapi.url}/api/v2/regions/$regionId"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
         val httpResponse = try {
             httpClient.newCall(
@@ -94,7 +90,7 @@ class DaangnUtilImpl(
                     .url(httpUrl)
                     .get()
                     .addHeader("Accept", "application/json")
-                    .addHeader("X-Api-Key", appKey)
+                    .addHeader("X-Api-Key", daangnProperties.appKey)
                     .build()
             ).execute()
         } catch (e: Exception) {
@@ -114,14 +110,14 @@ class DaangnUtilImpl(
 
     @SentrySpan
     override fun sendBizChatting(postBizChatReq: PostBizChatReq) {
-        val url = "$oApiBaseUrl/api/v2/chat/send_biz_chat_message"
+        val url = "${daangnProperties.oapi.url}/api/v2/chat/send_biz_chat_message"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
 
         val requestBody = objectMapper.writeValueAsString(postBizChatReq)
         val request: Request = Request.Builder()
             .url(httpUrl)
             .post(requestBody.toRequestBody("application/json".toMediaTypeOrNull()))
-            .addHeader("X-Api-Key", appKey)
+            .addHeader("X-Api-Key", daangnProperties.appKey)
             .build()
         val response = try {
             httpClient.newCall(request).execute()
@@ -135,13 +131,13 @@ class DaangnUtilImpl(
 
     @Trace
     override fun getNeighborRegionByRegionId(regionId: String): GetNeighborRegionInfoRes {
-        val url = "$oApiBaseUrl/api/v2/regions/$regionId/neighbor_regions"
+        val url = "${daangnProperties.oapi.url}/api/v2/regions/$regionId/neighbor_regions"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
-            .addQueryParameter("range", range).build() // MY, ADJACENT, RANGE_2, RANGE_3
+            .addQueryParameter("range", daangnProperties.oapi.neighborRange).build() // MY, ADJACENT, RANGE_2, RANGE_3
         val request = Request.Builder()
             .url(httpUrl)
             .get()
-            .addHeader("X-Api-Key", appKey)
+            .addHeader("X-Api-Key", daangnProperties.appKey)
             .build()
         val httpResponse = try {
             httpClient.newCall(request).execute()
@@ -168,12 +164,12 @@ class DaangnUtilImpl(
     }
 
     override fun getUserProfile(daangnId: String): GetUserInfoByUserIdRes {
-        val url = "$oApiBaseUrl/api/v2/users/$daangnId"
+        val url = "${daangnProperties.oapi.url}/api/v2/users/$daangnId"
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder().build()
         val request = Request.Builder()
             .url(httpUrl)
             .get()
-            .addHeader("X-Api-Key", appKey)
+            .addHeader("X-Api-Key", daangnProperties.appKey)
             .build()
         val httpResponse = try {
             httpClient.newCall(request).execute()
@@ -186,14 +182,14 @@ class DaangnUtilImpl(
 
     override fun getUsersProfile(daangnIdList: List<String>): GetUserInfoByUserIdListRes {
         val userIds = daangnIdList.joinToString(separator = ",")
-        val urlString = "$oApiBaseUrl/api/v2/users/by_ids"
+        val urlString = "${daangnProperties.oapi.url}/api/v2/users/by_ids"
         val httpUrl = urlString.toHttpUrlOrNull()!!.newBuilder()
             .addQueryParameter("ids", userIds)
             .build()
         val request = Request.Builder()
             .url(httpUrl)
             .get()
-            .addHeader("X-Api-Key", appKey)
+            .addHeader("X-Api-Key", daangnProperties.appKey)
             .build()
         val httpResponse = try {
             httpClient.newCall(request).execute()
@@ -206,12 +202,12 @@ class DaangnUtilImpl(
 
     @Trace(operationName = "regionInfo Map")
     override fun getRegionInfoByRegionIdMap(regionIds: MutableSet<String>): MutableMap<String, String> {
-        val urlString = "$oApiBaseUrl/api/v2/regions/by_ids"
+        val urlString = "${daangnProperties.oapi.url}/api/v2/regions/by_ids"
         val regionIdSequence = regionIds.joinToString(",")
         val httpUrl = urlString.toHttpUrlOrNull()!!.newBuilder()
             .addQueryParameter("ids", regionIdSequence)
             .build()
-        val request = Request.Builder().url(httpUrl).get().addHeader("X-Api-Key", appKey).build()
+        val request = Request.Builder().url(httpUrl).get().addHeader("X-Api-Key", daangnProperties.appKey).build()
         val httpResponse = httpClient.newCall(request).execute()
         val responseBody: String? = httpResponse.body?.string()
         val res = objectMapper.readValue(responseBody, GetRegionInfoListRes::class.java)
