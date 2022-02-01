@@ -47,7 +47,7 @@ class DaangnUtilImpl(
         val httpResponse = try {
             httpClient.newCall(request).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         val responseBody: String? = httpResponse.body?.string()
         if (!httpResponse.isSuccessful) {
@@ -56,7 +56,7 @@ class DaangnUtilImpl(
         return try {
             objectMapper.readValue(responseBody, GetAccessTokenRes::class.java)
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -73,15 +73,15 @@ class DaangnUtilImpl(
                     .build()
             ).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         if (!httpResponse.isSuccessful) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 프로필 정보 조회 실패"))
+            throw ErrandException(ErrandError.DAANGN_ERROR, "당근 프로필 정보 조회 실패")
         }
         return try {
             objectMapper.readValue(httpResponse.body?.string(), GetUserProfileRes::class.java).data
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -98,16 +98,16 @@ class DaangnUtilImpl(
                     .build()
             ).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         val responseBody: String? = httpResponse.body?.string()
         if (!httpResponse.isSuccessful) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 지역 정보 조회 실패"))
+            throw ErrandException(ErrandError.DAANGN_ERROR, "당근 지역 정보 조회 실패")
         }
         return try {
             objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
 
     }
@@ -126,10 +126,10 @@ class DaangnUtilImpl(
         val response = try {
             httpClient.newCall(request).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         if (!response.isSuccessful) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setCustomDesc("당근 비즈 채팅 보내기 실패"))
+            throw ErrandException(ErrandError.DAANGN_ERROR, "당근 비즈 채팅 보내기 실패")
         }
     }
 
@@ -146,13 +146,13 @@ class DaangnUtilImpl(
         val httpResponse = try {
             httpClient.newCall(request).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         val responseBody: String? = httpResponse.body?.string()
         return try {
             objectMapper.readValue(responseBody, GetNeighborRegionInfoRes::class.java)
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR.setDescExceptionMsg(e))
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -178,7 +178,7 @@ class DaangnUtilImpl(
         val httpResponse = try {
             httpClient.newCall(request).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         val responseBody: String? = httpResponse.body?.string()
         return objectMapper.readValue(responseBody, GetUserInfoByUserIdRes::class.java)
@@ -198,7 +198,7 @@ class DaangnUtilImpl(
         val httpResponse = try {
             httpClient.newCall(request).execute()
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.DAANGN_ERROR, e.localizedMessage)
+            throw ErrandException(ErrandError.DAANGN_ERROR, e.toString())
         }
         val responseBody: String? = httpResponse.body?.string()
         return objectMapper.readValue(responseBody, GetUserInfoByUserIdListRes::class.java)
