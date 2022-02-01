@@ -56,7 +56,7 @@ class DaangnUtilImpl(
         return try {
             objectMapper.readValue(responseBody, GetAccessTokenRes::class.java)
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR, e.toString())
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -81,7 +81,7 @@ class DaangnUtilImpl(
         return try {
             objectMapper.readValue(httpResponse.body?.string(), GetUserProfileRes::class.java).data
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR, e.toString())
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -107,7 +107,7 @@ class DaangnUtilImpl(
         return try {
             objectMapper.readValue(responseBody, GetRegionInfoRes::class.java).data
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR, e.toString())
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
 
     }
@@ -152,7 +152,7 @@ class DaangnUtilImpl(
         return try {
             objectMapper.readValue(responseBody, GetNeighborRegionInfoRes::class.java)
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR, e.toString())
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 

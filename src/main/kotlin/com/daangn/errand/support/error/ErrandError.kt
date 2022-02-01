@@ -12,7 +12,7 @@ enum class ErrandError(var description: String, val status: HttpStatus) {
     UNEXPECTED_VALUE("예상하지 못한 값입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     FAIL_TO_LOGIN("로그인 실패", HttpStatus.FORBIDDEN),
     AWS_ERROR("AWS 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    CUSTOM_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNEXPECTED_ERROR("서버 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     UNEXPOSED_ERRAND("미노출된 게시물입니다.", HttpStatus.BAD_REQUEST),
     DAANGN_ERROR("당근 API 에러", HttpStatus.INTERNAL_SERVER_ERROR);
 }

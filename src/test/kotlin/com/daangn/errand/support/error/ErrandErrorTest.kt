@@ -12,7 +12,7 @@ internal class ErrandErrorTest {
             val nullValue: String = null!!
             println(nullValue)
         } catch (e: Exception) {
-            throw ErrandException(ErrandError.CUSTOM_ERROR, e.toString())
+            throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
 
@@ -21,8 +21,7 @@ internal class ErrandErrorTest {
         val thrown: ErrandException = assertThrows(ErrandException::class.java) {
             throwNullPointerException()
         }
-        println(thrown.message)
 
-        Assertions.assertThat(thrown.message).isEqualTo("java.lang.NullPointerException")
+        Assertions.assertThat(thrown.message).isEqualTo("서버 에러입니다.(java.lang.NullPointerException)")
     }
 }
