@@ -42,7 +42,7 @@ class RedisUtilTest constructor(
         redisTemplate.opsForValue().set("$regionId:$user2Id", "")
 
         // when
-        val daangnIdList = redisUtil.getDaangnIdListByRegionId(regionId)
+        val daangnIdList = redisUtil.getDaangnUserIdsBy(regionId)
 
         // then
         Assertions.assertThat(daangnIdList.size).isEqualTo(2)

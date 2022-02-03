@@ -9,7 +9,7 @@ class RedisUtilImpl(
     val redisTemplate: RedisTemplate<String, String>
 ): RedisUtil {
 
-    override fun getDaangnIdListByRegionId(regionId: String): List<String> {
+    override fun getDaangnUserIdsBy(regionId: String): List<String> {
         val allKeys = redisTemplate.keys("$regionId*")
         return allKeys.asSequence().map { key -> key.split(":")[1] }.toList()
     }

@@ -12,6 +12,7 @@ import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.event.ErrandCreatedEvent
 import com.daangn.errand.support.event.HelperConfirmedErrandEvent
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
@@ -46,32 +47,15 @@ class ErrandService(
         return matchedErrandCnt.toFloat() / totalErrandCnt * 100
     }
 
-    fun createErrandAndPublishEvents(userId: Long, postErrandReqDto: PostErrandReqDto): PostErrandResDto {
-        val errand = createErrand(userId, postErrandReqDto)
-
-        val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
-
-        val errandDto = errandConverter.toErrandDto(errand)
-        daangnChatEventPublisher.publishErrandRegisteredEvent(errandDto)
-        mixpanelEventPublisher.publishErrandRegisteredEvent(errandId)
-
-        return PostErrandResDto(errandId)
-    }
-
     @Transactional
     fun createErrand(
         userId: Long,
         postErrandReqDto: PostErrandReqDto
-    ): Errand {
-        val user =
-            userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
+    ): PostErrandResDto {
+        val user = userRepository.findBy(userId)
         val category = categoryRepository.findById(postErrandReqDto.categoryId).orElseThrow {
             throw ErrandException(ErrandError.BAD_REQUEST)
         }
-        if (!postErrandReqDto.images.isNullOrEmpty() && postErrandReqDto.images.size > 10) throw ErrandException(
-            ErrandError.BAD_REQUEST,
-            "사진은 최대 10장까지만 첨부 가능합니다."
-        )
         val errand = errandRepository.save(
             Errand(
                 category = category,
@@ -83,13 +67,16 @@ class ErrandService(
                 regionId = postErrandReqDto.regionId
             )
         )
+        val errandId = errand.id ?: throw ErrandException(ErrandError.FAIL_TO_CREATE)
 
         if (!postErrandReqDto.images.isNullOrEmpty()) {
             postErrandReqDto.images.map { imgUrl ->
                 imageRepository.save(Image(imgUrl, errand))
             }
         }
-        return errand
+
+        eventPublisher.publishEvent(ErrandCreatedEvent(errandId))
+        return PostErrandResDto(errandId)
     }
 
     @Transactional

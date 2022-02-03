@@ -13,7 +13,7 @@ class MixpanelService(
     val mixpanelConfig: MixpanelConfig
 ) {
     @Throws(IOException::class)
-    fun trackEvent(event: MixpanelTrackEvent, entities: HashMap<String, Any>) {
+    fun trackEvent(event: MixpanelTrackEvent, entities: Map<String, Any>) {
         val messageBuilder = MessageBuilder(mixpanelConfig.token)
 
         val props = JSONObject()

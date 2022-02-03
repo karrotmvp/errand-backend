@@ -8,11 +8,12 @@ import com.daangn.errand.rest.dto.help.HelperPreview
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.ErrandService
 import com.daangn.errand.service.HelpService
+import com.daangn.errand.support.error.ErrandError
+import com.daangn.errand.support.exception.ErrandException
 import com.daangn.errand.support.response.ErrandResponse
 import com.daangn.errand.util.JwtPayload
 import io.swagger.annotations.*
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 
@@ -29,7 +30,11 @@ class ErrandController(
         @ApiIgnore @TokenPayload payload: JwtPayload,
         @RequestBody postErrandReqDto: PostErrandReqDto
     ): ErrandResponse<PostErrandResDto> {
-        return ErrandResponse(errandService.createErrandAndPublishEvents(payload.userId, postErrandReqDto))
+        if (!postErrandReqDto.images.isNullOrEmpty() && postErrandReqDto.images.size > 10) throw ErrandException(
+                ErrandError.BAD_REQUEST,
+                "사진은 최대 10장까지만 첨부 가능합니다."
+        )
+        return ErrandResponse(errandService.createErrand(payload.userId, postErrandReqDto))
     }
 
     @GetMapping("/{id}")

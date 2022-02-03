@@ -9,15 +9,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class UserQueryRepositoryImpl(
     val query: JPAQueryFactory
 ) : UserQueryRepository {
-    override fun findByDaangnIdListAndHasCategory(
-        customerId: Long,
+    override fun findUsersInDaangnIdsAndHavingCategory(
         daangnIds: MutableSet<String>,
-        categoryId: Long
+        categoryId: Long,
     ): MutableList<User> {
         return query.selectFrom(user)
             .join(helperHasCategories)
             .on(user.eq(helperHasCategories.user).and(helperHasCategories.category.id.eq(categoryId)))
-            .where(user.daangnId.`in`(daangnIds).and(!user.id.eq(customerId)))
+            .where(user.daangnId.`in`(daangnIds))
             .fetch()
     }
 }

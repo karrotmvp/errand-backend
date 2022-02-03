@@ -6,6 +6,10 @@ data class GetNeighborRegionInfoRes(
     class Data(
         val region: RegionWithNeighbor
     )
+
+    fun getRegionIds(): List<String> {
+        return data.region.neighborRegions.map { it.id }
+    }
 }
 
 class RegionWithNeighbor(

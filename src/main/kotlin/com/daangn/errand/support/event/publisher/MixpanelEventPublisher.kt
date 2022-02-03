@@ -21,22 +21,6 @@ class MixpanelEventPublisher(
     private val errandRepository: ErrandRepository,
     private val userRepository: UserRepository
 ) {
-    @Async
-    @Transactional(readOnly = true)
-    fun publishErrandRegisteredEvent(errandId: Long) {
-        val errand = errandRepository.findById(errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-
-        val entities: HashMap<String, Any> = HashMap()
-        entities["심부름 id"] = errand.id.toString()
-        entities["심부름 카테고리"] = errand.category.name
-
-        val userInfo = daangnUtil.getUserProfile(errand.customer.daangnId).data.user
-        entities["유저 ID"] = userInfo.id
-        entities["유저 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
-
-//        entities["customer_errandReqList_size"] = errand.customer.errandReqList.size.toString() // 믹스패널에서 조회 가능
-        eventPublisher.publishEvent(MixpanelEvent(MixpanelTrackEvent.ERRAND_REGISTERED, entities))
-    }
 
     @Async
     @Transactional(readOnly = true)
