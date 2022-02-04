@@ -1,4 +1,4 @@
-package com.daangn.errand.rest.dto.daangn
+package com.daangn.errand.service.daangn.dto
 
 data class GetUserInfoByUserIdRes(
     val data: Data

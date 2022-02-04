@@ -3,7 +3,7 @@ package com.daangn.errand.domain.errand
 import com.daangn.errand.domain.category.CategoryVo
 import com.daangn.errand.domain.image.ImageVo
 import com.daangn.errand.domain.user.UserProfileVo
-import com.daangn.errand.rest.dto.daangn.RegionVo
+import com.daangn.errand.service.daangn.dto.RegionVo
 import java.time.LocalDateTime
 
 class ErrandAdmin(

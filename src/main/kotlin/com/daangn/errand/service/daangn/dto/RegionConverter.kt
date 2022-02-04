@@ -1,4 +1,4 @@
-package com.daangn.errand.rest.dto.daangn
+package com.daangn.errand.service.daangn.dto
 
 import org.mapstruct.Mapper
 import org.mapstruct.Mappings

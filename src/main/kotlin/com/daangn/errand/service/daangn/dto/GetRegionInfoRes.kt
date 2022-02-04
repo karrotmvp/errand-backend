@@ -1,6 +1,4 @@
-package com.daangn.errand.rest.dto.daangn
-
-import datadog.trace.api.Trace
+package com.daangn.errand.service.daangn.dto
 
 data class GetRegionInfoRes(
     val data: Data

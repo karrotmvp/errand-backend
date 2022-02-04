@@ -1,8 +1,6 @@
 package com.daangn.errand.util
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -13,7 +11,6 @@ import java.time.Duration
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
 import javax.xml.bind.DatatypeConverter
-import kotlin.jvm.Throws
 
 @Component
 class JwtUtil (

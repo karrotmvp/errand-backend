@@ -1,10 +1,10 @@
-package com.daangn.errand.util.daangnUtil
+package com.daangn.errand.service.daangn
 
 import com.daangn.errand.domain.user.UserProfileVo
 import com.daangn.errand.rest.dto.daangn.*
+import com.daangn.errand.service.daangn.dto.*
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import com.fasterxml.jackson.databind.ObjectMapper
 import datadog.trace.api.Trace
 import io.sentry.spring.tracing.SentrySpan
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
 
 @Component
-class DaangnUtilImpl(
+class DaangnOpenApiServiceImpl(
     private val httpClient: OkHttpClient,
     private val objectMapper: ObjectMapper,
     @Value("\${daangn.open-api.url}") val openApiBaseUrl: String,
@@ -26,7 +26,7 @@ class DaangnUtilImpl(
     @Value("\${daangn.app-auth}") val appAuthorization: String,
     @Value("\${daangn.app-key}") val appKey: String,
     @Value("\${daangn.oapi.neighbor-range}") val range: String,
-): DaangnUtil {
+): DaangnOpenApiService {
     protected val SCOPE = "account/profile"
     protected val GRANT_TYPE = "authorization_code"
     protected val RESPONSE_TYPE = "code"
@@ -133,6 +133,12 @@ class DaangnUtilImpl(
         }
     }
 
+    override fun sendBizChatting(postBizChatReqs: List<PostBizChatReq>) {
+        postBizChatReqs.asSequence()
+                .map(this::sendBizChatting)
+    }
+
+
     @Trace
     override fun getNeighborRegionByRegionId(regionId: String): GetNeighborRegionInfoRes {
         val url = "$oApiBaseUrl/api/v2/regions/$regionId/neighbor_regions"
@@ -155,7 +161,6 @@ class DaangnUtilImpl(
             throw ErrandException(ErrandError.UNEXPECTED_ERROR, e.toString())
         }
     }
-
 
     override fun setUserDaangnProfile(user: UserProfileVo, regionId: String?): UserProfileVo {
         val getUserInfoRes = getUserProfile(user.daangnId)

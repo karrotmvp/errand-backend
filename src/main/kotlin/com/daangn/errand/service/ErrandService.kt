@@ -5,19 +5,18 @@ import com.daangn.errand.domain.image.Image
 import com.daangn.errand.domain.user.User
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.repository.*
-import com.daangn.errand.rest.dto.daangn.Region
-import com.daangn.errand.rest.dto.daangn.RegionConverter
 import com.daangn.errand.rest.dto.errand.GetErrandResDto
 import com.daangn.errand.rest.dto.errand.PostErrandReqDto
 import com.daangn.errand.rest.dto.errand.PostErrandResDto
 import com.daangn.errand.rest.dto.help.HelperPreview
+import com.daangn.errand.service.daangn.DaangnOpenApiService
+import com.daangn.errand.service.daangn.dto.RegionVo
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandCreatedEvent
 import com.daangn.errand.support.event.HelperConfirmedErrandEvent
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.JwtPayload
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -25,20 +24,19 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ErrandService(
-    private val userRepository: UserRepository,
-    private val errandRepository: ErrandRepository,
-    private val categoryRepository: CategoryRepository,
-    private val helpRepository: HelpRepository,
-    private val imageRepository: ImageRepository,
+        private val userRepository: UserRepository,
+        private val errandRepository: ErrandRepository,
+        private val categoryRepository: CategoryRepository,
+        private val helpRepository: HelpRepository,
+        private val imageRepository: ImageRepository,
 
-    private val errandConverter: ErrandConverter,
-    private val regionConverter: RegionConverter,
-    private val userConverter: UserConverter,
+        private val errandConverter: ErrandConverter,
+        private val userConverter: UserConverter,
 
-    private val daangnUtil: DaangnUtil,
-    private val daangnChatEventPublisher: DaangnChatEventPublisher,
-    private val mixpanelEventPublisher: MixpanelEventPublisher,
-    private val eventPublisher: ApplicationEventPublisher,
+        private val daangnOpenAPIService: DaangnOpenApiService,
+        private val daangnChatEventPublisher: DaangnChatEventPublisher,
+        private val mixpanelEventPublisher: MixpanelEventPublisher,
+        private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     fun getMatchedErrandRate(): Float {
@@ -98,9 +96,10 @@ class ErrandService(
     @Transactional
     fun makeErrandToErrandDto(errand: Errand): ErrandDto {
         val errandDto = errandConverter.toErrandDto(errand)
-        errandDto.region = regionConverter.toRegionVo(daangnUtil.getRegionInfoByRegionId(errand.regionId).region)
+        val region = daangnOpenAPIService.getRegionInfoByRegionId(errand.regionId).region
+        errandDto.region = RegionVo.from(region)
         errandDto.helpCount = helpRepository.countByErrand(errand)
-        daangnUtil.setUserDaangnProfile(errandDto.customer)
+        daangnOpenAPIService.setUserDaangnProfile(errandDto.customer)
         return errandDto
     }
 
@@ -159,7 +158,7 @@ class ErrandService(
     fun convertHelpListToHelpPreviewList(errand: Errand): List<HelperPreview> {
         return helpRepository.findByErrandOrderByCreatedAt(errand).asSequence().map { help ->
             val userProfileVo =
-                daangnUtil.setUserDaangnProfile(
+                daangnOpenAPIService.setUserDaangnProfile(
                     userConverter.toUserProfileVo(help.helper),
                     help.regionId
                 )
@@ -191,8 +190,10 @@ class ErrandService(
 
     @Transactional
     fun readMain(userId: Long, lastId: Long?, size: Long, regionId: String): List<GetErrandResDto<ErrandPreview>> {
-        val neighbors = daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions
-        val neighborIds = Region.convertRegionListToRegionIdList(neighbors)
+        val neighbors = daangnOpenAPIService.getNeighborRegionByRegionId(regionId).data.region.neighborRegions
+        val neighborIds = neighbors.asSequence()
+                .map { region -> region.id }
+                .toList()
         val errands = errandRepository.findMainErrands(userId, size, neighborIds, lastId)
         return makeErrandPreviewByUserRole(errands, userId)
     }
@@ -204,7 +205,7 @@ class ErrandService(
     ): List<GetErrandResDto<ErrandPreview>> {
         val regionIds: MutableSet<String> = HashSet()
         errands.forEach { e -> regionIds.add(e.regionId) }
-        val regionIdAndNameHashMap = daangnUtil.getRegionInfoByRegionIdMap(regionIds)
+        val regionIdAndNameHashMap = daangnOpenAPIService.getRegionInfoByRegionIdMap(regionIds)
         return errands.asSequence().map { errand ->
             errand.helpCount = helpRepository.countByErrandId(errand.id)
             val isMine = errand.customerId == userId
@@ -223,7 +224,7 @@ class ErrandService(
     ): List<GetErrandResDto<ErrandPreview>> {
         val regionIds: MutableSet<String> = HashSet()
         errands.forEach { e -> regionIds.add(e.regionId) }
-        val regionIdAndNameHashMap = daangnUtil.getRegionInfoByRegionIdMap(regionIds)
+        val regionIdAndNameHashMap = daangnOpenAPIService.getRegionInfoByRegionIdMap(regionIds)
         return errands.asSequence().map { errand ->
             val isMine = errand.customer == user
             val didIApply: Boolean = !isMine && helpRepository.existsByErrandAndHelper(errand, user)
@@ -253,12 +254,10 @@ class ErrandService(
         size: Long,
         regionId: String
     ): List<GetErrandResDto<ErrandPreview>> {
-        val neighborIds =
-            Region.convertRegionListToRegionIdList(daangnUtil.getNeighborRegionByRegionId(regionId).data.region.neighborRegions)
+        val neighborIds = daangnOpenAPIService.getNeighborRegionByRegionId(regionId).getRegionIds()
         val errands =
             errandRepository.findAppliableMainErrands(lastId, userId, neighborIds, size)
         return makeErrandPreviewByUserRole(errands, userId)
-//            .filter { e -> e.errand.status != Status.FAIL.name } // 어차피 chosenHelper 가 없는 심부름만 조회하기 때문에 fail 불가능.
     }
 
     @Transactional

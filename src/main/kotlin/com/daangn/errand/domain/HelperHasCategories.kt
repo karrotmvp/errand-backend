@@ -4,8 +4,6 @@ import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import au.com.console.kassava.kotlinToString
 import com.daangn.errand.domain.category.Category
-import com.daangn.errand.domain.errand.Errand
-import com.daangn.errand.domain.help.Help
 import com.daangn.errand.domain.user.User
 import javax.persistence.*
 

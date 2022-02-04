@@ -1,8 +1,6 @@
 package com.daangn.errand.rest.dto.errand
 
-import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.domain.errand.ErrandHasStatus
-import com.daangn.errand.domain.errand.ErrandPreview
 import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

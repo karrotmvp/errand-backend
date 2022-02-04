@@ -1,6 +1,6 @@
 package com.daangn.errand.support.event
 
-import com.daangn.errand.rest.dto.daangn.*
+import com.daangn.errand.service.daangn.dto.*
 
 interface DaangnChatReqRegisteredEvent {
     val targetUserIds: List<String>

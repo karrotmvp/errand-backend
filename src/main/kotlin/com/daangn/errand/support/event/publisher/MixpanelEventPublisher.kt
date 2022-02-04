@@ -4,10 +4,10 @@ import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
 import com.daangn.errand.service.MixpanelTrackEvent
+import com.daangn.errand.service.daangn.DaangnOpenApiService
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.MixpanelEvent
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class MixpanelEventPublisher(
-    private val eventPublisher: ApplicationEventPublisher,
-    private val daangnUtil: DaangnUtil,
-    private val helpRepository: HelpRepository,
-    private val errandRepository: ErrandRepository,
-    private val userRepository: UserRepository
+        private val eventPublisher: ApplicationEventPublisher,
+        private val daangnOpenAPIService: DaangnOpenApiService,
+        private val helpRepository: HelpRepository,
+        private val errandRepository: ErrandRepository,
+        private val userRepository: UserRepository
 ) {
 
     @Async
@@ -33,7 +33,7 @@ class MixpanelEventPublisher(
         entities["심부름 카테고리"] = help.errand.category.name
         entities["지원 순서"] = help.errand.helps.size.toString()
 
-        val userInfo = daangnUtil.getUserProfile(help.helper.daangnId).data.user
+        val userInfo = daangnOpenAPIService.getUserProfile(help.helper.daangnId).data.user
         entities["헬퍼 ID"] = userInfo.id
         entities["헬퍼 닉네임"] = userInfo.nickname ?: "닉네임 미등록"
 
@@ -55,8 +55,8 @@ class MixpanelEventPublisher(
         entities["심부름 카테고리"] = errand.category.name
         entities["고객 ID"] = errand.customer.id.toString()
 
-        val customerInfo = daangnUtil.getUserProfile(errand.customer.daangnId).data.user
-        val helperInfo = daangnUtil.getUserProfile(
+        val customerInfo = daangnOpenAPIService.getUserProfile(errand.customer.daangnId).data.user
+        val helperInfo = daangnOpenAPIService.getUserProfile(
             errand.chosenHelper?.daangnId ?: throw ErrandException(
                 ErrandError.ENTITY_NOT_FOUND,
                 "chosen helper 없음"
@@ -74,7 +74,7 @@ class MixpanelEventPublisher(
     @Transactional(readOnly = true)
     fun publishErrandSignInEvent(userId: Long, isSignUp: Boolean) {
         val user = userRepository.findById(userId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-        val userInfo = daangnUtil.getUserProfile(user.daangnId).data.user
+        val userInfo = daangnOpenAPIService.getUserProfile(user.daangnId).data.user
         val entities = HashMap<String, Any>()
         entities["최초 로그인?"] = isSignUp
         entities["유저 ID"] = userId

@@ -2,7 +2,7 @@ package com.daangn.errand.domain.help
 
 import com.daangn.errand.domain.errand.ErrandDto
 import com.daangn.errand.domain.user.UserProfileVo
-import com.daangn.errand.rest.dto.daangn.RegionVo
+import com.daangn.errand.service.daangn.dto.RegionVo
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 

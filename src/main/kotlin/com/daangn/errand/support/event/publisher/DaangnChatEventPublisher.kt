@@ -2,10 +2,10 @@ package com.daangn.errand.support.event.publisher
 
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
+import com.daangn.errand.service.daangn.DaangnOpenApiService
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.*
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component
 
 @Component
 data class DaangnChatEventPublisher(
-    @Value("\${host.url}")
+        @Value("\${host.url}")
     private val baseUrl: String,
-    private val eventPublisher: ApplicationEventPublisher,
-    private val daangnUtil: DaangnUtil,
-    private val redisUtil: RedisUtil,
-    private val userRepository: UserRepository,
-    private val errandRepository: ErrandRepository,
+        private val eventPublisher: ApplicationEventPublisher,
+        private val daangnOpenAPIService: DaangnOpenApiService,
+        private val redisUtil: RedisUtil,
+        private val userRepository: UserRepository,
+        private val errandRepository: ErrandRepository,
 ) {
 
     @Async

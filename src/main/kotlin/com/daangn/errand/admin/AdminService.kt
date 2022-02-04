@@ -13,10 +13,10 @@ import com.daangn.errand.domain.user.UserPreview
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.HelpRepository
 import com.daangn.errand.repository.UserRepository
-import com.daangn.errand.rest.dto.daangn.RegionConverter
+import com.daangn.errand.service.daangn.DaangnOpenApiService
+import com.daangn.errand.service.daangn.dto.RegionConverter
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -28,16 +28,16 @@ import javax.servlet.http.HttpSession
 @Service
 @Transactional
 class AdminService(
-    private val errandRepository: ErrandRepository,
-    private val userRepository: UserRepository,
-    private val errandConverter: ErrandConverter,
-    private val daangnUtil: DaangnUtil,
-    private val regionConverter: RegionConverter,
-    private val helpRepository: HelpRepository,
-    private val helpConverter: HelpConverter,
-    private val userConverter: UserConverter,
-    @Value("\${admin.username}") private val username: String,
-    @Value("\${admin.password}") private val password: String,
+        private val errandRepository: ErrandRepository,
+        private val userRepository: UserRepository,
+        private val errandConverter: ErrandConverter,
+        private val daangnOpenAPIService: DaangnOpenApiService,
+        private val regionConverter: RegionConverter,
+        private val helpRepository: HelpRepository,
+        private val helpConverter: HelpConverter,
+        private val userConverter: UserConverter,
+        @Value("\${admin.username}") private val username: String,
+        @Value("\${admin.password}") private val password: String,
 ) {
 
     fun login(adminLoginReqDto: AdminLoginReqDto): Boolean {
@@ -67,7 +67,7 @@ class AdminService(
 
         return errands.asSequence().map { errand ->
             val errandAdmin = errandConverter.toErrandAdmin(errand)
-            val region = daangnUtil.getRegionInfoByRegionId(errand.regionId).region
+            val region = daangnOpenAPIService.getRegionInfoByRegionId(errand.regionId).region
             errandAdmin.region = regionConverter.toRegionVo(region)
             errandAdmin.helpCount = helpRepository.countByErrand(errand)
             errandAdmin
@@ -78,7 +78,7 @@ class AdminService(
         val errand = errandRepository.findById(errandId)
             .orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND, "아이디로 엔티티 조회 실패") }
         val errandAdmin = errandConverter.toErrandAdmin(errand)
-        val region = daangnUtil.getRegionInfoByRegionId(errand.regionId).region
+        val region = daangnOpenAPIService.getRegionInfoByRegionId(errand.regionId).region
         errandAdmin.region = regionConverter.toRegionVo(region)
         errandAdmin.helpCount = helpRepository.countByErrand(errand)
         return errandAdmin
@@ -95,10 +95,10 @@ class AdminService(
 
     val convertToHelpAdmin: (Help) -> HelpAdmin = { help ->
         val helpAdmin = helpConverter.toHelpAdmin(help)
-        val region = daangnUtil.getRegionInfoByRegionId(help.regionId).region
+        val region = daangnOpenAPIService.getRegionInfoByRegionId(help.regionId).region
         helpAdmin.region = regionConverter.toRegionVo(region)
         val userProfile = userConverter.toUserProfileVo(help.helper)
-        helpAdmin.helper = daangnUtil.setUserDaangnProfile(userProfile)
+        helpAdmin.helper = daangnOpenAPIService.setUserDaangnProfile(userProfile)
         helpAdmin
     }
 
@@ -112,7 +112,7 @@ class AdminService(
 
     fun getUserDaangnInfo(userId: Long): UserAdmin {
         val user = userRepository.findById(userId).get()
-        val daangnProfile = daangnUtil.getUserProfile(user.daangnId).data.user
+        val daangnProfile = daangnOpenAPIService.getUserProfile(user.daangnId).data.user
         val errandCount = errandRepository.countByCustomer(user)
         val helpCount = helpRepository.countByHelper(user)
         return UserAdmin(

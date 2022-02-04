@@ -6,7 +6,6 @@ import com.daangn.errand.domain.errand.QErrand.errand
 import com.daangn.errand.domain.help.QHelp.help
 import com.daangn.errand.domain.user.User
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 

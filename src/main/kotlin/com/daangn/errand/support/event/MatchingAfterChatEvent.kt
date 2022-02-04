@@ -1,6 +1,6 @@
 package com.daangn.errand.support.event
 
-import com.daangn.errand.rest.dto.daangn.ActionType
+import com.daangn.errand.service.daangn.dto.ActionType
 
 class MatchingAfterChatEvent(
     override val targetUserIds: List<String>,

@@ -1,7 +1,7 @@
 package com.daangn.errand.util
 
-import com.daangn.errand.rest.dto.daangn.*
-import com.daangn.errand.util.daangnUtil.DaangnUtilImpl
+import com.daangn.errand.service.daangn.DaangnOpenApiServiceImpl
+import com.daangn.errand.service.daangn.dto.*
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -14,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest
     named="SPRING_PROFILES_ACTIVE",
     matches="local"
 )
-internal class DaangnUtilImplTest constructor(
-    @Autowired val daangnUtilImpl: DaangnUtilImpl,
-    @Autowired val regionConverter: RegionConverter
+internal class DaangnOpenApiServiceImplTest constructor(
+        @Autowired val daangnUtilImpl: DaangnOpenApiServiceImpl,
+        @Autowired val regionConverter: RegionConverter
 ) {
     @Test
     fun `regionId로 region 정보 가져오기`() {
@@ -62,7 +62,7 @@ internal class DaangnUtilImplTest constructor(
     fun `당근 프로필 불러오기`() {
         val userId = "8a190fa9bb5d4d89b3944dc8c5b3a102"
         val userInfo: GetUserInfoByUserIdRes = assertDoesNotThrow { daangnUtilImpl.getUserProfile(userId) }
-        
+
         println(userInfo.data.user.id)
         println(userInfo.data.user.nickname)
         println(userInfo.data.user.profileImageUrl)

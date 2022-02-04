@@ -1,4 +1,4 @@
-package com.daangn.errand.rest.dto.daangn
+package com.daangn.errand.service.daangn.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime

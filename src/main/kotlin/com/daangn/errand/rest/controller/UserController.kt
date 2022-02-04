@@ -1,8 +1,8 @@
 package com.daangn.errand.rest.controller
 
 import com.daangn.errand.domain.user.UserProfileVo
-import com.daangn.errand.rest.dto.category.PatchUserCategoryReqDto
 import com.daangn.errand.rest.dto.PatchUserAlarmReqDto
+import com.daangn.errand.rest.dto.category.PatchUserCategoryReqDto
 import com.daangn.errand.rest.resolver.TokenPayload
 import com.daangn.errand.service.UserService
 import com.daangn.errand.support.response.ErrandResponse

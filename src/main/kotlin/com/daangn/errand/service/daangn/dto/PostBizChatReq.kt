@@ -1,4 +1,4 @@
-package com.daangn.errand.rest.dto.daangn
+package com.daangn.errand.service.daangn.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
@@ -8,11 +8,11 @@ data class PostBizChatReq(
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Input(
-    val userId: String,
-    val title: String,
-    val text: String,
-    val actions: List<Action>,
-    val imageUrl: String? = null
+        val userId: String,
+        val title: String,
+        val text: String,
+        val actions: List<Action>,
+        val imageUrl: String? = null
 )
 
 data class Action(

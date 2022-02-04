@@ -1,9 +1,7 @@
 package com.daangn.errand.util
 
 import com.google.common.net.HttpHeaders
-import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseCookie
-import org.springframework.stereotype.Component
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 

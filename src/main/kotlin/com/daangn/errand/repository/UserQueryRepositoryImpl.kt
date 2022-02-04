@@ -1,7 +1,6 @@
 package com.daangn.errand.repository
 
 import com.daangn.errand.domain.QHelperHasCategories.helperHasCategories
-import com.daangn.errand.domain.category.Category
 import com.daangn.errand.domain.user.QUser.user
 import com.daangn.errand.domain.user.User
 import com.querydsl.jpa.impl.JPAQueryFactory

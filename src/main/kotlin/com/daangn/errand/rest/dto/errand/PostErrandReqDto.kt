@@ -1,7 +1,6 @@
 package com.daangn.errand.rest.dto.errand
 
 import io.swagger.annotations.ApiModelProperty
-import org.springframework.web.multipart.MultipartFile
 
 data class PostErrandReqDto(
     @ApiModelProperty(value = "카테고리 ID")

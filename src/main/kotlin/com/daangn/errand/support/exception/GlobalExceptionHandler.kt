@@ -2,7 +2,6 @@ package com.daangn.errand.support.exception
 
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.response.ErrandResponse
-import io.sentry.Sentry
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

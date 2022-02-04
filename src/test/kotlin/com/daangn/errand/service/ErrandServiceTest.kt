@@ -3,10 +3,10 @@ package com.daangn.errand.service
 import com.daangn.errand.domain.errand.ErrandConverter
 import com.daangn.errand.domain.user.UserConverter
 import com.daangn.errand.repository.*
-import com.daangn.errand.rest.dto.daangn.RegionConverter
+import com.daangn.errand.service.daangn.DaangnOpenApiService
+import com.daangn.errand.service.daangn.dto.RegionConverter
 import com.daangn.errand.support.event.publisher.DaangnChatEventPublisher
 import com.daangn.errand.support.event.publisher.MixpanelEventPublisher
-import com.daangn.errand.util.DaangnUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -51,7 +51,7 @@ class ErrandServiceTest {
     private lateinit var userConverter: UserConverter
 
     @MockK
-    private lateinit var daangnUtil: DaangnUtil
+    private lateinit var daangnOpenAPIService: DaangnOpenApiService
 
     @MockK
     private lateinit var daangnChatEventPublisher: DaangnChatEventPublisher

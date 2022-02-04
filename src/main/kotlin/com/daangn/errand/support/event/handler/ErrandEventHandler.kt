@@ -3,16 +3,15 @@ package com.daangn.errand.support.event.handler
 import com.daangn.errand.domain.errand.Errand
 import com.daangn.errand.repository.ErrandRepository
 import com.daangn.errand.repository.UserRepository
-import com.daangn.errand.rest.dto.daangn.ActionType
 import com.daangn.errand.service.MixpanelService
 import com.daangn.errand.service.MixpanelTrackEvent
+import com.daangn.errand.service.daangn.DaangnOpenApiService
+import com.daangn.errand.service.daangn.dto.ActionType
+import com.daangn.errand.service.daangn.dto.DaangnChatRequest
 import com.daangn.errand.support.error.ErrandError
 import com.daangn.errand.support.event.ErrandCreatedEvent
 import com.daangn.errand.support.exception.ErrandException
-import com.daangn.errand.util.DaangnUtil
 import com.daangn.errand.util.RedisUtil
-import com.daangn.errand.util.daangn.ChatSender
-import com.daangn.errand.util.daangn.DaangnChatRequest
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -29,8 +28,7 @@ class ErrandEventHandler(
         private val redisUtil: RedisUtil,
         private val errandRepository: ErrandRepository,
         private val userRepository: UserRepository,
-        private val daangnUtil: DaangnUtil,
-        private val chatSender: ChatSender,
+        private val daangnOpenAPIService: DaangnOpenApiService,
         private val mixpanelService: MixpanelService,
 ) {
 
@@ -40,30 +38,29 @@ class ErrandEventHandler(
     fun requestToSendNewErrandNotification(event: ErrandCreatedEvent) {
         val errand = errandRepository.findById(event.errandId)
                 .orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
-
-        chatSender.sendBizChat(
-            DaangnChatRequest(
-                targetUserIds = getTargetUserDaangnIds(errand),
-                title = "${getRegionName(errand) ?: "우리동네"}에 새로운 심부름이 올라왔어요.",
-                text = "심부름의 자세한 내용을 확인해보세요!",
-                linkUrl = "$baseUrl/errands/${errand.id}",
-                buttonText = "보러 갈래요",
-                actionType = ActionType.NORMAL_BUTTON,
-                imageUrl = ERRAND_CREATED_CHAT_IMAGE_URL,
-            )
-        )
+        val apiRequest =
+                DaangnChatRequest(
+                        targetUserIds = getTargetUserDaangnIds(errand),
+                        title = "${getRegionName(errand) ?: "우리동네"}에 새로운 심부름이 올라왔어요.",
+                        text = "심부름의 자세한 내용을 확인해보세요!",
+                        linkUrl = "$baseUrl/errands/${errand.id}",
+                        buttonText = "보러 갈래요",
+                        actionType = ActionType.NORMAL_BUTTON,
+                        imageUrl = ERRAND_CREATED_CHAT_IMAGE_URL,
+                ).toApiRequest()
+        daangnOpenAPIService.sendBizChatting(apiRequest)
     }
 
     private fun getRegionName(errand: Errand): String? =
             try {
-                daangnUtil.getRegionInfoByRegionId(errand.regionId).region.name
+                daangnOpenAPIService.getRegionInfoByRegionId(errand.regionId).region.name
             } catch (e: Exception) {
                 null
             }
 
 
     fun getTargetUserDaangnIds(errand: Errand): List<String> {
-        val neighborRegionResponse = daangnUtil.getNeighborRegionByRegionId(errand.regionId)
+        val neighborRegionResponse = daangnOpenAPIService.getNeighborRegionByRegionId(errand.regionId)
         val userIdsInRegion = neighborRegionResponse.getRegionIds().stream()
                 .flatMap { regionId -> redisUtil.getDaangnUserIdsBy(regionId).stream() }
                 .collect(Collectors.toSet())
@@ -82,7 +79,7 @@ class ErrandEventHandler(
     fun sendMixpanelEvent(event: ErrandCreatedEvent) {
         val errand = errandRepository.findById(event.errandId).orElseThrow { ErrandException(ErrandError.ENTITY_NOT_FOUND) }
 
-        val userInfo = daangnUtil.getUserProfile(errand.customer.daangnId).data.user
+        val userInfo = daangnOpenAPIService.getUserProfile(errand.customer.daangnId).data.user
         val entities = mapOf(
                 Pair("심부름 id", errand.id.toString()),
                 Pair("심부름 카테고리", errand.category.name),
